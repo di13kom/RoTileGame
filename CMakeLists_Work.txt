@@ -1,0 +1,23 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(Efs)
+set(CMAKE_CXX_STANDARD 14)
+
+find_package(FLTK REQUIRED MODULE)
+include(${FLTK_USE_FILE})
+
+set(Sources Efs.cpp)
+set(Headers Efs.h Common.h)
+
+#Efs
+set(EFS_Lib_Sources EFS_Lib.cpp)
+set(EFS_Lib_Headers EFS_Lib.h)
+#add_library(EFS_Lib SHARED ${EFS_Lib_Sources} ${EFS_Lib_Headers})
+#Bfs
+set(BFS_Lib_Sources BFS_Lib.cpp)
+#set(BFS_Lib_Headers BFS_Lib.h)
+#add_library(BFS_Lib SHARED ${BFS_Lib_Sources} ${BFS_Lib_Headers})
+#add_library(BFS_Lib SHARED ${BFS_Lib_Sources})
+
+add_executable(Efs ${Sources} ${Headers} ${EFS_Lib_Headers} ${EFS_Lib_Sources} ${BFS_Lib_Sources} ${BFS_Lib_Headers})
+target_link_libraries(Efs fltk fltk_images ) 
