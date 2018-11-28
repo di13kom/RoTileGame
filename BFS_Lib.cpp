@@ -57,24 +57,31 @@ int BFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 	char *Tmp = new char[N*N + 1];
 	if (Tmp == NULL)std::cout << "memory exhausted\n";
 	std::copy(Output, Output + N * N, Tmp);
-	char *Buff = new char;
+	//char *Buff = new char;
 	if (IsLeft)//Left Rotate
 	{
-		*Buff = Tmp[(int)M];
-		Tmp[(int)M] = Tmp[(int)M + 1];
-		Tmp[(int)M + 1] = Tmp[(int)M + N + 1];
-		Tmp[(int)M + N + 1] = Tmp[(int)M + N];
-		Tmp[(int)M + N] = *Buff;
+		std::swap(Tmp[(int)M],Tmp[(int)M + 1]);
+		std::swap(Tmp[(int)M],Tmp[(int)M + N + 1]);
+		std::swap(Tmp[(int)M],Tmp[(int)M + N]);
+
+		//*Buff = Tmp[(int)M];
+		//Tmp[(int)M] = Tmp[(int)M + 1];
+		//Tmp[(int)M + 1] = Tmp[(int)M + N + 1];
+		//Tmp[(int)M + N + 1] = Tmp[(int)M + N];
+		//Tmp[(int)M + N] = *Buff;
 	}
 	else//Right Rotate
 	{
-		*Buff = Tmp[(int)M];
-		Tmp[(int)M] = Tmp[(int)M + N];
-		Tmp[(int)M + N] = Tmp[(int)M + N + 1];
-		Tmp[(int)M + N + 1] = Tmp[(int)M + 1];
-		Tmp[(int)M + 1] = *Buff;
+		std::swap(Tmp[(int)M],Tmp[(int)M + 1]);
+		std::swap(Tmp[(int)M + 1],Tmp[(int)M + N]);
+		std::swap(Tmp[(int)M + 1],Tmp[(int)M + N + 1]);
+		//*Buff = Tmp[(int)M];
+		//Tmp[(int)M] = Tmp[(int)M + N];
+		//Tmp[(int)M + N] = Tmp[(int)M + N + 1];
+		//Tmp[(int)M + N + 1] = Tmp[(int)M + 1];
+		//Tmp[(int)M + 1] = *Buff;
 	}
-	delete Buff;
+	//delete Buff;
 	Tmp[N*N] = '\0';
 	Node->Positions = Tmp;
 	if (std::equal(Tmp, Tmp + (N*N/*(N-1)*/), Solution))
