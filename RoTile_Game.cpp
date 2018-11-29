@@ -169,12 +169,12 @@ public:
 					std::cout << "Solution was find through " << BackList.size() << "steps in BackList\n";
 					fl_message("Solution was find through %d steps", BackList.size());
 					//std::cout<<"iterations: "<<L<<std::endl;
-					/*for(unsigned i=0;i<BackList.size();i++)
+					for(unsigned i=0;i<BackList.size();i++)
 					{
 						std::cout<<std::endl;
 						for(int j=0;j<N*N;j++)
 							std::cout<<(int)BackList[i][j];
-					}*/
+					}
 				}
 				else
 				{
@@ -258,12 +258,9 @@ public:
 
 	void TurnRight_(BoxesPreferences* BX)
 	{
-		int Buff;
-		Buff = (BX)->Data;
-		BX->Data = (BX + N)->Data;
-		(BX + N)->Data = (BX + N + 1)->Data;
-		(BX + N + 1)->Data = (BX + 1)->Data;
-		(BX + 1)->Data = Buff;
+		std::swap(BX->Data, (BX + 1)->Data);
+		std::swap(BX->Data, (BX + N + 1)->Data);
+		std::swap(BX->Data, (BX + N)->Data);
 
 		sprintf(BX->str.data(), "%d", BX->Data);
 		sprintf((BX + 1)->str.data(), "%d", (BX + 1)->Data);
@@ -273,12 +270,9 @@ public:
 
 	void TurnLeft_(BoxesPreferences* BX)
 	{
-		int Buff;
-		Buff = BX->Data;
-		BX->Data = (BX + 1)->Data;
-		(BX + 1)->Data = (BX + N + 1)->Data;
-		(BX + N + 1)->Data = (BX + N)->Data;
-		(BX + N)->Data = Buff;
+		std::swap((BX + 1)->Data, BX->Data);
+		std::swap((BX + 1)->Data, (BX + N)->Data);
+		std::swap((BX + 1)->Data, (BX + N + 1)->Data);
 
 		sprintf(BX->str.data(), "%d", BX->Data);
 		sprintf((BX + 1)->str.data(), "%d", (BX + 1)->Data);
