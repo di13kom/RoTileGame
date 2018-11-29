@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.0)
 
-project(Efs)
+project(RoTile_Game)
 
 find_package(FLTK REQUIRED MODULE)
 include(${FLTK_USE_FILE})
@@ -10,25 +10,24 @@ if(UNIX)
 endif(UNIX)
 
 
-set(Sources Efs.cpp)
-set(Headers Efs.h)
+set(Sources RoTile_Game.cpp)
+set(Headers RoTile_Game.h)
 
-#Efs
-set(EFS_Lib_Sources EFS_Lib.cpp)
-set(EFS_Lib_Headers EFS_Lib.h Common.h)
+#A_Star_Lib
+set(A_Star_Lib_Sources A_Star_Lib.cpp)
+set(A_Star_Lib_Headers A_Star_Lib.h Common.h)
 # 
-add_library(EFS_Lib STATIC ${EFS_Lib_Sources} ${EFS_Lib_Headers})
+add_library(A_Star_Lib STATIC ${A_Star_Lib_Sources} ${A_Star_Lib_Headers})
 #Bfs
 set(BFS_Lib_Sources BFS_Lib.cpp)
 set(BFS_Lib_Headers BFS_Lib.h Common.h)
 #
 add_library(BFS_Lib STATIC ${BFS_Lib_Sources} ${BFS_Lib_Headers})
 
-add_executable(Efs ${Sources} ${Headers})
-add_dependencies(Efs BFS_Lib EFS_Lib)
-target_link_libraries(Efs fltk fltk_images EFS_Lib BFS_Lib) 
+add_executable(RoTile_Game ${Sources} ${Headers})
+add_dependencies(RoTile_Game BFS_Lib A_Star_Lib)
+target_link_libraries(RoTile_Game fltk fltk_images A_Star_Lib BFS_Lib) 
 
 if(UNIX)
-	target_link_libraries (Efs ${CMAKE_THREAD_LIBS_INIT})
+	target_link_libraries (RoTile_Game ${CMAKE_THREAD_LIBS_INIT})
 endif(UNIX)
-

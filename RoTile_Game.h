@@ -9,7 +9,7 @@
 #include <cstdlib>
 #include <signal.h>
 #include "BFS_Lib.h"
-#include "EFS_Lib.h"
+#include "A_Star_Lib.h"
 #include <thread>
 #include <future>
 #include <array>
