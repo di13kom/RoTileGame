@@ -21,13 +21,8 @@ class Mybox : public Fl_Box
 	BoxesPreferences* BoxPref;
 	BoxesPreferences FramePref;
 	int x, y;
-	int p;
 	int HWBox;
 	int N;
-	int HWFrm;
-	int FrmPosNum;
-	int xc, yc;
-	std::vector<char> Numb;
 	std::vector<char> Solution;
 	std::vector<char*> BackList;
 public:
@@ -37,13 +32,13 @@ public:
 	}
 
 	friend void TimerR(void*);
-	Mybox(int _x, int _y, int _w, int _h, int _n) : Fl_Box(_x, _y, _w, _h),
-		//m_efsClass(_n),
-		//m_bfsClass(_n),
-		Numb(_n*_n),
-		Solution(_n*_n)
+	Mybox(int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(_x, _y, _w, _h),
+		//m_efsClass(elemsCount),
+		//m_bfsClass(elemsCount),
+		Solution(elemsCount * elemsCount)
 	{
-		N = _n;
+		std::vector<char> Numb(elemsCount * elemsCount);
+		N = elemsCount;
 		x = _x;
 		y = _y;
 		BoxPref = new BoxesPreferences[N*N];
@@ -56,10 +51,9 @@ public:
 			BoxPref[i].Data = Numb[i];
 			sprintf(BoxPref[i].str.data(), "%d", BoxPref[i].Data);
 		}
-		//delete[] Numb;
-		p = 0;
+		int p = 0;
 		HWBox = (430 - (N - 1) * 10) / N;
-		HWFrm = HWBox * 2 + 10 * 2;
+		int Frame_Width_Height = HWBox * 2 + 10 * 2;
 		//std::cout<<"HWBox:"<<HWBox<<"\n";
 		for (int i = 0; i < N; i++)
 		{
@@ -80,13 +74,13 @@ public:
 
 		/*FramePref.X = x + 145;
 		  FramePref.Y = y + 145;*/
-		FrmPosNum = (((N - 1)*(N - 1)) / 2) + 1;
-		yc = FrmPosNum / (N - 1);
-		xc = (FrmPosNum % (N - 1)) - 1;
+		int FrmPosNum = (((N - 1)*(N - 1)) / 2) + 1;
+		int yc = FrmPosNum / (N - 1);
+		int xc = (FrmPosNum % (N - 1)) - 1;
 		//std::cout<<"xc:"<<xc<<"\nyc:"<<yc<<"\n";
 		FramePref.X = (x + 35) + xc * HWBox + xc * 10;
 		FramePref.Y = (y + 35) + yc * HWBox + yc * 10;
-		FramePref.Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, FramePref.X, FramePref.Y, HWFrm, HWFrm, "");
+		FramePref.Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, FramePref.X, FramePref.Y, Frame_Width_Height, Frame_Width_Height, "");
 		FramePref.Box->color(FL_RED);
 	}
 
@@ -385,7 +379,7 @@ int main()
 	menu->add("&File/&Open", "^o", nullptr);
 	menu->add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
 	wind = &windowX;
-	Mybox Mb(150, 50, 500, 500, 4);
+	Mybox Mb(150, 50, 500, 500, 3);
 	windowX.end();
 	windowX.show();
 	return Fl::run();
