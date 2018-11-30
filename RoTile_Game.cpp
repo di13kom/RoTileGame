@@ -16,15 +16,15 @@ Mybox::~Mybox()
 	delete[] Tiles;
 }
 
-Mybox::Mybox(int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(_x, _y, _w, _h),
+Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(bt, _x, _y, _w, _h, ""),
 //m_efsClass(elemsCount),
 //m_bfsClass(elemsCount),
 Solution(elemsCount * elemsCount)
 {
 	std::vector<char> Numb(elemsCount * elemsCount);
 	TilesInRow = elemsCount;
-	x = _x;
-	y = _y;
+	m_MainTableXpos = _x;
+	m_MainTableYpos = _y;
 	Tiles = new BoxesPreferences[TilesInRow*TilesInRow];
 	std::iota(Numb.begin(), Numb.end(), 1);
 	std::iota(Solution.begin(), Solution.end(), 1);
@@ -36,15 +36,15 @@ Solution(elemsCount * elemsCount)
 		sprintf(Tiles[i].str.data(), "%d", Tiles[i].Data);
 	}
 	int p = 0;
-	Tile_Width_Height = (430 - (TilesInRow - 1) * 10) / TilesInRow;
-	int Frame_Width_Height = Tile_Width_Height * 2 + 10 * 2;
+	Tile_Width_Height = (430 - (TilesInRow - 1) * InterTileDistance) / TilesInRow;
+	int Frame_Width_Height = Tile_Width_Height * 2 + (FramePadding*2) + InterTileDistance;
 	//std::cout<<"Tile_Width_Height:"<<Tile_Width_Height<<"\n";
 	for (int i = 0; i < TilesInRow; i++)
 	{
 		for (int j = 0; j < TilesInRow; j++)
 		{
-			Tiles[p].X = (x + 40) + j * 10 + j * Tile_Width_Height;
-			Tiles[p].Y = (y + 40) + i * 10 + i * Tile_Width_Height;
+			Tiles[p].X = (m_MainTableXpos + 40) + j * InterTileDistance + j * Tile_Width_Height;
+			Tiles[p].Y = (m_MainTableYpos + 40) + i * InterTileDistance + i * Tile_Width_Height;
 			p++;
 		}
 	}
@@ -56,14 +56,14 @@ Solution(elemsCount * elemsCount)
 		Tiles[i].Box->labelsize(40 * 3 / TilesInRow);
 	}
 
-	/*Frame.X = x + 145;
-	  Frame.Y = y + 145;*/
+	/*Frame.X = m_MainTableXpos + 145;
+	  Frame.Y = m_MainTableYpos + 145;*/
 	int FrmPosNum = (((TilesInRow - 1)*(TilesInRow - 1)) / 2) + 1;
 	int yc = FrmPosNum / (TilesInRow - 1);
 	int xc = (FrmPosNum % (TilesInRow - 1)) - 1;
 	//std::cout<<"xc:"<<xc<<"\nyc:"<<yc<<"\n";
-	Frame.X = (x + 35) + xc * Tile_Width_Height + xc * 10;
-	Frame.Y = (y + 35) + yc * Tile_Width_Height + yc * 10;
+	Frame.X = (m_MainTableXpos + MainTablePadding) + xc * Tile_Width_Height + xc * InterTileDistance;
+	Frame.Y = (m_MainTableYpos + MainTablePadding) + yc * Tile_Width_Height + yc * InterTileDistance;
 	Frame.Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, Frame.X, Frame.Y, Frame_Width_Height, Frame_Width_Height, "");
 	Frame.Box->color(FL_RED);
 #ifdef __unix__//To show iterations
@@ -74,7 +74,7 @@ Solution(elemsCount * elemsCount)
 
 void Mybox::draw()
 {
-	//Fl_Box::draw();
+	Fl_Box::draw();
 	//wind->redraw();
 	//std::cout<<"REdraw called\n";
 	//fl_frame("AAAA", Frame.X, Frame.Y, 220, 220);
@@ -97,35 +97,35 @@ int Mybox::handle(int e)
 		{
 		case FL_Left:
 			//std::cout<<"Left Pressed\n";
-			Frame.X -= Tile_Width_Height + 10;
-			if (Frame.X < x + 35)
-				Frame.X = (x + 35) + (TilesInRow - 2) * 10 + (TilesInRow - 2)*Tile_Width_Height;
+			Frame.X -= Tile_Width_Height + InterTileDistance;
+			if (Frame.X < m_MainTableXpos + MainTablePadding)
+				Frame.X = (m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
 			Frame.Box->position(Frame.X, Frame.Y);
 			wind->redraw();
 			//std::cout<<"Frame.X="<<Frame.X<<"\n";
 			return 1;
 		case FL_Right:
 			//std::cout<<"Right Pressed\n";
-			Frame.X += Tile_Width_Height + 10;
-			if (Frame.X > ((x + 35) + (TilesInRow - 2) * 10 + (TilesInRow - 2)*Tile_Width_Height))
-				Frame.X = x + 35;
+			Frame.X += Tile_Width_Height + InterTileDistance;
+			if (Frame.X > ((m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+				Frame.X = m_MainTableXpos + MainTablePadding;
 			Frame.Box->position(Frame.X, Frame.Y);
 			wind->redraw();
 			//std::cout<<"Frame.X="<<Frame.X<<"\n";
 			return 1;
 		case FL_Up:
 			//std::cout<<"Up Pressed\n";
-			Frame.Y -= Tile_Width_Height + 10;
-			if (Frame.Y < y + 35)
-				Frame.Y = (y + 35) + (TilesInRow - 2) * 10 + (TilesInRow - 2)*Tile_Width_Height;
+			Frame.Y -= Tile_Width_Height + InterTileDistance;
+			if (Frame.Y < m_MainTableYpos + MainTablePadding)
+				Frame.Y = (m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
 			Frame.Box->position(Frame.X, Frame.Y);
 			wind->redraw();
 			return 1;
 		case FL_Down:
 			//std::cout<<"Down Pressed\n";
-			Frame.Y += Tile_Width_Height + 10;
-			if (Frame.Y > ((y + 35) + (TilesInRow - 2) * 10 + (TilesInRow - 2)*Tile_Width_Height))
-				Frame.Y = y + 35;
+			Frame.Y += Tile_Width_Height + InterTileDistance;
+			if (Frame.Y > ((m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+				Frame.Y = m_MainTableYpos + MainTablePadding;
 			Frame.Box->position(Frame.X, Frame.Y);
 			wind->redraw();
 			return 1;
@@ -234,7 +234,7 @@ BoxesPreferences* Mybox::GetFrameLeftUpperPosition()
 	for (int i = 0; i < TilesInRow*TilesInRow; i++)
 	{
 		//std::cout<<"enter to loop num:"<<i<<"\n";
-		if ((Col == Tiles[i].X - 5) && (Row == Tiles[i].Y - 5))
+		if ((Col == Tiles[i].X - FramePadding) && (Row == Tiles[i].Y - FramePadding))
 		{
 			//std::cout<<"return\n";
 			return &Tiles[i];
@@ -305,7 +305,7 @@ void *Mybox::PrgsBar(void *ptr)
 		if (b > strlen(Txt))b = 10;
 		progress.label(percent);
 		Fl::check();
-		std::this_thread::sleep_for(2s);
+		std::this_thread::sleep_for(0.5s);
 		//usleep(200000);
 		if (ToLeft)t++;
 		else t--;
@@ -353,14 +353,14 @@ static void TimerR(void* UserData)
 
 int main()
 {
-	srand(time(NULL));
-	Fl::scheme("gtk+");
-	Fl_Double_Window windowX(0, 0, 800, 600, "User Interface");
+	//srand(time(NULL));
+	//Fl::scheme("gtk+");
+	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
 	Fl_Menu_Bar *menu = new Fl_Menu_Bar(0, 0, 800, 25);              // Create menubar, items..
 	menu->add("&File/&Open", "^o", nullptr);
 	menu->add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
 	wind = &windowX;
-	Mybox Mb(150, 50, 500, 500, 3);
+	Mybox Mb(FL_PLASTIC_UP_FRAME, 150, 50, 500, 500, 6);
 	windowX.end();
 	windowX.show();
 	return Fl::run();

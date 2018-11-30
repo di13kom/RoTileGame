@@ -15,6 +15,11 @@
 #include <array>
 
 static void TimerR(void*);//To preserve static
+
+static int FramePadding = 5;
+static int InterTileDistance = 10;
+static int MainTablePadding = 35;
+
 struct BoxesPreferences
 {
 	std::array<char, 2> str;
@@ -23,6 +28,7 @@ struct BoxesPreferences
 	char Data;
 	std::unique_ptr<Fl_Box> Box;
 };
+
 class Mybox : public Fl_Box
 {
 	Fs* m_fsClass;
@@ -32,13 +38,13 @@ class Mybox : public Fl_Box
 
 	BoxesPreferences* Tiles;
 	BoxesPreferences Frame;
-	int x, y;
+	int m_MainTableXpos, m_MainTableYpos;
 	int Tile_Width_Height;
 	int TilesInRow;
 	std::vector<char> Solution;
 	std::vector<char*> BackList;
 public:
-	Mybox(int _x, int _y, int _w, int _h, int elemsCount);
+	Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount);
 	~Mybox();
 	friend void TimerR(void*);
 	void draw();
