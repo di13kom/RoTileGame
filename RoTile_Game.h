@@ -15,6 +15,7 @@
 #include <thread>
 #include <future>
 #include <array>
+#include "BoxesPreferences.h"
 
 static void TimerR(void*);//To preserve static
 
@@ -22,14 +23,6 @@ static int FramePadding = 5;
 static int InterTileDistance = 10;
 static int MainTablePadding = 35;
 
-struct BoxesPreferences
-{
-	std::array<char, 2> str;
-	int X;
-	int Y;
-	char Data;
-	std::unique_ptr<Fl_Box> Box;
-};
 
 class Mybox : public Fl_Box
 {

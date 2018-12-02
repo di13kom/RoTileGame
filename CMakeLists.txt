@@ -12,7 +12,7 @@ endif(UNIX)
 
 
 set(Sources RoTile_Game.cpp)
-set(Headers RoTile_Game.h)
+set(Headers RoTile_Game.h BoxesPreferences.h)
 
 #A_Star_Lib
 set(A_Star_Lib_Sources A_Star_Lib.cpp)
