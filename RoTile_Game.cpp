@@ -13,19 +13,20 @@ void Handler(int)
 
 Mybox::~Mybox()
 {
-	delete[] Tiles;
+	//delete[] Tiles;
 }
 
 Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(bt, _x, _y, _w, _h, ""),
-//m_efsClass(elemsCount),
-//m_bfsClass(elemsCount),
-Solution(elemsCount * elemsCount)
+	//m_efsClass(elemsCount),
+	//m_bfsClass(elemsCount),
+	Solution(elemsCount * elemsCount),
+	Tiles(elemsCount * elemsCount)
 {
 	std::vector<char> Numb(elemsCount * elemsCount);
 	TilesInRow = elemsCount;
 	m_MainTableXpos = _x;
 	m_MainTableYpos = _y;
-	Tiles = new BoxesPreferences[TilesInRow*TilesInRow];
+	//Tiles = std::vector<BoxesPreferences>(TilesInRow*TilesInRow);
 	std::iota(Numb.begin(), Numb.end(), 1);
 	std::iota(Solution.begin(), Solution.end(), 1);
 	//
@@ -75,7 +76,7 @@ Solution(elemsCount * elemsCount)
 void Mybox::draw()
 {
 	Fl_Box::draw();
-	//wind->redraw();
+	wind->redraw();
 	//std::cout<<"REdraw called\n";
 	//fl_frame("AAAA", Frame.X, Frame.Y, 220, 220);
 	//fl_color(FL_RED);
@@ -225,8 +226,9 @@ void Mybox::CheckSolution()
 	exit(0);
 }
 
-BoxesPreferences* Mybox::GetFrameLeftUpperPosition()
+int Mybox::GetFrameLeftUpperPosition()
 {
+	int retVal = 0;
 	int Row;
 	int Col;
 	Row = Frame.Box->y();
@@ -237,41 +239,42 @@ BoxesPreferences* Mybox::GetFrameLeftUpperPosition()
 		if ((Col == Tiles[i].X - FramePadding) && (Row == Tiles[i].Y - FramePadding))
 		{
 			//std::cout<<"return\n";
-			return &Tiles[i];
+			retVal =  i;
 		}
 	}
 	//std::cout<<"come out\n";
-	return NULL;
+	return retVal;
 }
 
-void Mybox::TurnRight_(BoxesPreferences* BX)
+void Mybox::TurnRight_(int bxInd)
 {
-	std::swap(BX->Data, (BX + 1)->Data);
-	std::swap(BX->Data, (BX + TilesInRow + 1)->Data);
-	std::swap(BX->Data, (BX + TilesInRow)->Data);
+	std::swap(Tiles[bxInd].Data, Tiles[bxInd + 1].Data);
+	std::swap(Tiles[bxInd].Data, Tiles[bxInd + TilesInRow + 1].Data);
+	std::swap(Tiles[bxInd].Data, Tiles[bxInd + TilesInRow].Data);
 
-	sprintf(BX->str.data(), "%d", BX->Data);
-	sprintf((BX + 1)->str.data(), "%d", (BX + 1)->Data);
-	sprintf((BX + TilesInRow)->str.data(), "%d", (BX + TilesInRow)->Data);
-	sprintf((BX + TilesInRow + 1)->str.data(), "%d", (BX + TilesInRow + 1)->Data);
+	sprintf(Tiles[bxInd].str.data(), "%d", Tiles[bxInd].Data);
+	sprintf(Tiles[bxInd + 1].str.data(), "%d", Tiles[bxInd + 1].Data);
+	sprintf(Tiles[bxInd + TilesInRow].str.data(), "%d", Tiles[bxInd + TilesInRow].Data);
+	sprintf(Tiles[bxInd + TilesInRow + 1].str.data(), "%d", Tiles[bxInd + TilesInRow + 1].Data);
 }
 
-void Mybox::TurnLeft_(BoxesPreferences* BX)
+void Mybox::TurnLeft_(int bxInd)
 {
-	std::swap((BX + 1)->Data, BX->Data);
-	std::swap((BX + 1)->Data, (BX + TilesInRow)->Data);
-	std::swap((BX + 1)->Data, (BX + TilesInRow + 1)->Data);
+	std::swap(Tiles[bxInd + 1].Data, Tiles[bxInd].Data);
+	std::swap(Tiles[bxInd + 1].Data, Tiles[bxInd + TilesInRow].Data);
+	std::swap(Tiles[bxInd + 1].Data, Tiles[bxInd + TilesInRow + 1].Data);
 
-	sprintf(BX->str.data(), "%d", BX->Data);
-	sprintf((BX + 1)->str.data(), "%d", (BX + 1)->Data);
-	sprintf((BX + TilesInRow)->str.data(), "%d", (BX + TilesInRow)->Data);
-	sprintf((BX + TilesInRow + 1)->str.data(), "%d", (BX + TilesInRow + 1)->Data);
+	sprintf(Tiles[bxInd].str.data(), "%d", Tiles[bxInd].Data);
+	sprintf(Tiles[bxInd + 1].str.data(), "%d", Tiles[bxInd + 1].Data);
+	sprintf(Tiles[bxInd + TilesInRow].str.data(), "%d", Tiles[bxInd + TilesInRow].Data);
+	sprintf(Tiles[bxInd + TilesInRow + 1].str.data(), "%d", Tiles[bxInd + TilesInRow + 1].Data);
 }
 
 void *Mybox::PrgsBar(void *ptr)
 {
 	wind->begin();
 	Fl_Double_Window wd(wind->x() + wind->w() / 2 - 110, wind->y() + wind->h() / 2 - 50, 220, 100, "Wait Please.");
+	wd.border(1);
 	wd.color(FL_LIGHT1);
 	//wd->begin();
 	Fl::check();
@@ -351,17 +354,46 @@ static void TimerR(void* UserData)
 
 }
 
+void callBack(Fl_Widget *wg, void *inp)
+{
+	std::cout<<"test"<<std::endl;
+	int vl = atoi(((Fl_Int_Input*)inp)->value());
+	std::cout<<((Fl_Int_Input*)inp)->value()<<std::endl;
+	wind->begin();
+	Mybox Mb(FL_PLASTIC_UP_FRAME, 150, 50, 500, 500, vl);
+	wind->end();
+	Mb.show();
+	//wind->redraw();
+}
+
 int main()
 {
 	//srand(time(NULL));
-	//Fl::scheme("gtk+");
+	Fl::scheme("gtk+");
+	int vl = 0;
+	do
+	{
+		auto r = fl_input("Enter value: from 3 - 10", "5");
+		vl = atoi(r);
+	}
+	while(vl == 0 || vl > 10);
+	
 	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
 	Fl_Menu_Bar *menu = new Fl_Menu_Bar(0, 0, 800, 25);              // Create menubar, items..
 	menu->add("&File/&Open", "^o", nullptr);
 	menu->add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
 	wind = &windowX;
-	Mybox Mb(FL_PLASTIC_UP_FRAME, 150, 50, 500, 500, 6);
+	Mybox Mb(FL_PLASTIC_UP_FRAME, 150, 50, 500, 500, vl);
 	windowX.end();
 	windowX.show();
+
+	//Fl_Double_Window window0(150, 150, 200, 70, "Enter value");
+	//Fl_Int_Input vl(10, 10, 180, 30);
+	//Fl_Button btn(140, 45, 50, 20, "Ok");
+	//btn.callback(callBack, (void*)&vl);
+	//window0.fullscreen_off();
+	//window0.end();
+	//window0.show();
+
 	return Fl::run();
 }

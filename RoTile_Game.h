@@ -5,6 +5,8 @@
 #include <FL/fl_draw.H>
 #include <FL/Fl_Progress.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Int_Input.H>
+#include <FL/Fl_Button.H>
 #include <ctime>        // std::time
 #include <cstdlib>
 #include <signal.h>
@@ -36,11 +38,11 @@ class Mybox : public Fl_Box
 	//BFS_Class m_bfsClass;
 	std::future<std::vector<char*>> m_fut;
 
-	BoxesPreferences* Tiles;
 	BoxesPreferences Frame;
 	int m_MainTableXpos, m_MainTableYpos;
 	int Tile_Width_Height;
 	int TilesInRow;
+	std::vector<BoxesPreferences> Tiles;
 	std::vector<char> Solution;
 	std::vector<char*> BackList;
 public:
@@ -50,9 +52,9 @@ public:
 	void draw();
 	int handle(int e);
 	void CheckSolution();
-	BoxesPreferences* GetFrameLeftUpperPosition();
-	void TurnRight_(BoxesPreferences* BX);
-	void TurnLeft_(BoxesPreferences* BX);
+	int GetFrameLeftUpperPosition();
+	void TurnRight_(int bxInd);
+	void TurnLeft_(int bxInd);
 	void *PrgsBar(void *ptr);
 };
 
