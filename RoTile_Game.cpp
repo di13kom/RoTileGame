@@ -13,63 +13,72 @@ void Handler(int)
 
 Mybox::~Mybox()
 {
-	//delete[] Tiles;
 }
 
 Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(bt, _x, _y, _w, _h, ""),
-	//m_efsClass(elemsCount),
-	//m_bfsClass(elemsCount),
-	Solution(elemsCount * elemsCount)
-	//,Tiles(elemsCount * elemsCount)
+Solution(elemsCount * elemsCount)
 {
+	int xPos;
+	int yPos;
+	int yc;
+	int xc;
+	int Frame_Width_Height;
+	int p = 0;
 	std::vector<char> Numb(elemsCount * elemsCount);
+	int FrmPosNum;
+	color(FL_LIGHT1);
+
 	TilesInRow = elemsCount;
 	m_MainTableXpos = _x;
 	m_MainTableYpos = _y;
-	//Tiles = std::vector<BoxesPreferences>(TilesInRow*TilesInRow);
 	std::iota(Numb.begin(), Numb.end(), 1);
 	std::iota(Solution.begin(), Solution.end(), 1);
-	//
 	std::random_shuffle(Numb.begin(), Numb.end());
-	int p = 0;
 	Tile_Width_Height = (430 - (TilesInRow - 1) * InterTileDistance) / TilesInRow;
-	int Frame_Width_Height = Tile_Width_Height * 2 + (FramePadding*2) + InterTileDistance;
+	Frame_Width_Height = Tile_Width_Height * 2 + (FramePadding * 2) + InterTileDistance;
+
 	//std::cout<<"Tile_Width_Height:"<<Tile_Width_Height<<"\n";
 	for (int i = 0; i < TilesInRow; i++)
 	{
 		for (int j = 0; j < TilesInRow; j++)
 		{
-			int xT = (m_MainTableXpos + 40) + j * InterTileDistance + j * Tile_Width_Height;
-			int yT = (m_MainTableYpos + 40) + i * InterTileDistance + i * Tile_Width_Height;
+			xPos = (m_MainTableXpos + MainTablePadding + FramePadding) + j * InterTileDistance + j * Tile_Width_Height;
+			yPos = (m_MainTableYpos + MainTablePadding + FramePadding) + i * InterTileDistance + i * Tile_Width_Height;
 
-			Tiles.push_back(BoxesPreferences(xT, yT, Tile_Width_Height, Tile_Width_Height, 40 * 3 / TilesInRow, Numb[p]));
+			Tiles.emplace_back(BoxesPreferences(xPos, yPos, Tile_Width_Height, Tile_Width_Height, 40 * 3 / TilesInRow, Numb[p++]));
 
-			p++;
+			//p++;
 		}
 	}
 
 	/*Frame.X = m_MainTableXpos + 145;
 	  Frame.Y = m_MainTableYpos + 145;*/
-	int FrmPosNum = (((TilesInRow - 1)*(TilesInRow - 1)) / 2) + 1;
-	int yc = FrmPosNum / (TilesInRow - 1);
-	int xc = (FrmPosNum % (TilesInRow - 1)) - 1;
+	FrmPosNum = (((TilesInRow - 1)*(TilesInRow - 1)) / 2) + 1;
+	yc = FrmPosNum / (TilesInRow - 1);
+	xc = (FrmPosNum % (TilesInRow - 1)) - 1;
 	//std::cout<<"xc:"<<xc<<"\nyc:"<<yc<<"\n";
 
 
-	Frame.X = (m_MainTableXpos + MainTablePadding) + xc * Tile_Width_Height + xc * InterTileDistance;
-	Frame.Y = (m_MainTableYpos + MainTablePadding) + yc * Tile_Width_Height + yc * InterTileDistance;
-	Frame.Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, Frame.X, Frame.Y, Frame_Width_Height, Frame_Width_Height, "");
-	Frame.Box->color(FL_RED);
+	xPos = (m_MainTableXpos + MainTablePadding) + xc * Tile_Width_Height + xc * InterTileDistance;
+	yPos = (m_MainTableYpos + MainTablePadding) + yc * Tile_Width_Height + yc * InterTileDistance;
+
+
+	Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame_Width_Height, Frame_Width_Height);
+
 #ifdef __unix__//To show iterations
 	signal(SIGUSR1, Handler);
 #endif // __unix__//To show 
 
+	//for(auto& item : Tiles)
+	//{
+	//	item.SetData(item.GetData());
+	//}
 }
 
 void Mybox::draw()
 {
 	Fl_Box::draw();
-	wind->redraw();
+	//wind->redraw();
 	//std::cout<<"REdraw called\n";
 	//fl_frame("AAAA", Frame.X, Frame.Y, 220, 220);
 	//fl_color(FL_RED);
@@ -83,6 +92,8 @@ int Mybox::handle(int e)
 {
 	char *dataStr = new char[TilesInRow*TilesInRow];
 	char* ptr = dataStr;
+	int xTmp;
+	int yTmp;
 	switch (e)
 	{
 	case FL_SHORTCUT:
@@ -91,37 +102,39 @@ int Mybox::handle(int e)
 		{
 		case FL_Left:
 			//std::cout<<"Left Pressed\n";
-			Frame.X -= Tile_Width_Height + InterTileDistance;
-			if (Frame.X < m_MainTableXpos + MainTablePadding)
-				Frame.X = (m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-			Frame.Box->position(Frame.X, Frame.Y);
+			xTmp = Frame->GetX() - (Tile_Width_Height + InterTileDistance);
+			if (xTmp < m_MainTableXpos + MainTablePadding)
+				xTmp = (m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+			Frame->SetX(xTmp);
 			wind->redraw();
-			//std::cout<<"Frame.X="<<Frame.X<<"\n";
+
 			return 1;
 		case FL_Right:
 			//std::cout<<"Right Pressed\n";
-			Frame.X += Tile_Width_Height + InterTileDistance;
-			if (Frame.X > ((m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				Frame.X = m_MainTableXpos + MainTablePadding;
-			Frame.Box->position(Frame.X, Frame.Y);
+			xTmp = Frame->GetX() + (Tile_Width_Height + InterTileDistance);
+			if (xTmp > ((m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+				xTmp = m_MainTableXpos + MainTablePadding;
+			Frame->SetX(xTmp);
 			wind->redraw();
-			//std::cout<<"Frame.X="<<Frame.X<<"\n";
+
 			return 1;
 		case FL_Up:
 			//std::cout<<"Up Pressed\n";
-			Frame.Y -= Tile_Width_Height + InterTileDistance;
-			if (Frame.Y < m_MainTableYpos + MainTablePadding)
-				Frame.Y = (m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-			Frame.Box->position(Frame.X, Frame.Y);
+			yTmp = Frame->GetY() - (Tile_Width_Height + InterTileDistance);
+			if (yTmp < m_MainTableYpos + MainTablePadding)
+				yTmp = (m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+			Frame->SetY(yTmp);
 			wind->redraw();
+
 			return 1;
 		case FL_Down:
 			//std::cout<<"Down Pressed\n";
-			Frame.Y += Tile_Width_Height + InterTileDistance;
-			if (Frame.Y > ((m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				Frame.Y = m_MainTableYpos + MainTablePadding;
-			Frame.Box->position(Frame.X, Frame.Y);
+			yTmp = Frame->GetY() + (Tile_Width_Height + InterTileDistance);
+			if (yTmp > ((m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+				yTmp = m_MainTableYpos + MainTablePadding;
+			Frame->SetY(yTmp);
 			wind->redraw();
+
 			return 1;
 		case 120:
 			//std::cout<<"x pressed\n";
@@ -138,7 +151,8 @@ int Mybox::handle(int e)
 		case 'a':
 			for (int i = 0; i < TilesInRow*TilesInRow; i++)
 			{
-				dataStr[i] = Tiles[i].Data;
+				dataStr[i] = Tiles[i].GetData();
+				//dataStr[i] = Tiles[i].Data;
 			}
 
 			m_fsClass = new BFS_Class(TilesInRow);
@@ -148,8 +162,8 @@ int Mybox::handle(int e)
 			BackList = m_fut.get();
 			if (BackList.size() > 0)
 			{
-				std::cout << "Solution was find through " << BackList.size() << "steps in BackList\n";
-				fl_message("Solution was find through %d steps", BackList.size());
+				std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
+				fl_message("Solution was found through %d steps", BackList.size());
 				//std::cout<<"iterations: "<<L<<std::endl;
 				//for(unsigned i=0;i<BackList.size();i++)
 				//{
@@ -167,7 +181,8 @@ int Mybox::handle(int e)
 		case 's':
 			for (int i = 0; i < TilesInRow*TilesInRow; i++)
 			{
-				dataStr[i] = Tiles[i].Data;
+				dataStr[i] = Tiles[i].GetData();
+				//dataStr[i] = Tiles[i].Data;
 			}
 
 			m_fsClass = new EFS_Class(TilesInRow);
@@ -177,9 +192,9 @@ int Mybox::handle(int e)
 			BackList = m_fut.get();
 			if (BackList.size() > 0)
 			{
-				std::cout << "Solution was find through " << BackList.size() << "steps in BackList\n";
+				std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
 				//std::cout<<"Solution was find through "<<UsedList.size()<<"steps in UsedList\n";
-				fl_message("Solution was find through %d steps", BackList.size());
+				fl_message("Solution was found through %d steps", BackList.size());
 				//std::cout<<"iterations: "<<L<<std::endl;
 				int _Tmp;
 				for (unsigned i = 0; i < BackList.size(); i++)
@@ -211,9 +226,9 @@ void Mybox::CheckSolution()
 {
 	for (int i = 0; i < TilesInRow*TilesInRow/*N*(N-1)*/; i++)
 	{
-		if (Tiles[i].Data != Solution[i])return;
+		if (Tiles[i].GetData() != Solution[i])return;
 	}
-	for (int i = 0; i < TilesInRow*TilesInRow; i++)Tiles[i].Box->color(FL_BLUE);
+	for (int i = 0; i < TilesInRow*TilesInRow; i++)Tiles[i].SetColor(FL_BLUE);
 	fl_message("you win");
 	std::cout << "You win\n";
 	exit(0);
@@ -222,17 +237,14 @@ void Mybox::CheckSolution()
 int Mybox::GetFrameLeftUpperPosition()
 {
 	int retVal = 0;
-	int Row;
-	int Col;
-	Row = Frame.Box->y();
-	Col = Frame.Box->x();
+	int Row = Frame->GetY();
+	int Col = Frame->GetX();
 	for (int i = 0; i < TilesInRow*TilesInRow; i++)
 	{
 		//std::cout<<"enter to loop num:"<<i<<"\n";
-		if ((Col == Tiles[i].X - FramePadding) && (Row == Tiles[i].Y - FramePadding))
+		if ((Col == Tiles[i].GetX() - FramePadding) && (Row == Tiles[i].GetY() - FramePadding))
 		{
-			//std::cout<<"return\n";
-			retVal =  i;
+			retVal = i;
 		}
 	}
 	//std::cout<<"come out\n";
@@ -241,27 +253,23 @@ int Mybox::GetFrameLeftUpperPosition()
 
 void Mybox::TurnRight_(int bxInd)
 {
-	std::swap(Tiles[bxInd].Data, Tiles[bxInd + 1].Data);
-	std::swap(Tiles[bxInd].Data, Tiles[bxInd + TilesInRow + 1].Data);
-	std::swap(Tiles[bxInd].Data, Tiles[bxInd + TilesInRow].Data);
-
-	sprintf(Tiles[bxInd].str.data(), "%d", Tiles[bxInd].Data);
-	sprintf(Tiles[bxInd + 1].str.data(), "%d", Tiles[bxInd + 1].Data);
-	sprintf(Tiles[bxInd + TilesInRow].str.data(), "%d", Tiles[bxInd + TilesInRow].Data);
-	sprintf(Tiles[bxInd + TilesInRow + 1].str.data(), "%d", Tiles[bxInd + TilesInRow + 1].Data);
-
+	int Buff;
+	Buff = Tiles[bxInd].GetData();
+	Tiles[bxInd].SetData(Tiles[bxInd].GetData());
+	Tiles[bxInd + TilesInRow].SetData(Tiles[bxInd + TilesInRow + 1].GetData());
+	Tiles[bxInd + TilesInRow + 1].SetData(Tiles[bxInd + 1].GetData());
+	Tiles[bxInd + 1].SetData(Buff);
 }
 
 void Mybox::TurnLeft_(int bxInd)
 {
-	std::swap(Tiles[bxInd + 1].Data, Tiles[bxInd].Data);
-	std::swap(Tiles[bxInd + 1].Data, Tiles[bxInd + TilesInRow].Data);
-	std::swap(Tiles[bxInd + 1].Data, Tiles[bxInd + TilesInRow + 1].Data);
+	int Buff;
+	Buff = Tiles[bxInd].GetData();
+	Tiles[bxInd].SetData(Tiles[bxInd + 1].GetData());
+	Tiles[bxInd + 1].SetData(Tiles[bxInd + TilesInRow + 1].GetData());
 
-	sprintf(Tiles[bxInd].str.data(), "%d", Tiles[bxInd].Data);
-	sprintf(Tiles[bxInd + 1].str.data(), "%d", Tiles[bxInd + 1].Data);
-	sprintf(Tiles[bxInd + TilesInRow].str.data(), "%d", Tiles[bxInd + TilesInRow].Data);
-	sprintf(Tiles[bxInd + TilesInRow + 1].str.data(), "%d", Tiles[bxInd + TilesInRow + 1].Data);
+	Tiles[bxInd + TilesInRow + 1].SetData(Tiles[bxInd + TilesInRow].GetData());
+	Tiles[bxInd + TilesInRow].SetData(Buff);
 }
 
 void *Mybox::PrgsBar(void *ptr)
@@ -331,8 +339,7 @@ static void TimerR(void* UserData)
 		{
 			char T = Mb->BackList[ST][x];
 			//std::cout<<(int)T<<std::endl;
-			Mb->Tiles[x].Data = (int)T;
-			sprintf(Mb->Tiles[x].str.data(), "%d", Mb->Tiles[x].Data);
+			Mb->Tiles[x].SetData((int)T);
 		}
 		//auto Iter =Mb->BackList[0];
 		//Mb->BackList.erase(Mb->BackList[0]);
@@ -350,9 +357,9 @@ static void TimerR(void* UserData)
 
 void callBack(Fl_Widget *wg, void *inp)
 {
-	std::cout<<"test"<<std::endl;
+	std::cout << "test" << std::endl;
 	int vl = atoi(((Fl_Int_Input*)inp)->value());
-	std::cout<<((Fl_Int_Input*)inp)->value()<<std::endl;
+	std::cout << ((Fl_Int_Input*)inp)->value() << std::endl;
 	wind->begin();
 	Mybox Mb(FL_PLASTIC_UP_FRAME, 150, 50, 500, 500, vl);
 	wind->end();
@@ -362,22 +369,22 @@ void callBack(Fl_Widget *wg, void *inp)
 
 int main()
 {
-	//srand(time(NULL));
+	srand(time(NULL));
 	Fl::scheme("gtk+");
 	int vl = 0;
 	do
 	{
 		auto r = fl_input("Enter value: from 3 - 10", "5");
-		vl = atoi(r);
-	}
-	while(vl == 0 || vl > 10);
-	
+		if (r != nullptr)
+			vl = atoi(r);
+	} while (vl < 3 || vl > 10);
+
 	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
 	Fl_Menu_Bar *menu = new Fl_Menu_Bar(0, 0, 800, 25);              // Create menubar, items..
 	menu->add("&File/&Open", "^o", nullptr);
 	menu->add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
 	wind = &windowX;
-	Mybox Mb(FL_PLASTIC_UP_FRAME, 150, 50, 500, 500, vl);
+	Mybox Mb(FL_DOWN_BOX, 150, 50, 500, 500, vl);
 	windowX.end();
 	windowX.show();
 

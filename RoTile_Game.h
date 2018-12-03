@@ -31,7 +31,7 @@ class Mybox : public Fl_Box
 	//BFS_Class m_bfsClass;
 	std::future<std::vector<char*>> m_fut;
 
-	BoxesPreferences Frame;
+	std::unique_ptr<BoxesPreferences>Frame;
 	int m_MainTableXpos, m_MainTableYpos;
 	int Tile_Width_Height;
 	int TilesInRow;

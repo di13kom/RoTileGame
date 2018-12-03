@@ -25,9 +25,9 @@ set(BFS_Lib_Headers BFS_Lib.h Common.h)
 #
 add_library(BFS_Lib STATIC ${BFS_Lib_Sources} ${BFS_Lib_Headers})
 
-#if(WIN32)
-#	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT RoTile_Game)
-#endif(WIN32)
+if(MSVC_IDE)
+	set_property(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT RoTile_Game)
+endif(MSVC_IDE)
 add_executable(RoTile_Game ${Sources} ${Headers})
 add_dependencies(RoTile_Game BFS_Lib A_Star_Lib)
 target_link_libraries(RoTile_Game fltk fltk_images A_Star_Lib BFS_Lib) 
