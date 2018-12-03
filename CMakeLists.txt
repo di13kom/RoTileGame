@@ -11,7 +11,7 @@ if(UNIX)
 endif(UNIX)
 
 
-set(Sources RoTile_Game.cpp)
+set(Sources RoTile_Game.cpp BoxesPreferences.cpp)
 set(Headers RoTile_Game.h BoxesPreferences.h)
 
 #A_Star_Lib

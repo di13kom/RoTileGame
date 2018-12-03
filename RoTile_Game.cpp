@@ -19,8 +19,8 @@ Mybox::~Mybox()
 Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(bt, _x, _y, _w, _h, ""),
 	//m_efsClass(elemsCount),
 	//m_bfsClass(elemsCount),
-	Solution(elemsCount * elemsCount),
-	Tiles(elemsCount * elemsCount)
+	Solution(elemsCount * elemsCount)
+	//,Tiles(elemsCount * elemsCount)
 {
 	std::vector<char> Numb(elemsCount * elemsCount);
 	TilesInRow = elemsCount;
@@ -31,11 +31,6 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl
 	std::iota(Solution.begin(), Solution.end(), 1);
 	//
 	std::random_shuffle(Numb.begin(), Numb.end());
-	for (int i = 0; i < TilesInRow*TilesInRow; i++)
-	{
-		Tiles[i].Data = Numb[i];
-		sprintf(Tiles[i].str.data(), "%d", Tiles[i].Data);
-	}
 	int p = 0;
 	Tile_Width_Height = (430 - (TilesInRow - 1) * InterTileDistance) / TilesInRow;
 	int Frame_Width_Height = Tile_Width_Height * 2 + (FramePadding*2) + InterTileDistance;
@@ -44,17 +39,13 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl
 	{
 		for (int j = 0; j < TilesInRow; j++)
 		{
-			Tiles[p].X = (m_MainTableXpos + 40) + j * InterTileDistance + j * Tile_Width_Height;
-			Tiles[p].Y = (m_MainTableYpos + 40) + i * InterTileDistance + i * Tile_Width_Height;
+			int xT = (m_MainTableXpos + 40) + j * InterTileDistance + j * Tile_Width_Height;
+			int yT = (m_MainTableYpos + 40) + i * InterTileDistance + i * Tile_Width_Height;
+
+			Tiles.push_back(BoxesPreferences(xT, yT, Tile_Width_Height, Tile_Width_Height, 40 * 3 / TilesInRow, Numb[p]));
+
 			p++;
 		}
-	}
-	for (int i = 0; i < TilesInRow*TilesInRow; i++)
-	{
-		Tiles[i].Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_BOX, Tiles[i].X, Tiles[i].Y, Tile_Width_Height, Tile_Width_Height, Tiles[i].str.data());
-		Tiles[i].Box->color(FL_GREEN);
-		Tiles[i].Box->labelfont(FL_HELVETICA_BOLD);
-		Tiles[i].Box->labelsize(40 * 3 / TilesInRow);
 	}
 
 	/*Frame.X = m_MainTableXpos + 145;
@@ -63,6 +54,8 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl
 	int yc = FrmPosNum / (TilesInRow - 1);
 	int xc = (FrmPosNum % (TilesInRow - 1)) - 1;
 	//std::cout<<"xc:"<<xc<<"\nyc:"<<yc<<"\n";
+
+
 	Frame.X = (m_MainTableXpos + MainTablePadding) + xc * Tile_Width_Height + xc * InterTileDistance;
 	Frame.Y = (m_MainTableYpos + MainTablePadding) + yc * Tile_Width_Height + yc * InterTileDistance;
 	Frame.Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, Frame.X, Frame.Y, Frame_Width_Height, Frame_Width_Height, "");
@@ -256,6 +249,7 @@ void Mybox::TurnRight_(int bxInd)
 	sprintf(Tiles[bxInd + 1].str.data(), "%d", Tiles[bxInd + 1].Data);
 	sprintf(Tiles[bxInd + TilesInRow].str.data(), "%d", Tiles[bxInd + TilesInRow].Data);
 	sprintf(Tiles[bxInd + TilesInRow + 1].str.data(), "%d", Tiles[bxInd + TilesInRow + 1].Data);
+
 }
 
 void Mybox::TurnLeft_(int bxInd)
