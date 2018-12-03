@@ -2,11 +2,13 @@
 #define BOXESPREFERENCES_H
 #include <iostream>
 #include <array>
+#include <memory>
 #include <FL/Fl_Box.H>
 class BoxesPreferences
 {
-	//std::array<char, 2> str;
-	char *str;
+	//std::array<char, 2>;
+	//char *str;
+	std::unique_ptr<char[]> str;
 	int X;
 	int Y;
 	char Data;

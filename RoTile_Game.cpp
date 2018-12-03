@@ -46,8 +46,6 @@ Solution(elemsCount * elemsCount)
 			yPos = (m_MainTableYpos + MainTablePadding + FramePadding) + i * InterTileDistance + i * Tile_Width_Height;
 
 			Tiles.emplace_back(BoxesPreferences(xPos, yPos, Tile_Width_Height, Tile_Width_Height, 40 * 3 / TilesInRow, Numb[p++]));
-
-			//p++;
 		}
 	}
 
@@ -254,11 +252,11 @@ int Mybox::GetFrameLeftUpperPosition()
 void Mybox::TurnRight_(int bxInd)
 {
 	int Buff;
-	Buff = Tiles[bxInd].GetData();
-	Tiles[bxInd].SetData(Tiles[bxInd].GetData());
+	Buff = Tiles[bxInd + 1].GetData();
+	Tiles[bxInd + 1].SetData(Tiles[bxInd].GetData());
+	Tiles[bxInd].SetData(Tiles[bxInd + TilesInRow].GetData());
 	Tiles[bxInd + TilesInRow].SetData(Tiles[bxInd + TilesInRow + 1].GetData());
-	Tiles[bxInd + TilesInRow + 1].SetData(Tiles[bxInd + 1].GetData());
-	Tiles[bxInd + 1].SetData(Buff);
+	Tiles[bxInd + TilesInRow + 1].SetData(Buff);
 }
 
 void Mybox::TurnLeft_(int bxInd)
