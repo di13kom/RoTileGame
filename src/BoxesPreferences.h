@@ -16,7 +16,7 @@ class BoxesPreferences
 public:
 	BoxesPreferences() = default;
 	BoxesPreferences(int _x, int _y, int _h, int _w);
-	BoxesPreferences(int _x, int _y, int _h, int _w, double fontSize, char _data);
+	BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize fontSize, char _data);
 	//~BoxesPreferences();
 	void SetX(int _x);
 	int GetX();

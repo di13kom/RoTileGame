@@ -15,13 +15,15 @@
 #include <thread>
 #include <future>
 #include <array>
+#include <random>
 #include "BoxesPreferences.h"
 
 static void TimerR(void*);//To preserve static
 
-static int FramePadding = 5;
-static int InterTileDistance = 10;
-static int MainTablePadding = 35;
+static int s_FramePadding = 5;
+static int s_InterTileDistance = 10;
+static int s_MainTablePadding = 35;
+static int s_BasicFontSize = 40;
 
 
 class Mybox : public Fl_Box

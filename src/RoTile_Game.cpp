@@ -33,19 +33,23 @@ Solution(elemsCount * elemsCount)
 	m_MainTableYpos = _y;
 	std::iota(Numb.begin(), Numb.end(), 1);
 	std::iota(Solution.begin(), Solution.end(), 1);
-	std::random_shuffle(Numb.begin(), Numb.end());
-	Tile_Width_Height = (430 - (TilesInRow - 1) * InterTileDistance) / TilesInRow;
-	Frame_Width_Height = Tile_Width_Height * 2 + (FramePadding * 2) + InterTileDistance;
+	//
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(Numb.begin(), Numb.end(), g);
+	//
+	Tile_Width_Height = ((_w - s_MainTablePadding * 2) - (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
+	Frame_Width_Height = Tile_Width_Height * 2 + (s_FramePadding * 2) + s_InterTileDistance;
 
 	//std::cout<<"Tile_Width_Height:"<<Tile_Width_Height<<"\n";
 	for (int i = 0; i < TilesInRow; i++)
 	{
 		for (int j = 0; j < TilesInRow; j++)
 		{
-			xPos = (m_MainTableXpos + MainTablePadding + FramePadding) + j * InterTileDistance + j * Tile_Width_Height;
-			yPos = (m_MainTableYpos + MainTablePadding + FramePadding) + i * InterTileDistance + i * Tile_Width_Height;
+			xPos = (m_MainTableXpos + s_MainTablePadding + s_FramePadding) + j * s_InterTileDistance + j * Tile_Width_Height;
+			yPos = (m_MainTableYpos + s_MainTablePadding + s_FramePadding) + i * s_InterTileDistance + i * Tile_Width_Height;
 
-			Tiles.emplace_back(BoxesPreferences(xPos, yPos, Tile_Width_Height, Tile_Width_Height, 40 * 3 / TilesInRow, Numb[p++]));
+			Tiles.emplace_back(BoxesPreferences(xPos, yPos, Tile_Width_Height, Tile_Width_Height, s_BasicFontSize * 3 / TilesInRow, Numb[p++]));
 		}
 	}
 
@@ -57,8 +61,8 @@ Solution(elemsCount * elemsCount)
 	//std::cout<<"xc:"<<xc<<"\nyc:"<<yc<<"\n";
 
 
-	xPos = (m_MainTableXpos + MainTablePadding) + xc * Tile_Width_Height + xc * InterTileDistance;
-	yPos = (m_MainTableYpos + MainTablePadding) + yc * Tile_Width_Height + yc * InterTileDistance;
+	xPos = (m_MainTableXpos + s_MainTablePadding) + xc * Tile_Width_Height + xc * s_InterTileDistance;
+	yPos = (m_MainTableYpos + s_MainTablePadding) + yc * Tile_Width_Height + yc * s_InterTileDistance;
 
 
 	Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame_Width_Height, Frame_Width_Height);
@@ -100,36 +104,36 @@ int Mybox::handle(int e)
 		{
 		case FL_Left:
 			//std::cout<<"Left Pressed\n";
-			xTmp = Frame->GetX() - (Tile_Width_Height + InterTileDistance);
-			if (xTmp < m_MainTableXpos + MainTablePadding)
-				xTmp = (m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+			xTmp = Frame->GetX() - (Tile_Width_Height + s_InterTileDistance);
+			if (xTmp < m_MainTableXpos + s_MainTablePadding)
+				xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
 			Frame->SetX(xTmp);
 			wind->redraw();
 
 			return 1;
 		case FL_Right:
 			//std::cout<<"Right Pressed\n";
-			xTmp = Frame->GetX() + (Tile_Width_Height + InterTileDistance);
-			if (xTmp > ((m_MainTableXpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				xTmp = m_MainTableXpos + MainTablePadding;
+			xTmp = Frame->GetX() + (Tile_Width_Height + s_InterTileDistance);
+			if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+				xTmp = m_MainTableXpos + s_MainTablePadding;
 			Frame->SetX(xTmp);
 			wind->redraw();
 
 			return 1;
 		case FL_Up:
 			//std::cout<<"Up Pressed\n";
-			yTmp = Frame->GetY() - (Tile_Width_Height + InterTileDistance);
-			if (yTmp < m_MainTableYpos + MainTablePadding)
-				yTmp = (m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+			yTmp = Frame->GetY() - (Tile_Width_Height + s_InterTileDistance);
+			if (yTmp < m_MainTableYpos + s_MainTablePadding)
+				yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
 			Frame->SetY(yTmp);
 			wind->redraw();
 
 			return 1;
 		case FL_Down:
 			//std::cout<<"Down Pressed\n";
-			yTmp = Frame->GetY() + (Tile_Width_Height + InterTileDistance);
-			if (yTmp > ((m_MainTableYpos + MainTablePadding) + (TilesInRow - 2) * InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				yTmp = m_MainTableYpos + MainTablePadding;
+			yTmp = Frame->GetY() + (Tile_Width_Height + s_InterTileDistance);
+			if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+				yTmp = m_MainTableYpos + s_MainTablePadding;
 			Frame->SetY(yTmp);
 			wind->redraw();
 
@@ -240,7 +244,7 @@ int Mybox::GetFrameLeftUpperPosition()
 	for (int i = 0; i < TilesInRow*TilesInRow; i++)
 	{
 		//std::cout<<"enter to loop num:"<<i<<"\n";
-		if ((Col == Tiles[i].GetX() - FramePadding) && (Row == Tiles[i].GetY() - FramePadding))
+		if ((Col == Tiles[i].GetX() - s_FramePadding) && (Row == Tiles[i].GetY() - s_FramePadding))
 		{
 			retVal = i;
 		}
@@ -367,7 +371,6 @@ void callBack(Fl_Widget *wg, void *inp)
 
 int main()
 {
-	srand(time(NULL));
 	Fl::scheme("gtk+");
 	int vl = 0;
 	do

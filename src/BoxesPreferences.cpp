@@ -8,7 +8,7 @@ BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w)
 	Box->color(FL_RED);
 }
 
-BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, double fontSize, char _data)
+BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize fontSize, char _data)
 {
 	//str = new char[2];
 	str = std::make_unique<char[]>(2);
