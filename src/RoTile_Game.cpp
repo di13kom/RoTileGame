@@ -16,7 +16,7 @@ Mybox::~Mybox()
 }
 
 Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(bt, _x, _y, _w, _h, ""),
-Solution(elemsCount * elemsCount)
+	Solution(elemsCount * elemsCount)
 {
 	int xPos;
 	int yPos;
@@ -98,127 +98,130 @@ int Mybox::handle(int e)
 	int yTmp;
 	switch (e)
 	{
-	case FL_SHORTCUT:
-	{
-		switch (Fl::event_key())
-		{
-		case FL_Left:
-			//std::cout<<"Left Pressed\n";
-			xTmp = Frame->GetX() - (Tile_Width_Height + s_InterTileDistance);
-			if (xTmp < m_MainTableXpos + s_MainTablePadding)
-				xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-			Frame->SetX(xTmp);
-			wind->redraw();
-
-			return 1;
-		case FL_Right:
-			//std::cout<<"Right Pressed\n";
-			xTmp = Frame->GetX() + (Tile_Width_Height + s_InterTileDistance);
-			if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				xTmp = m_MainTableXpos + s_MainTablePadding;
-			Frame->SetX(xTmp);
-			wind->redraw();
-
-			return 1;
-		case FL_Up:
-			//std::cout<<"Up Pressed\n";
-			yTmp = Frame->GetY() - (Tile_Width_Height + s_InterTileDistance);
-			if (yTmp < m_MainTableYpos + s_MainTablePadding)
-				yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-			Frame->SetY(yTmp);
-			wind->redraw();
-
-			return 1;
-		case FL_Down:
-			//std::cout<<"Down Pressed\n";
-			yTmp = Frame->GetY() + (Tile_Width_Height + s_InterTileDistance);
-			if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				yTmp = m_MainTableYpos + s_MainTablePadding;
-			Frame->SetY(yTmp);
-			wind->redraw();
-
-			return 1;
-		case 120:
-			//std::cout<<"x pressed\n";
-			TurnRight_(GetFrameLeftUpperPosition());
-			wind->redraw();
-			CheckSolution();
-			return 1;
-		case 122:
-			//std::cout<<"z pressed\n";
-			TurnLeft_(GetFrameLeftUpperPosition());
-			wind->redraw();
-			CheckSolution();
-			return 1;
-		case 'a':
-			for (int i = 0; i < TilesInRow*TilesInRow; i++)
+		case FL_SHORTCUT:
 			{
-				dataStr[i] = Tiles[i].GetData();
-				//dataStr[i] = Tiles[i].Data;
-			}
-
-			m_fsClass = new BFS_Class(TilesInRow);
-			m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass), ptr);
-
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
-			if (BackList.size() > 0)
-			{
-				std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
-				fl_message("Solution was found through %d steps", BackList.size());
-				//std::cout<<"iterations: "<<L<<std::endl;
-				//for(unsigned i=0;i<BackList.size();i++)
-				//{
-				//	std::cout<<std::endl;
-				//	for(int j=0;j<TilesInRow*TilesInRow;j++)
-				//		std::cout<<(int)BackList[i][j];
-				//}
-			}
-			else
-			{
-				fl_message("solution is not found");
-				std::cout << "solution is not found\n";
-			}
-			return 1;
-		case 's':
-			for (int i = 0; i < TilesInRow*TilesInRow; i++)
-			{
-				dataStr[i] = Tiles[i].GetData();
-				//dataStr[i] = Tiles[i].Data;
-			}
-
-			m_fsClass = new EFS_Class(TilesInRow);
-			m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass), ptr);
-
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
-			if (BackList.size() > 0)
-			{
-				std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
-				//std::cout<<"Solution was find through "<<UsedList.size()<<"steps in UsedList\n";
-				fl_message("Solution was found through %d steps", BackList.size());
-				//std::cout<<"iterations: "<<L<<std::endl;
-				int _Tmp;
-				for (unsigned i = 0; i < BackList.size(); i++)
+				switch (Fl::event_key())
 				{
-					for (auto k = 0; k < TilesInRow*TilesInRow; k++)
-					{
-						if (k % TilesInRow == 0)std::cout << "\n";
-						_Tmp = (int)BackList[i][k];
-						std::cout << std::setw(2) << _Tmp << " ";
-					}
-					std::cout << std::endl;
+					case FL_Left:
+						//std::cout<<"Left Pressed\n";
+						xTmp = Frame->GetX() - (Tile_Width_Height + s_InterTileDistance);
+						if (xTmp < m_MainTableXpos + s_MainTablePadding)
+							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+						Frame->SetX(xTmp);
+						wind->redraw();
+
+						return 1;
+					case FL_Right:
+						//std::cout<<"Right Pressed\n";
+						xTmp = Frame->GetX() + (Tile_Width_Height + s_InterTileDistance);
+						if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+							xTmp = m_MainTableXpos + s_MainTablePadding;
+						Frame->SetX(xTmp);
+						wind->redraw();
+
+						return 1;
+					case FL_Up:
+						//std::cout<<"Up Pressed\n";
+						yTmp = Frame->GetY() - (Tile_Width_Height + s_InterTileDistance);
+						if (yTmp < m_MainTableYpos + s_MainTablePadding)
+							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+						Frame->SetY(yTmp);
+						wind->redraw();
+
+						return 1;
+					case FL_Down:
+						//std::cout<<"Down Pressed\n";
+						yTmp = Frame->GetY() + (Tile_Width_Height + s_InterTileDistance);
+						if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+							yTmp = m_MainTableYpos + s_MainTablePadding;
+						Frame->SetY(yTmp);
+						wind->redraw();
+
+						return 1;
+					case 120:
+						//std::cout<<"x pressed\n";
+						TurnRight_(GetFrameLeftUpperPosition());
+						wind->redraw();
+						CheckSolution();
+						return 1;
+					case 122:
+						//std::cout<<"z pressed\n";
+						TurnLeft_(GetFrameLeftUpperPosition());
+						wind->redraw();
+						CheckSolution();
+						return 1;
+					case 'a':
+						for (int i = 0; i < TilesInRow*TilesInRow; i++)
+						{
+							dataStr[i] = Tiles[i].GetData();
+							//dataStr[i] = Tiles[i].Data;
+						}
+
+						m_fsClass = new BFS_Class(TilesInRow);
+						m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass), ptr);
+
+						PrgsBar(nullptr);
+						BackList = m_fut.get();
+						if (BackList.size() > 0)
+						{
+							std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
+							fl_message("Solution was found through %d steps", BackList.size());
+							//std::cout<<"iterations: "<<L<<std::endl;
+							//for(unsigned i=0;i<BackList.size();i++)
+							//{
+							//	std::cout<<std::endl;
+							//	for(int j=0;j<TilesInRow*TilesInRow;j++)
+							//		std::cout<<(int)BackList[i][j];
+							//}
+						}
+						else
+						{
+							fl_message("solution is not found");
+							std::cout << "solution is not found\n";
+						}
+						return 1;
+					case 's':
+						for (int i = 0; i < TilesInRow*TilesInRow; i++)
+						{
+							dataStr[i] = Tiles[i].GetData();
+							//dataStr[i] = Tiles[i].Data;
+						}
+
+						m_fsClass = new EFS_Class(TilesInRow);
+						m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass), ptr);
+
+						PrgsBar(nullptr);
+						BackList = m_fut.get();
+						if (BackList.size() > 0)
+						{
+							std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
+							//std::cout<<"Solution was find through "<<UsedList.size()<<"steps in UsedList\n";
+							fl_message("Solution was found through %d steps", BackList.size());
+							//std::cout<<"iterations: "<<L<<std::endl;
+							int _Tmp;
+
+							/*
+							for (unsigned i = 0; i < BackList.size(); i++)
+							{
+								for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+								{
+									if (k % TilesInRow == 0)std::cout << "\n";
+									_Tmp = (int)BackList[i][k];
+									std::cout << std::setw(2) << _Tmp << " ";
+								}
+								std::cout << std::endl;
+							}
+							*/
+							Fl::add_timeout(0.25, TimerR, (void*)this);
+						}
+						else
+						{
+							fl_message("solution is not found");
+							std::cout << "solution is not found\n";
+						}
+						return 1;
 				}
-				Fl::add_timeout(0.25, TimerR, (void*)this);
 			}
-			else
-			{
-				fl_message("solution is not found");
-				std::cout << "solution is not found\n";
-			}
-			return 1;
-		}
-	}
 	}
 	return 0;
 }
@@ -251,6 +254,15 @@ int Mybox::GetFrameLeftUpperPosition()
 	}
 	//std::cout<<"come out\n";
 	return retVal;
+}
+
+void Mybox::SetFramPositionByTileIndex(int ind)
+{
+	int x = Tiles[ind].GetX();
+	int y = Tiles[ind].GetY();
+
+	Frame->SetX(x - s_FramePadding);
+	Frame->SetY(y - s_FramePadding);
 }
 
 void Mybox::TurnRight_(int bxInd)
@@ -332,21 +344,68 @@ void *Mybox::PrgsBar(void *ptr)
 static void TimerR(void* UserData)
 {
 	Mybox* Mb = (Mybox*)UserData;
-	static int ST = Mb->BackList.size() - 1;
+	static int currentIndex = Mb->BackList.size() - 1;
 	int K = Mb->TilesInRow;
+	static char* PrevArray = nullptr;
+
 	//if(Mb->BackList.size() > 0)
-	if (ST >= 0)
+	if (currentIndex >= 0)
 	{
-		for (auto x = 0; x < K*K; x++)
+		char* currArray = Mb->BackList[currentIndex];
+
+		char* currArrayElement = currArray;
+		char* prevArraElement = PrevArray;
+		int changedElemIndex;
+		if(PrevArray != nullptr)
 		{
-			char T = Mb->BackList[ST][x];
+			while(*currArrayElement == *prevArraElement)
+			{
+				currArrayElement++;
+				prevArraElement++;
+			}
+			changedElemIndex = currArrayElement - currArray;
+
+			Mb->SetFramPositionByTileIndex(changedElemIndex);
+			//std::this_thread::sleep_for(0.2s);
+
+			if(*currArrayElement == *(prevArraElement + 1))
+			{
+				Mb->TurnLeft_(changedElemIndex);
+			}
+			else
+			{
+				Mb->TurnRight_(changedElemIndex);
+			}
+			/*
+			   auto vl = std::mismatch(std::begin(Mb->BackList[currentIndex]), std::end(Mb->BackList[currentIndex]), PrevArray);
+			   if(*vl.first == *(vl+1).second)
+			   {
+			   Mb->TurnRight_(vl.first -  std::begin(Mb->BackList[currentIndex]));
+			   }
+			   else
+			   {
+			   Mb->TurnLeft_(vl.first -  std::begin(Mb->BackList[currentIndex]));
+			   }
+			   */
+
+
+
+
+			/*
+			   for (auto x = 0; x < K*K; x++)
+			   {
+			   char T = Mb->BackList[currentIndex][x];
 			//std::cout<<(int)T<<std::endl;
 			Mb->Tiles[x].SetData((int)T);
+			}
+			*/
+			//auto Iter =Mb->BackList[0];
+			//Mb->BackList.erase(Mb->BackList[0]);
+			wind->redraw();
 		}
-		//auto Iter =Mb->BackList[0];
-		//Mb->BackList.erase(Mb->BackList[0]);
-		wind->redraw();
-		ST--;
+		PrevArray = Mb->BackList[currentIndex];
+
+		currentIndex--;
 		Fl::repeat_timeout(0.5, TimerR, UserData);
 	}
 	else

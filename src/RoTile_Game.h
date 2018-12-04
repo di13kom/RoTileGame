@@ -51,5 +51,6 @@ public:
 	void TurnRight_(int bxInd);
 	void TurnLeft_(int bxInd);
 	void *PrgsBar(void *ptr);
+	void SetFramPositionByTileIndex(int);
 };
 
