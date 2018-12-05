@@ -4,13 +4,14 @@ project(RoTile_Game)
 
 #packages
 find_package(FLTK REQUIRED MODULE)
-include(${FLTK_USE_FILE})
+if(WIN32)
+	include(${FLTK_USE_FILE})
+endif(WIN32)
 
 if(UNIX)
 	find_package (Threads)
 endif(UNIX)
 #packages
-include(${FLTK_USE_FILE})
 set(CMAKE_CXX_STACK_SIZE "33554432")
 
 set(Solver_Dir ${CMAKE_CURRENT_SOURCE_DIR}/Solver)
