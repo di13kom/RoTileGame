@@ -4,9 +4,9 @@ project(RoTile_Game)
 
 #packages
 find_package(FLTK REQUIRED MODULE)
-if(WIN32)
+if(NOT MSYS)
 	include(${FLTK_USE_FILE})
-endif(WIN32)
+endif(NOT MSYS)
 
 if(UNIX)
 	find_package (Threads)
