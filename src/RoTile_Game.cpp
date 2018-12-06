@@ -25,11 +25,6 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h) : Fl_Box(bt, _x, _y,
 #ifdef __unix__//To show iterations
 	signal(SIGUSR1, Handler);
 #endif // __unix__//To show 
-
-	//for(auto& item : Tiles)
-	//{
-	//	item.SetData(item.GetData());
-	//}
 }
 
 void Mybox::draw()
@@ -38,7 +33,6 @@ void Mybox::draw()
 	//wind->redraw();
 	if (Frame != nullptr)
 	{
-		//Frame->Redraw();
 		//std::cout<<"Redraw called\n";
 		fl_draw_box(FL_PLASTIC_UP_FRAME, Frame->GetX(), Frame->GetY(), Frame_Width_Height, Frame_Width_Height, FL_RED);
 
@@ -47,15 +41,10 @@ void Mybox::draw()
 		{
 			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY(), Tile_Width_Height, Tile_Width_Height, FL_GREEN);
 			fl_color(FL_BLACK);
-			//fl_draw(item.GetRawData(), item.GetX() + Tile_Width_Height/2 - m_FontSize/2 \
-					, item.GetY()+ Tile_Width_Height/2 + m_FontSize/2);
 			fl_draw(item.GetRawData(), item.GetX(), item.GetY(), Tile_Width_Height \
 				, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
 		}
 	}
-	//Frame->redraw();
-	//Frame->resize(Frame.X + 110, Frame.Y, 20, 20);
-	//redraw();
 }
 
 void Mybox::SetTilesValue(int elemsCount)
@@ -64,7 +53,6 @@ void Mybox::SetTilesValue(int elemsCount)
 	int yPos;
 	int yc;
 	int xc;
-	//int Frame_Width_Height;
 	int p = 0;
 	std::vector<char> Numb(elemsCount * elemsCount);
 	int FrmPosNum;
@@ -95,12 +83,9 @@ void Mybox::SetTilesValue(int elemsCount)
 		}
 	}
 
-	/*Frame.X = m_MainTableXpos + 145;
-	  Frame.Y = m_MainTableYpos + 145;*/
 	FrmPosNum = (((TilesInRow - 1)*(TilesInRow - 1)) / 2) + 1;
 	yc = FrmPosNum / (TilesInRow - 1);
 	xc = (FrmPosNum % (TilesInRow - 1)) - 1;
-	//std::cout<<"xc:"<<xc<<"\nyc:"<<yc<<"\n";
 
 
 	xPos = (m_MainTableXpos + s_MainTablePadding) + xc * Tile_Width_Height + xc * s_InterTileDistance;
@@ -177,7 +162,6 @@ int Mybox::handle(int e)
 			for (int i = 0; i < TilesInRow*TilesInRow; i++)
 			{
 				dataStr[i] = Tiles[i].GetData();
-				//dataStr[i] = Tiles[i].Data;
 			}
 
 			m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
@@ -208,7 +192,6 @@ int Mybox::handle(int e)
 			for (int i = 0; i < TilesInRow*TilesInRow; i++)
 			{
 				dataStr[i] = Tiles[i].GetData();
-				//dataStr[i] = Tiles[i].Data;
 			}
 
 			m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
@@ -358,7 +341,6 @@ void *Mybox::PrgsBar(void *ptr)
 	wd.remove(&progress);
 	//delete progress;
 	wind->remove(&wd);
-	//delete wd;
 	wind->redraw();
 
 	return nullptr;
@@ -400,31 +382,6 @@ static void TimerR(void* UserData)
 			{
 				Mb->TurnRight_(changedElemIndex);
 			}
-			/*
-			   auto vl = std::mismatch(std::begin(Mb->BackList[currentIndex]), std::end(Mb->BackList[currentIndex]), PrevArray);
-			   if(*vl.first == *(vl+1).second)
-			   {
-			   Mb->TurnRight_(vl.first -  std::begin(Mb->BackList[currentIndex]));
-			   }
-			   else
-			   {
-			   Mb->TurnLeft_(vl.first -  std::begin(Mb->BackList[currentIndex]));
-			   }
-			   */
-
-
-
-
-			   /*
-				  for (auto x = 0; x < K*K; x++)
-				  {
-				  char T = Mb->BackList[currentIndex][x];
-			   //std::cout<<(int)T<<std::endl;
-			   Mb->Tiles[x].SetData((int)T);
-			   }
-			   */
-			   //auto Iter =Mb->BackList[0];
-			   //Mb->BackList.erase(Mb->BackList[0]);
 			wind->redraw();
 		}
 		PrevArray = Mb->BackList[currentIndex];
@@ -444,14 +401,9 @@ void callBack(Fl_Widget *wg, void *inp)
 {
 	//std::cout << "test" << std::endl;
 	int vl = atoi(((Fl_Int_Input*)inp)->value());
-	//std::cout << ((Fl_Int_Input*)inp)->value() << std::endl;
-	//auto* mb = (Mybox*)wind->child(0);
-	//auto b = dynamic_cast<Fl_Widget*>(wind->child(1));
-	//Mybox* mb = (Mybox*)&b;
 	auto* mb = dynamic_cast<Mybox*>(wind->child(1));
 	mb->SetTilesValue(vl);
 	mb->show();
-	//wind->redraw();
 	wind->flush();
 	wg->parent()->hide();
 }
@@ -459,20 +411,11 @@ void callBack(Fl_Widget *wg, void *inp)
 int main()
 {
 	Fl::scheme("gtk+");
-	/*
-	   int vl = 0;
-	   do
-	   {
-	   auto r = fl_input("Enter value: from 3 - 10", "5");
-	   if (r != nullptr)
-	   vl = atoi(r);
-	   } while (vl < 3 || vl > 10);
-	   */
 
 	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
-	Fl_Menu_Bar *menu = new Fl_Menu_Bar(0, 0, 800, 25);              // Create menubar, items..
-	menu->add("&File/&Open", "^o", nullptr);
-	menu->add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
+	Fl_Menu_Bar menu(0, 0, 800, 25);
+	menu.add("&File/&Open", "^o", nullptr);
+	menu.add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
 	wind = &windowX;
 	Mybox Mb(FL_DOWN_BOX, 150, 50, 500, 500);
 	windowX.end();
