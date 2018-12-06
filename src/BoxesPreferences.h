@@ -4,11 +4,13 @@
 #include <array>
 #include <memory>
 #include <FL/Fl_Box.H>
+#include <string>
 class BoxesPreferences
 {
-	//std::array<char, 2>;
+	//std::array<char, 3> str;
 	//char *str;
-	std::unique_ptr<char[]> str;
+	//std::unique_ptr<char[]> str;
+	std::string str;
 	int X;
 	int Y;
 	char Data;
@@ -25,6 +27,7 @@ public:
 	char GetData();
 	void SetData(int);
 	void SetColor(Fl_Color);
+	const char* GetRawData();
 };
 
 #endif

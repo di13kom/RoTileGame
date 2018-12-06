@@ -15,30 +15,72 @@ Mybox::~Mybox()
 {
 }
 
-Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl_Box(bt, _x, _y, _w, _h, ""),
-	Solution(elemsCount * elemsCount)
+Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h) : Fl_Box(bt, _x, _y, _w, _h, "")
+{
+
+	m_MainTableXpos = _x;
+	m_MainTableYpos = _y;
+	m_MainTableWidth = _w;
+	Frame = nullptr;
+#ifdef __unix__//To show iterations
+	signal(SIGUSR1, Handler);
+#endif // __unix__//To show 
+
+	//for(auto& item : Tiles)
+	//{
+	//	item.SetData(item.GetData());
+	//}
+}
+
+void Mybox::draw()
+{
+	Fl_Box::draw();
+	//wind->redraw();
+	if(Frame != nullptr)
+	{		
+		//Frame->Redraw();
+		//std::cout<<"Redraw called\n";
+		fl_draw_box( FL_PLASTIC_UP_FRAME, Frame->GetX(), Frame->GetY(), Frame_Width_Height, Frame_Width_Height, FL_RED);
+
+		fl_font(FL_HELVETICA_BOLD, m_FontSize);
+		for(auto& item:Tiles)
+		{
+			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY(), Tile_Width_Height, Tile_Width_Height, FL_GREEN);
+			fl_color(FL_BLACK);
+			//fl_draw(item.GetRawData(), item.GetX() + Tile_Width_Height/2 - m_FontSize/2 \
+					, item.GetY()+ Tile_Width_Height/2 + m_FontSize/2);
+			fl_draw(item.GetRawData(), item.GetX() , item.GetY(), Tile_Width_Height \
+					, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
+		}
+	}
+	//Frame->redraw();
+	//Frame->resize(Frame.X + 110, Frame.Y, 20, 20);
+	//redraw();
+}
+
+void Mybox::SetTilesValue(int elemsCount)
 {
 	int xPos;
 	int yPos;
 	int yc;
 	int xc;
-	int Frame_Width_Height;
+	//int Frame_Width_Height;
 	int p = 0;
 	std::vector<char> Numb(elemsCount * elemsCount);
 	int FrmPosNum;
 	color(FL_LIGHT1);
 
 	TilesInRow = elemsCount;
-	m_MainTableXpos = _x;
-	m_MainTableYpos = _y;
+	m_FontSize = s_BasicFontSize * 3 / TilesInRow;
+
 	std::iota(Numb.begin(), Numb.end(), 1);
-	std::iota(Solution.begin(), Solution.end(), 1);
+	std::copy(Numb.begin(), Numb.end(), std::back_inserter(Solution));
 	//
 	std::random_device rd;
 	std::mt19937 g(rd());
 	std::shuffle(Numb.begin(), Numb.end(), g);
 	//
-	Tile_Width_Height = ((_w - s_MainTablePadding * 2) - (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
+	Tile_Width_Height = ((m_MainTableWidth - s_MainTablePadding * 2) - (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
 	Frame_Width_Height = Tile_Width_Height * 2 + (s_FramePadding * 2) + s_InterTileDistance;
 
 	//std::cout<<"Tile_Width_Height:"<<Tile_Width_Height<<"\n";
@@ -66,28 +108,7 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount) : Fl
 
 
 	Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame_Width_Height, Frame_Width_Height);
-
-#ifdef __unix__//To show iterations
-	signal(SIGUSR1, Handler);
-#endif // __unix__//To show 
-
-	//for(auto& item : Tiles)
-	//{
-	//	item.SetData(item.GetData());
-	//}
-}
-
-void Mybox::draw()
-{
-	Fl_Box::draw();
-	//wind->redraw();
-	//std::cout<<"REdraw called\n";
-	//fl_frame("AAAA", Frame.X, Frame.Y, 220, 220);
-	//fl_color(FL_RED);
-	//Fl_Box(FL_PLASTIC_UP_BOX, 10, 10, Tile_Width_Height, Tile_Width_Height,Tiles[15].str);
-	//Frame->redraw();
-	//Frame->resize(Frame.X + 110, Frame.Y, 20, 20);
-	//redraw();
+	wind->redraw();
 }
 
 int Mybox::handle(int e)
@@ -164,8 +185,8 @@ int Mybox::handle(int e)
 						BackList = m_fut.get();
 						if (BackList.size() > 0)
 						{
-							std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
-							fl_message("Solution was found through %d steps", BackList.size());
+							std::cout << "Solution was found through " << BackList.size() - 1<< "steps in BackList\n";
+							fl_message("Solution was found through %d steps", BackList.size() - 1);
 							//std::cout<<"iterations: "<<L<<std::endl;
 							//for(unsigned i=0;i<BackList.size();i++)
 							//{
@@ -194,24 +215,24 @@ int Mybox::handle(int e)
 						BackList = m_fut.get();
 						if (BackList.size() > 0)
 						{
-							std::cout << "Solution was found through " << BackList.size() << "steps in BackList\n";
+							std::cout << "Solution was found through " << BackList.size()  - 1<< "steps in BackList\n";
 							//std::cout<<"Solution was find through "<<UsedList.size()<<"steps in UsedList\n";
-							fl_message("Solution was found through %d steps", BackList.size());
+							fl_message("Solution was found through %d steps", BackList.size() - 1);
 							//std::cout<<"iterations: "<<L<<std::endl;
 							int _Tmp;
 
 							/*
-							for (unsigned i = 0; i < BackList.size(); i++)
-							{
-								for (auto k = 0; k < TilesInRow*TilesInRow; k++)
-								{
-									if (k % TilesInRow == 0)std::cout << "\n";
-									_Tmp = (int)BackList[i][k];
-									std::cout << std::setw(2) << _Tmp << " ";
-								}
-								std::cout << std::endl;
-							}
-							*/
+							   for (unsigned i = 0; i < BackList.size(); i++)
+							   {
+							   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+							   {
+							   if (k % TilesInRow == 0)std::cout << "\n";
+							   _Tmp = (int)BackList[i][k];
+							   std::cout << std::setw(2) << _Tmp << " ";
+							   }
+							   std::cout << std::endl;
+							   }
+							   */
 							Fl::add_timeout(0.25, TimerR, (void*)this);
 						}
 						else
@@ -418,43 +439,49 @@ static void TimerR(void* UserData)
 
 void callBack(Fl_Widget *wg, void *inp)
 {
-	std::cout << "test" << std::endl;
+	//std::cout << "test" << std::endl;
 	int vl = atoi(((Fl_Int_Input*)inp)->value());
-	std::cout << ((Fl_Int_Input*)inp)->value() << std::endl;
-	wind->begin();
-	Mybox Mb(FL_PLASTIC_UP_FRAME, 150, 50, 500, 500, vl);
-	wind->end();
-	Mb.show();
+	//std::cout << ((Fl_Int_Input*)inp)->value() << std::endl;
+	//auto* mb = (Mybox*)wind->child(0);
+	//auto b = dynamic_cast<Fl_Widget*>(wind->child(1));
+	//Mybox* mb = (Mybox*)&b;
+	auto* mb = dynamic_cast<Mybox*>(wind->child(1));
+	mb->SetTilesValue(vl);
+	mb->show();
 	//wind->redraw();
+	wind->flush();
+	wg->parent()->hide();
 }
 
 int main()
 {
 	Fl::scheme("gtk+");
-	int vl = 0;
-	do
-	{
-		auto r = fl_input("Enter value: from 3 - 10", "5");
-		if (r != nullptr)
-			vl = atoi(r);
-	} while (vl < 3 || vl > 10);
+	/*
+	   int vl = 0;
+	   do
+	   {
+	   auto r = fl_input("Enter value: from 3 - 10", "5");
+	   if (r != nullptr)
+	   vl = atoi(r);
+	   } while (vl < 3 || vl > 10);
+	   */
 
 	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
 	Fl_Menu_Bar *menu = new Fl_Menu_Bar(0, 0, 800, 25);              // Create menubar, items..
 	menu->add("&File/&Open", "^o", nullptr);
 	menu->add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
 	wind = &windowX;
-	Mybox Mb(FL_DOWN_BOX, 150, 50, 500, 500, vl);
+	Mybox Mb(FL_DOWN_BOX, 150, 50, 500, 500);
 	windowX.end();
 	windowX.show();
 
-	//Fl_Double_Window window0(150, 150, 200, 70, "Enter value");
-	//Fl_Int_Input vl(10, 10, 180, 30);
-	//Fl_Button btn(140, 45, 50, 20, "Ok");
-	//btn.callback(callBack, (void*)&vl);
-	//window0.fullscreen_off();
-	//window0.end();
-	//window0.show();
+	Fl_Double_Window window0(150, 150, 200, 70, "Enter value");
+	Fl_Int_Input vl(10, 10, 180, 30);
+	Fl_Return_Button btn(140, 45, 50, 20, "Ok");
+	btn.callback(callBack, (void*)&vl);
+	window0.fullscreen_off();
+	window0.end();
+	window0.show();
 
 	return Fl::run();
 }

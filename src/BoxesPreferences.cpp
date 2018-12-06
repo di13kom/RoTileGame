@@ -11,11 +11,11 @@ BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w)
 BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize fontSize, char _data)
 {
 	//str = new char[2];
-	str = std::make_unique<char[]>(2);
+	//str = std::make_unique<char[]>(2);
 	SetData(_data);
 	X = _x;
 	Y = _y;
-	Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_BOX, X, Y, _h, _w, str.get());
+	Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_BOX, X, Y, _h, _w, str.c_str());
 	Box->labeltype(_FL_SHADOW_LABEL);
 	Box->color(FL_GREEN);
 	Box->labelfont(FL_HELVETICA_BOLD);
@@ -54,8 +54,9 @@ char BoxesPreferences::GetData()
 void BoxesPreferences::SetData(int _data)
 {
 	Data = _data;
-	sprintf(str.get(), "%d", Data);
+	//sprintf(str.get(), "%d", Data);
 	//sprintf(str.data(), "%d", Data);
+	str = std::to_string(_data);
 	//Box->label(str.data());
 	//std::cout<<"Sd: "<<std::addressof(str)<<std::endl;
 }
@@ -63,4 +64,10 @@ void BoxesPreferences::SetData(int _data)
 void BoxesPreferences::SetColor(Fl_Color color)
 {
 	Box->color(color);
+}
+
+const char* BoxesPreferences::GetRawData()
+{
+	return str.c_str();
+	//return str.data();
 }

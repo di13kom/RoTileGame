@@ -6,7 +6,7 @@
 #include <FL/Fl_Progress.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Int_Input.H>
-#include <FL/Fl_Button.H>
+#include <FL/Fl_Return_Button.H>
 #include <ctime>        // std::time
 #include <cstdlib>
 #include <signal.h>
@@ -16,6 +16,7 @@
 #include <future>
 #include <array>
 #include <random>
+#include <algorithm>
 #include "BoxesPreferences.h"
 
 static void TimerR(void*);//To preserve static
@@ -34,15 +35,15 @@ class Mybox : public Fl_Box
 	std::future<std::vector<char*>> m_fut;
 
 	std::unique_ptr<BoxesPreferences>Frame;
-	int m_MainTableXpos, m_MainTableYpos;
+	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidth;
+	int m_FontSize;
 	int Tile_Width_Height;
+	int Frame_Width_Height;
 	int TilesInRow;
 	std::vector<BoxesPreferences> Tiles;
 	std::vector<char> Solution;
 	std::vector<char*> BackList;
-public:
-	Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h, int elemsCount);
-	~Mybox();
+
 	friend void TimerR(void*);
 	void draw();
 	int handle(int e);
@@ -52,5 +53,9 @@ public:
 	void TurnLeft_(int bxInd);
 	void *PrgsBar(void *ptr);
 	void SetFramPositionByTileIndex(int);
+public:
+	Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h);
+	~Mybox();
+	void SetTilesValue(int elemsCount);
 };
 
