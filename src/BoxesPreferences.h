@@ -14,7 +14,7 @@ class BoxesPreferences
 	int X;
 	int Y;
 	char Data;
-	std::unique_ptr<Fl_Box> Box;
+	//std::unique_ptr<Fl_Box> Box;
 public:
 	BoxesPreferences() = default;
 	BoxesPreferences(int _x, int _y, int _h, int _w);
@@ -26,7 +26,7 @@ public:
 	int GetY();
 	char GetData();
 	void SetData(int);
-	void SetColor(Fl_Color);
+	//void SetColor(Fl_Color);
 	const char* GetRawData();
 };
 

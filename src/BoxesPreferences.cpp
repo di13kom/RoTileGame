@@ -4,8 +4,8 @@ BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w)
 {
 	X = _x;
 	Y = _y;
-	Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, X, Y, _h, _w, nullptr);
-	Box->color(FL_RED);
+	//Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, X, Y, _h, _w, nullptr);
+	//Box->color(FL_RED);
 }
 
 BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize fontSize, char _data)
@@ -15,11 +15,11 @@ BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize f
 	SetData(_data);
 	X = _x;
 	Y = _y;
-	Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_BOX, X, Y, _h, _w, str.c_str());
-	Box->labeltype(_FL_SHADOW_LABEL);
-	Box->color(FL_GREEN);
-	Box->labelfont(FL_HELVETICA_BOLD);
-	Box->labelsize(fontSize);
+	//Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_BOX, X, Y, _h, _w, str.c_str());
+	//Box->labeltype(_FL_SHADOW_LABEL);
+	//Box->color(FL_GREEN);
+	//Box->labelfont(FL_HELVETICA_BOLD);
+	//Box->labelsize(fontSize);
 
 	//std::cout<<"A: "<<std::addressof(str)<<std::endl;
 }
@@ -27,7 +27,7 @@ BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize f
 void BoxesPreferences::SetX(int _x)
 {
 	X = _x;
-	Box->position(X, Y);
+	//Box->position(X, Y);
 }
 
 int BoxesPreferences::GetX()
@@ -38,7 +38,7 @@ int BoxesPreferences::GetX()
 void BoxesPreferences::SetY(int _y)
 {
 	Y = _y;
-	Box->position(X, Y);
+	//Box->position(X, Y);
 }
 
 int BoxesPreferences::GetY()
@@ -61,10 +61,10 @@ void BoxesPreferences::SetData(int _data)
 	//std::cout<<"Sd: "<<std::addressof(str)<<std::endl;
 }
 
-void BoxesPreferences::SetColor(Fl_Color color)
-{
-	Box->color(color);
-}
+//void BoxesPreferences::SetColor(Fl_Color color)
+//{
+//	//Box->color(color);
+//}
 
 const char* BoxesPreferences::GetRawData()
 {

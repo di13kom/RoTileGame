@@ -258,7 +258,7 @@ void Mybox::CheckSolution()
 	{
 		if (Tiles[i].GetData() != Solution[i])return;
 	}
-	for (int i = 0; i < TilesInRow*TilesInRow; i++)Tiles[i].SetColor(FL_BLUE);
+	//for (int i = 0; i < TilesInRow*TilesInRow; i++)Tiles[i].SetColor(FL_BLUE);
 	fl_message("you win");
 	std::cout << "You win\n";
 	exit(0);
