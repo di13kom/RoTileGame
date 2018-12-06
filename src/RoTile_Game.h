@@ -29,7 +29,7 @@ static int s_BasicFontSize = 40;
 
 class Mybox : public Fl_Box
 {
-	Fs* m_fsClass;
+	//std::unique_ptr<Fs> m_fsClass;
 	//EFS_Class m_efsClass;
 	//BFS_Class m_bfsClass;
 	std::future<std::vector<char*>> m_fut;

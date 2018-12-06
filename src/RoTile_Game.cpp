@@ -113,9 +113,10 @@ void Mybox::SetTilesValue(int elemsCount)
 
 int Mybox::handle(int e)
 {
-	char *dataStr;
 	int xTmp;
 	int yTmp;
+	std::unique_ptr<char[]> dataStr;
+	std::unique_ptr<Fs> m_fsClass;
 	switch (e)
 	{
 	case FL_SHORTCUT:
@@ -172,15 +173,15 @@ int Mybox::handle(int e)
 			return 1;
 		case 'a':
 
-			dataStr = new char[TilesInRow*TilesInRow];
+			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
 			for (int i = 0; i < TilesInRow*TilesInRow; i++)
 			{
 				dataStr[i] = Tiles[i].GetData();
 				//dataStr[i] = Tiles[i].Data;
 			}
 
-			m_fsClass = new BFS_Class(TilesInRow);
-			m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass), dataStr);
+			m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
+			m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass.get()), dataStr.get());
 
 			PrgsBar(nullptr);
 			BackList = m_fut.get();
@@ -201,18 +202,17 @@ int Mybox::handle(int e)
 				fl_message("solution is not found");
 				std::cout << "solution is not found\n";
 			}
-			delete[] dataStr;
 			return 1;
 		case 's':
-			dataStr = new char[TilesInRow*TilesInRow];
+			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
 			for (int i = 0; i < TilesInRow*TilesInRow; i++)
 			{
 				dataStr[i] = Tiles[i].GetData();
 				//dataStr[i] = Tiles[i].Data;
 			}
 
-			m_fsClass = new EFS_Class(TilesInRow);
-			m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass), dataStr);
+			m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
+			m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass.get()), dataStr.get());
 
 			PrgsBar(nullptr);
 			BackList = m_fut.get();
@@ -243,7 +243,6 @@ int Mybox::handle(int e)
 				fl_message("solution is not found");
 				std::cout << "solution is not found\n";
 			}
-			delete[] dataStr;
 			return 1;
 		}
 	}
