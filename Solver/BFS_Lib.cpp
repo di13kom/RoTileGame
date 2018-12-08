@@ -85,10 +85,8 @@ int BFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 	}
 	else
 	{
-		size_t sz;
-		sz = UsedList.size();
-		UsedList.insert(Tmp);
-		if (sz != UsedList.size())
+		auto vl = UsedList.insert(Tmp);
+		if (vl.second == true)
 		{
 			for (char i = 0; i < (N - 1); i++)
 			{

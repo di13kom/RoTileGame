@@ -13,6 +13,8 @@
 //#include <array>
 //#include <thread>
 #include <tuple>
+//
+#include <unordered_set>
 
 
 struct _Nd
@@ -25,6 +27,43 @@ struct _Nd
 	_Nd** Child;
 };
 
+//
+struct compHashFunc
+{
+	bool operator()(const char* s1, const char* s2) const
+	{
+		return true;
+	}
+};
+struct hashFunc
+{
+	inline size_t operator()(const char* s1) const
+	{
+//		int vl = 0;
+//		size_t retVal;
+//		int len = strlen(s1);
+//
+//		for(int i=0;i<len;i++)
+//		{
+//			vl += ((int)s1[i])*std::pow(len,i);
+//		}
+//		retVal = std::hash<int>()(vl);
+//
+//		return retVal;
+		size_t result = 0;
+		const size_t prime = 31;
+		int len = strlen(s1);
+		for (size_t i = 0; i < len; ++i) {
+			result = s1[i] + (result * prime);
+		}
+		return result;
+		//size_t h = 5381;
+		//int c;
+		//while ((c = *s1++))
+		//	h = ((h << 5) + h) + c;
+		//return h;
+	}
+};
 
 ///-----------
 struct Comp1Func
@@ -48,7 +87,8 @@ class Fs
 protected:
 	int N, L;
 	char* Solution;
-	std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
+	//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
+	std::unordered_set<char*,hashFunc, compHashFunc> UsedList;//Checking list for used combinations
 	_Nd *Node;
 	std::vector<char*> BackList;
 	virtual int Rotate(char M, char*, _Nd*, char) = 0;
