@@ -1,0 +1,46 @@
+Linux:
+	==========Set=====================
+	5-A
+		Time elapsed: 0.58513
+		Solution was found through 74steps in BackList
+		Time elapsed: 0.585954
+		Solution was found through 74steps in BackList
+		Time elapsed: 0.586917
+		Solution was found through 74steps in BackList
+	3-Bfs
+		Time elapsed: 1.10207
+		Solution was found through 111500steps in BackList
+		Time elapsed: 1.10203
+		Solution was found through 111500steps in BackList
+		Time elapsed: 1.10204
+		Solution was found through 111500steps in BackList
+	6-A
+		Time elapsed: 106.805
+		Solution was found through 142steps in BackList
+		Time elapsed: 107.405
+		Solution was found through 142steps in BackList
+		Time elapsed: 107.447
+		Solution was found through 142steps in BackList
+
+	==========unordered_set=============
+	5-A
+		Time elapsed: 0.584354
+		Solution was found through 74steps in BackList
+		Time elapsed: 0.580286
+		Solution was found through 74steps in BackList
+		Time elapsed: 0.581036
+		Solution was found through 74steps in BackList
+	3-Bfs
+		Time elapsed: 1.1021
+		Solution was found through 111500steps in BackList
+		Time elapsed: 1.1021
+		Solution was found through 111500steps in BackList
+		Time elapsed: 1.10209
+		Solution was found through 111500steps in BackList
+	6-A
+		Time elapsed: 84.588
+		Solution was found through 142steps in BackList
+		Time elapsed: 84.6354
+		Solution was found through 142steps in BackList
+		Time elapsed: 84.5869
+		Solution was found through 142steps in BackList

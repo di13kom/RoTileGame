@@ -174,12 +174,13 @@ int Mybox::handle(int e)
 			m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
 			m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass.get()), dataStr.get());
 			
+			PrgsBar(nullptr);
+			BackList = m_fut.get();
+
 			end = std::chrono::system_clock::now();
 			diff = end - start;
 			std::cout << "Time elapsed: " << diff.count()<<std::endl;
 
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
 			if (BackList.size() > 0)
 			{
 				std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
@@ -210,13 +211,12 @@ int Mybox::handle(int e)
 			m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
 			m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass.get()), dataStr.get());
 
+			PrgsBar(nullptr);
+			BackList = m_fut.get();
+
 			end = std::chrono::system_clock::now();
 			diff = end - start;
 			std::cout << "Time elapsed: " << diff.count()<<std::endl;
-
-
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
 			if (BackList.size() > 0)
 			{
 				std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
