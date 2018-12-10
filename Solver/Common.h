@@ -15,7 +15,7 @@
 #include <tuple>
 //
 #include <unordered_set>
-
+#include <exception>
 
 struct _Nd
 {
@@ -32,7 +32,13 @@ struct compHashFunc
 {
 	bool operator()(const char* s1, const char* s2) const
 	{
-		return true;
+		bool retVal;
+		if (strcmp(s1, s2) == 0)
+			retVal = true;
+		else
+			retVal = false;
+
+		return retVal;
 	}
 };
 struct hashFunc

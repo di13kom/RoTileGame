@@ -64,6 +64,8 @@ void Mybox::SetTilesValue(int elemsCount)
 	std::iota(Numb.begin(), Numb.end(), 1);
 	std::copy(Numb.begin(), Numb.end(), std::back_inserter(Solution));
 	//
+	//std::sort(std::begin(Numb), std::end(Numb), std::greater<char>());
+
 	std::random_device rd;
 	std::mt19937 g(rd());
 	std::shuffle(Numb.begin(), Numb.end(), g);
@@ -102,6 +104,9 @@ int Mybox::handle(int e)
 	int yTmp;
 	std::unique_ptr<char[]> dataStr;
 	std::unique_ptr<Fs> m_fsClass;
+	std::chrono::time_point<std::chrono::system_clock> start;
+	std::chrono::time_point<std::chrono::system_clock> end;
+	std::chrono::duration<double> diff;
 	switch (e)
 	{
 	case FL_SHORTCUT:
@@ -164,8 +169,14 @@ int Mybox::handle(int e)
 				dataStr[i] = Tiles[i].GetData();
 			}
 
+			start = std::chrono::system_clock::now();
+
 			m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
 			m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass.get()), dataStr.get());
+			
+			end = std::chrono::system_clock::now();
+			diff = end - start;
+			std::cout << "Time elapsed: " << diff.count()<<std::endl;
 
 			PrgsBar(nullptr);
 			BackList = m_fut.get();
@@ -194,8 +205,15 @@ int Mybox::handle(int e)
 				dataStr[i] = Tiles[i].GetData();
 			}
 
+			start = std::chrono::system_clock::now();
+
 			m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
 			m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass.get()), dataStr.get());
+
+			end = std::chrono::system_clock::now();
+			diff = end - start;
+			std::cout << "Time elapsed: " << diff.count()<<std::endl;
+
 
 			PrgsBar(nullptr);
 			BackList = m_fut.get();

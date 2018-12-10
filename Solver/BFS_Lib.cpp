@@ -21,28 +21,35 @@ BFS_Class::~BFS_Class()
 std::vector<char*> BFS_Class::FindSolution(char* inData)
 {
 	char *Comb = new char[N*N + 1];
-	Node = new _Nd;
-	_Nd *TmpNode = Node;
-	std::memset(Node, 0, sizeof(_Nd));
-	for (int i = 0; i < N*N; i++)
+	try
 	{
-		Comb[i] = inData[i];
-	}
-	Comb[N*N] = '\0';
-	Node->Positions = Comb;
-	UsedList.insert(Comb);
-	//StartRecursiveFunction
-	for (char i = 0; i < (N - 1); i++)
-	{
-		for (char j = 0; j < (N - 1); j++)
+		Node = new _Nd;
+		_Nd *TmpNode = Node;
+		std::memset(Node, 0, sizeof(_Nd));
+		for (int i = 0; i < N*N; i++)
 		{
-			for (char Left = 0; Left < 2; Left++)
+			Comb[i] = inData[i];
+		}
+		Comb[N*N] = '\0';
+		Node->Positions = Comb;
+		UsedList.insert(Comb);
+		//StartRecursiveFunction
+		for (char i = 0; i < (N - 1); i++)
+		{
+			for (char j = 0; j < (N - 1); j++)
 			{
-				Node = TmpNode;
-				if (Rotate(N*(int)i + (int)j, Comb, Node, (bool)Left))
-					return BackList;
+				for (char Left = 0; Left < 2; Left++)
+				{
+					Node = TmpNode;
+					if (Rotate(N*(int)i + (int)j, Comb, Node, (bool)Left))
+						return BackList;
+				}
 			}
 		}
+	}
+	catch (std::exception& ex)
+	{
+		std::cout << ex.what() << std::endl;
 	}
 	return std::vector<char*>();
 }

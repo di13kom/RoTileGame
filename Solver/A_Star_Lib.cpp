@@ -91,61 +91,69 @@ EFS_Class::EFS_Class(int _n)
 std::vector<char*> EFS_Class::FindSolution(char *inData)
 {
 	char *Comb = new char[N*N + 1];
-	Node = new _Nd;
-	//_Nd *TmpNode = Node;
-	std::memset(Node, 0, sizeof(_Nd));
-	for (int i = 0; i < N*N; i++)
+	try
+
 	{
-		Comb[i] = inData[i];
-		//Comb[i] = BoxPref[i].Data;
-		//std::cout<<(int) Comb[i]<<std::endl;
-	}
-	Comb[N*N] = '\0';
-	Node->Positions = Comb;
-	Node->gValue = 0;
-	Node->hValue = GetManhattan(Node->Positions);
-	Node->fValue = Node->gValue + Node->hValue;
-	//Add to CloseList
-	UsedList.insert(Node->Positions);//insert combination
-
-	// Create child
-
-
-	//StartRecursiveFunction
-	while (1)
-	{
-		for (char i = 0; i < (N - 1); i++)
+		Node = new _Nd;
+		//_Nd *TmpNode = Node;
+		std::memset(Node, 0, sizeof(_Nd));
+		for (int i = 0; i < N*N; i++)
 		{
-			for (char j = 0; j < (N - 1); j++)
+			Comb[i] = inData[i];
+			//Comb[i] = BoxPref[i].Data;
+			//std::cout<<(int) Comb[i]<<std::endl;
+		}
+		Comb[N*N] = '\0';
+		Node->Positions = Comb;
+		Node->gValue = 0;
+		Node->hValue = GetManhattan(Node->Positions);
+		Node->fValue = Node->gValue + Node->hValue;
+		//Add to CloseList
+		UsedList.insert(Node->Positions);//insert combination
+
+		// Create child
+
+
+		//StartRecursiveFunction
+		while (1)
+		{
+			for (char i = 0; i < (N - 1); i++)
 			{
-				for (char Left = 0; Left < 2; Left++)
+				for (char j = 0; j < (N - 1); j++)
 				{
-					//Creation
-					/*Node->Child[x] = */Rotate(N*(int)i + (int)j, Node->Positions, Node, (bool)Left);
+					for (char Left = 0; Left < 2; Left++)
+					{
+						//Creation
+						/*Node->Child[x] = */Rotate(N*(int)i + (int)j, Node->Positions, Node, (bool)Left);
+					}
 				}
 			}
-		}
-		//auto It = std::min_element(Queue.begin(),Queue.end(),Comp1Func()); 
-		auto It = Queue.begin();
-		Node = *It;
-		if (Node->hValue == 0)
-		{
-
-			//if(std::equal(Tmp, Tmp+(N*N), Solution))
-			//{
-			//std::cout<<"match with ideal\n";
-			while (Node)
+			//auto It = std::min_element(Queue.begin(),Queue.end(),Comp1Func()); 
+			auto It = Queue.begin();
+			Node = *It;
+			if (Node->hValue == 0)
 			{
-				BackList.push_back(Node->Positions);
-				if (Node->Parent) Node = Node->Parent;
-				else break;
-				//std::cout<<"ura\n";
+
+				//if(std::equal(Tmp, Tmp+(N*N), Solution))
+				//{
+				//std::cout<<"match with ideal\n";
+				while (Node)
+				{
+					BackList.push_back(Node->Positions);
+					if (Node->Parent) Node = Node->Parent;
+					else break;
+					//std::cout<<"ura\n";
+				}
+				//Calculated = 1;
+				//return 1;
+				return BackList;
 			}
-			//Calculated = 1;
-			//return 1;
-			return BackList;
+			Queue.erase(It);
 		}
-		Queue.erase(It);
+	}
+	catch (std::exception& ex)
+	{
+		std::cout << ex.what() << std::endl;
 	}
 	return std::vector<char*>();
 }
