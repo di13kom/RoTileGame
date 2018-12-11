@@ -4,7 +4,6 @@ BFS_Class::BFS_Class(int _n)
 {
 	ElementsInRow = _n;
 	IterationCount = 0;
-	//Solution.reserve(ElementsInRow*ElementsInRow);
 	Solution = new char[ElementsInRow*ElementsInRow];
 	for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
 	{
@@ -41,7 +40,7 @@ std::vector<char*> BFS_Class::FindSolution(char* inData)
 				for (char Left = 0; Left < 2; Left++)
 				{
 					Node = TmpNode;
-					if (Rotate(ElementsInRow*(int)i + (int)j, Comb, Node, (bool)Left))
+					if (Rotate(ElementsInRow*(int)i + (int)j, Node, (bool)Left))
 						return BackList;
 				}
 			}
@@ -54,7 +53,7 @@ std::vector<char*> BFS_Class::FindSolution(char* inData)
 	return std::vector<char*>();
 }
 
-int BFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
+int BFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
 {
 	IterationCount++;
 	Node = new _Nd;
@@ -63,7 +62,7 @@ int BFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 	Node->Parent = ParNode;
 	char *Tmp = new char[ElementsInRow*ElementsInRow + 1];
 	if (Tmp == NULL)std::cout << "memory exhausted\n";
-	std::copy(Output, Output + ElementsInRow * ElementsInRow, Tmp);
+	std::copy(ParNode->Positions, ParNode->Positions + ElementsInRow * ElementsInRow, Tmp);
 	if (IsLeft)//Left Rotate
 	{
 		std::swap(Tmp[(int)M + 1], Tmp[(int)M]);
@@ -102,7 +101,7 @@ int BFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 					for (char Left = 0; Left < 2; Left++)
 					{
 						Node = TmpNode;
-						if (Rotate(ElementsInRow*(char)i + (char)j, Tmp, Node, (bool)Left))
+						if (Rotate(ElementsInRow*(char)i + (char)j, Node, (bool)Left))
 							return 1;
 						//Rotate(ElementsInRow*i+j, Comb, 0);
 					}

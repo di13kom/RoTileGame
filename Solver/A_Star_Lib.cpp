@@ -16,7 +16,7 @@ int EFS_Class::Calc(char Num, int Pos)
 	Dif = std::abs(x - x1) + std::abs(y - y1);
 	return Dif;
 }
-int EFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
+int EFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
 {
 	IterationCount++;
 
@@ -25,10 +25,9 @@ int EFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 	if (_Node == nullptr)std::cout << "memory exhausted\n";
 	//std::memset(Node,0,sizeof(_Nd));
 	_Node->Parent = ParNode;
-	//bool NotEqualFlag = false;
 	char *Tmp = new char[ElementsInRow*ElementsInRow + 1];
 	if (Tmp == nullptr)std::cout << "memory exhausted\n";
-	std::copy(Output, Output + ElementsInRow * ElementsInRow, Tmp);
+	std::copy(ParNode->Positions, ParNode->Positions + ElementsInRow * ElementsInRow, Tmp);
 	char *Buff = new char;
 	if (IsLeft)//Left Rotate
 	{
@@ -52,15 +51,10 @@ int EFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 	_Node->gValue = ParNode->gValue + 1;
 	_Node->hValue = GetManhattan(_Node->Positions);
 	_Node->fValue = _Node->gValue + _Node->hValue;
-	/**/
-	/**/
 	//Insert combination to UsedList
-	//size_t sz;
-	//sz = UsedList.size();
 	bool result;
 	std::tie(std::ignore, result) = UsedList.insert(_Node->Positions);
 	//Check existance in UsedList
-	//if(sz != UsedList.size() || _Node->hValue == 0)
 	if (result == true || _Node->hValue == 0)
 	{
 		Queue.insert(_Node);
@@ -97,12 +91,7 @@ std::vector<char*> EFS_Class::FindSolution(char *inData)
 		Node = new _Nd;
 		//_Nd *TmpNode = Node;
 		std::memset(Node, 0, sizeof(_Nd));
-		for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
-		{
-			Comb[i] = inData[i];
-			//Comb[i] = BoxPref[i].Data;
-			//std::cout<<(int) Comb[i]<<std::endl;
-		}
+		std::copy(inData, inData + ElementsInRow * ElementsInRow, Comb);
 		Comb[ElementsInRow*ElementsInRow] = '\0';
 		Node->Positions = Comb;
 		Node->gValue = 0;
@@ -124,7 +113,7 @@ std::vector<char*> EFS_Class::FindSolution(char *inData)
 					for (char Left = 0; Left < 2; Left++)
 					{
 						//Creation
-						/*Node->Child[x] = */Rotate(ElementsInRow*(int)i + (int)j, Node->Positions, Node, (bool)Left);
+						/*Node->Child[x] = */Rotate(ElementsInRow*(int)i + (int)j, Node, (bool)Left);
 					}
 				}
 			}

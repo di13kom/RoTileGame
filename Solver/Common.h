@@ -97,7 +97,7 @@ protected:
 	std::unordered_set<char*, hashFunc, compHashFunc> UsedList;//Checking list for used combinations
 	_Nd *Node;
 	std::vector<char*> BackList;
-	virtual int Rotate(char M, char*, _Nd*, char) = 0;
+	virtual int Rotate(char M, _Nd*, char) = 0;
 public:
 	virtual std::vector<char*> FindSolution(char*) = 0;
 	Fs(int);

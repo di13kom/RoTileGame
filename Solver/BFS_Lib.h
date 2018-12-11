@@ -8,7 +8,7 @@ class BFS_Class :public Fs
 	//std::vector<char*> BackList;
 	//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
 	char* Solution;
-	int Rotate(char M, char*, _Nd*, char);
+	int Rotate(char M, _Nd*, char);
 public:
 	BFS_Class(int);
 	std::vector<char*> FindSolution(char*);

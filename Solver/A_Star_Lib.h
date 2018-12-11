@@ -8,7 +8,7 @@ class EFS_Class :public Fs
 	//std::vector<char*> BackList;
 	std::multiset<_Nd *, Comp1Func> Queue;//Checking list for used combinations
 	int Calc(char, int);
-	int Rotate(char, char*, _Nd*, char);
+	int Rotate(char, _Nd*, char);
 	int GetManhattan(char*);
 public:
 	EFS_Class(int);
