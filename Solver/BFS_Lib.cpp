@@ -2,11 +2,11 @@
 
 BFS_Class::BFS_Class(int _n)
 {
-	N = _n;
-	L = 0;
-	//Solution.reserve(N*N);
-	Solution = new char[N*N];
-	for (int i = 0; i < N*N; i++)
+	ElementsInRow = _n;
+	IterationCount = 0;
+	//Solution.reserve(ElementsInRow*ElementsInRow);
+	Solution = new char[ElementsInRow*ElementsInRow];
+	for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
 	{
 		//Solution.push_back(i+1);
 		Solution[i] = i + 1;
@@ -20,28 +20,28 @@ BFS_Class::~BFS_Class()
 
 std::vector<char*> BFS_Class::FindSolution(char* inData)
 {
-	char *Comb = new char[N*N + 1];
+	char *Comb = new char[ElementsInRow*ElementsInRow + 1];
 	try
 	{
 		Node = new _Nd;
 		_Nd *TmpNode = Node;
 		std::memset(Node, 0, sizeof(_Nd));
-		for (int i = 0; i < N*N; i++)
+		for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
 		{
 			Comb[i] = inData[i];
 		}
-		Comb[N*N] = '\0';
+		Comb[ElementsInRow*ElementsInRow] = '\0';
 		Node->Positions = Comb;
 		UsedList.insert(Comb);
 		//StartRecursiveFunction
-		for (char i = 0; i < (N - 1); i++)
+		for (char i = 0; i < (ElementsInRow - 1); i++)
 		{
-			for (char j = 0; j < (N - 1); j++)
+			for (char j = 0; j < (ElementsInRow - 1); j++)
 			{
 				for (char Left = 0; Left < 2; Left++)
 				{
 					Node = TmpNode;
-					if (Rotate(N*(int)i + (int)j, Comb, Node, (bool)Left))
+					if (Rotate(ElementsInRow*(int)i + (int)j, Comb, Node, (bool)Left))
 						return BackList;
 				}
 			}
@@ -56,29 +56,29 @@ std::vector<char*> BFS_Class::FindSolution(char* inData)
 
 int BFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 {
-	L++;
+	IterationCount++;
 	Node = new _Nd;
 	_Nd *TmpNode = Node;
 	if (Node == NULL)std::cout << "memory exhausted\n";
 	Node->Parent = ParNode;
-	char *Tmp = new char[N*N + 1];
+	char *Tmp = new char[ElementsInRow*ElementsInRow + 1];
 	if (Tmp == NULL)std::cout << "memory exhausted\n";
-	std::copy(Output, Output + N * N, Tmp);
+	std::copy(Output, Output + ElementsInRow * ElementsInRow, Tmp);
 	if (IsLeft)//Left Rotate
 	{
 		std::swap(Tmp[(int)M + 1], Tmp[(int)M]);
-		std::swap(Tmp[(int)M + 1], Tmp[(int)M + N]);
-		std::swap(Tmp[(int)M + 1], Tmp[(int)M + N + 1]);
+		std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow]);
+		std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow + 1]);
 	}
 	else//Right Rotate
 	{
 		std::swap(Tmp[(int)M], Tmp[(int)M + 1]);
-		std::swap(Tmp[(int)M], Tmp[(int)M + N + 1]);
-		std::swap(Tmp[(int)M], Tmp[(int)M + N]);
+		std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow + 1]);
+		std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow]);
 	}
-	Tmp[N*N] = '\0';
+	Tmp[ElementsInRow*ElementsInRow] = '\0';
 	Node->Positions = Tmp;
-	if (std::equal(Tmp, Tmp + (N*N/*(N-1)*/), Solution))
+	if (std::equal(Tmp, Tmp + (ElementsInRow*ElementsInRow/*(ElementsInRow-1)*/), Solution))
 	{
 		//std::cout<<"match with ideal\n";
 		while (Node)
@@ -95,16 +95,16 @@ int BFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 		auto vl = UsedList.insert(Tmp);
 		if (vl.second == true)
 		{
-			for (char i = 0; i < (N - 1); i++)
+			for (char i = 0; i < (ElementsInRow - 1); i++)
 			{
-				for (char j = 0; j < (N - 1); j++)
+				for (char j = 0; j < (ElementsInRow - 1); j++)
 				{
 					for (char Left = 0; Left < 2; Left++)
 					{
 						Node = TmpNode;
-						if (Rotate(N*(char)i + (char)j, Tmp, Node, (bool)Left))
+						if (Rotate(ElementsInRow*(char)i + (char)j, Tmp, Node, (bool)Left))
 							return 1;
-						//Rotate(N*i+j, Comb, 0);
+						//Rotate(ElementsInRow*i+j, Comb, 0);
 					}
 				}
 			}

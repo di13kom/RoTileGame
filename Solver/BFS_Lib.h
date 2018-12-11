@@ -2,7 +2,7 @@
 
 class BFS_Class :public Fs
 {
-	//int N, L;
+	//int ElementsInRow, IterationCount;
 	//_Nd *Node;
 	//std::vector<char> Solution;
 	//std::vector<char*> BackList;

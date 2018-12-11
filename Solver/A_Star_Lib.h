@@ -2,7 +2,7 @@
 
 class EFS_Class :public Fs
 {
-	//int N, L;
+	//int ElementsInRow, IterationCount;
 	//_Nd *Node;
 	//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
 	//std::vector<char*> BackList;

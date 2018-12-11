@@ -45,17 +45,17 @@ struct hashFunc
 {
 	inline size_t operator()(const char* s1) const
 	{
-//		int vl = 0;
-//		size_t retVal;
-//		int len = strlen(s1);
-//
-//		for(int i=0;i<len;i++)
-//		{
-//			vl += ((int)s1[i])*std::pow(len,i);
-//		}
-//		retVal = std::hash<int>()(vl);
-//
-//		return retVal;
+		//		int vl = 0;
+		//		size_t retVal;
+		//		int len = strlen(s1);
+		//
+		//		for(int i=0;i<len;i++)
+		//		{
+		//			vl += ((int)s1[i])*std::pow(len,i);
+		//		}
+		//		retVal = std::hash<int>()(vl);
+		//
+		//		return retVal;
 		size_t result = 0;
 		const size_t prime = 31;
 		int len = strlen(s1);
@@ -91,10 +91,10 @@ struct Comp2Func
 class Fs
 {
 protected:
-	int N, L;
+	int ElementsInRow, IterationCount;
 	char* Solution;
 	//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
-	std::unordered_set<char*,hashFunc, compHashFunc> UsedList;//Checking list for used combinations
+	std::unordered_set<char*, hashFunc, compHashFunc> UsedList;//Checking list for used combinations
 	_Nd *Node;
 	std::vector<char*> BackList;
 	virtual int Rotate(char M, char*, _Nd*, char) = 0;

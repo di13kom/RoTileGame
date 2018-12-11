@@ -5,20 +5,20 @@ int EFS_Class::Calc(char Num, int Pos)
 {
 	int Dif = 0;
 	int x1, y1, x, y;
-	x1 = Pos % N;
-	y1 = Pos / N;
+	x1 = Pos % ElementsInRow;
+	y1 = Pos / ElementsInRow;
 
-	x = ((int)Num - 1) % N;
-	//x = (std::stoi(&Num) - 1) % N;
-	y = ((int)Num - 1) / N;
-	//y = (std::stoi(&Num) - 1) / N;
+	x = ((int)Num - 1) % ElementsInRow;
+	//x = (std::stoi(&Num) - 1) % ElementsInRow;
+	y = ((int)Num - 1) / ElementsInRow;
+	//y = (std::stoi(&Num) - 1) / ElementsInRow;
 
 	Dif = std::abs(x - x1) + std::abs(y - y1);
 	return Dif;
 }
 int EFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 {
-	L++;
+	IterationCount++;
 
 	_Nd* _Node = new _Nd;
 	//_Nd *TmpNode = _Node;
@@ -26,28 +26,28 @@ int EFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 	//std::memset(Node,0,sizeof(_Nd));
 	_Node->Parent = ParNode;
 	//bool NotEqualFlag = false;
-	char *Tmp = new char[N*N + 1];
+	char *Tmp = new char[ElementsInRow*ElementsInRow + 1];
 	if (Tmp == nullptr)std::cout << "memory exhausted\n";
-	std::copy(Output, Output + N * N, Tmp);
+	std::copy(Output, Output + ElementsInRow * ElementsInRow, Tmp);
 	char *Buff = new char;
 	if (IsLeft)//Left Rotate
 	{
 		*Buff = Tmp[(int)M];
 		Tmp[(int)M] = Tmp[(int)M + 1];
-		Tmp[(int)M + 1] = Tmp[(int)M + N + 1];
-		Tmp[(int)M + N + 1] = Tmp[(int)M + N];
-		Tmp[(int)M + N] = *Buff;
+		Tmp[(int)M + 1] = Tmp[(int)M + ElementsInRow + 1];
+		Tmp[(int)M + ElementsInRow + 1] = Tmp[(int)M + ElementsInRow];
+		Tmp[(int)M + ElementsInRow] = *Buff;
 	}
 	else//Right Rotate
 	{
 		*Buff = Tmp[(int)M];
-		Tmp[(int)M] = Tmp[(int)M + N];
-		Tmp[(int)M + N] = Tmp[(int)M + N + 1];
-		Tmp[(int)M + N + 1] = Tmp[(int)M + 1];
+		Tmp[(int)M] = Tmp[(int)M + ElementsInRow];
+		Tmp[(int)M + ElementsInRow] = Tmp[(int)M + ElementsInRow + 1];
+		Tmp[(int)M + ElementsInRow + 1] = Tmp[(int)M + 1];
 		Tmp[(int)M + 1] = *Buff;
 	}
 	delete Buff;
-	Tmp[N*N] = '\0';
+	Tmp[ElementsInRow*ElementsInRow] = '\0';
 	_Node->Positions = Tmp;
 	_Node->gValue = ParNode->gValue + 1;
 	_Node->hValue = GetManhattan(_Node->Positions);
@@ -78,32 +78,32 @@ int EFS_Class::Rotate(char M, char* Output, _Nd *ParNode, char IsLeft)
 int EFS_Class::GetManhattan(char *Value)
 {
 	int Sum = 0;
-	for (int i = 0; i < N*N; i++)
+	for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
 		Sum += Calc(Value[i], i);
 	return Sum;
 }
 
 EFS_Class::EFS_Class(int _n)
 {
-	N = _n;
-	L = 0;
+	ElementsInRow = _n;
+	IterationCount = 0;
 };
 std::vector<char*> EFS_Class::FindSolution(char *inData)
 {
-	char *Comb = new char[N*N + 1];
+	char *Comb = new char[ElementsInRow*ElementsInRow + 1];
 	try
 
 	{
 		Node = new _Nd;
 		//_Nd *TmpNode = Node;
 		std::memset(Node, 0, sizeof(_Nd));
-		for (int i = 0; i < N*N; i++)
+		for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
 		{
 			Comb[i] = inData[i];
 			//Comb[i] = BoxPref[i].Data;
 			//std::cout<<(int) Comb[i]<<std::endl;
 		}
-		Comb[N*N] = '\0';
+		Comb[ElementsInRow*ElementsInRow] = '\0';
 		Node->Positions = Comb;
 		Node->gValue = 0;
 		Node->hValue = GetManhattan(Node->Positions);
@@ -117,14 +117,14 @@ std::vector<char*> EFS_Class::FindSolution(char *inData)
 		//StartRecursiveFunction
 		while (1)
 		{
-			for (char i = 0; i < (N - 1); i++)
+			for (char i = 0; i < (ElementsInRow - 1); i++)
 			{
-				for (char j = 0; j < (N - 1); j++)
+				for (char j = 0; j < (ElementsInRow - 1); j++)
 				{
 					for (char Left = 0; Left < 2; Left++)
 					{
 						//Creation
-						/*Node->Child[x] = */Rotate(N*(int)i + (int)j, Node->Positions, Node, (bool)Left);
+						/*Node->Child[x] = */Rotate(ElementsInRow*(int)i + (int)j, Node->Positions, Node, (bool)Left);
 					}
 				}
 			}
@@ -134,7 +134,7 @@ std::vector<char*> EFS_Class::FindSolution(char *inData)
 			if (Node->hValue == 0)
 			{
 
-				//if(std::equal(Tmp, Tmp+(N*N), Solution))
+				//if(std::equal(Tmp, Tmp+(ElementsInRow*ElementsInRow), Solution))
 				//{
 				//std::cout<<"match with ideal\n";
 				while (Node)
