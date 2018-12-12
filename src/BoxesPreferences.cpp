@@ -20,7 +20,7 @@ void BoxesPreferences::SetX(int _x)
 	X = _x;
 }
 
-int BoxesPreferences::GetX()
+int BoxesPreferences::GetX() const
 {
 	return X;
 }
@@ -30,12 +30,12 @@ void BoxesPreferences::SetY(int _y)
 	Y = _y;
 }
 
-int BoxesPreferences::GetY()
+int BoxesPreferences::GetY() const
 {
 	return Y;
 }
 
-char BoxesPreferences::GetData()
+char BoxesPreferences::GetData() const
 {
 	return Data;
 }
@@ -47,7 +47,7 @@ void BoxesPreferences::SetData(int _data)
 	//std::cout<<"Sd: "<<std::addressof(str)<<std::endl;
 }
 
-const char* BoxesPreferences::GetRawData()
+const char* BoxesPreferences::GetRawData() const
 {
 	return str.c_str();
 }

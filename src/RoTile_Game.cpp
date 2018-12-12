@@ -30,7 +30,6 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h) : Fl_Box(bt, _x, _y,
 void Mybox::draw()
 {
 	Fl_Box::draw();
-	//wind->redraw();
 	if (Frame != nullptr)
 	{
 		//std::cout<<"Redraw called\n";
@@ -42,7 +41,7 @@ void Mybox::draw()
 			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY(), Tile_Width_Height, Tile_Width_Height, FL_GREEN);
 			fl_color(FL_BLACK);
 			fl_draw(item.GetRawData(), item.GetX(), item.GetY(), Tile_Width_Height \
-				, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
+					, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
 		}
 	}
 }
@@ -109,144 +108,144 @@ int Mybox::handle(int e)
 	std::chrono::duration<double> diff;
 	switch (e)
 	{
-	case FL_SHORTCUT:
-	{
-		switch (Fl::event_key())
-		{
-		case FL_Left:
-			//std::cout<<"Left Pressed\n";
-			xTmp = Frame->GetX() - (Tile_Width_Height + s_InterTileDistance);
-			if (xTmp < m_MainTableXpos + s_MainTablePadding)
-				xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-			Frame->SetX(xTmp);
-			wind->redraw();
-
-			return 1;
-		case FL_Right:
-			//std::cout<<"Right Pressed\n";
-			xTmp = Frame->GetX() + (Tile_Width_Height + s_InterTileDistance);
-			if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				xTmp = m_MainTableXpos + s_MainTablePadding;
-			Frame->SetX(xTmp);
-			wind->redraw();
-
-			return 1;
-		case FL_Up:
-			//std::cout<<"Up Pressed\n";
-			yTmp = Frame->GetY() - (Tile_Width_Height + s_InterTileDistance);
-			if (yTmp < m_MainTableYpos + s_MainTablePadding)
-				yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-			Frame->SetY(yTmp);
-			wind->redraw();
-
-			return 1;
-		case FL_Down:
-			//std::cout<<"Down Pressed\n";
-			yTmp = Frame->GetY() + (Tile_Width_Height + s_InterTileDistance);
-			if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
-				yTmp = m_MainTableYpos + s_MainTablePadding;
-			Frame->SetY(yTmp);
-			wind->redraw();
-
-			return 1;
-		case 120:
-			//std::cout<<"x pressed\n";
-			TurnRight_(GetFrameLeftUpperPosition());
-			wind->redraw();
-			CheckSolution();
-			return 1;
-		case 122:
-			//std::cout<<"z pressed\n";
-			TurnLeft_(GetFrameLeftUpperPosition());
-			wind->redraw();
-			CheckSolution();
-			return 1;
-		case 'a':
-
-			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
-			for (int i = 0; i < TilesInRow*TilesInRow; i++)
+		case FL_SHORTCUT:
 			{
-				dataStr[i] = Tiles[i].GetData();
+				switch (Fl::event_key())
+				{
+					case FL_Left:
+						//std::cout<<"Left Pressed\n";
+						xTmp = Frame->GetX() - (Tile_Width_Height + s_InterTileDistance);
+						if (xTmp < m_MainTableXpos + s_MainTablePadding)
+							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+						Frame->SetX(xTmp);
+						wind->redraw();
+
+						return 1;
+					case FL_Right:
+						//std::cout<<"Right Pressed\n";
+						xTmp = Frame->GetX() + (Tile_Width_Height + s_InterTileDistance);
+						if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+							xTmp = m_MainTableXpos + s_MainTablePadding;
+						Frame->SetX(xTmp);
+						wind->redraw();
+
+						return 1;
+					case FL_Up:
+						//std::cout<<"Up Pressed\n";
+						yTmp = Frame->GetY() - (Tile_Width_Height + s_InterTileDistance);
+						if (yTmp < m_MainTableYpos + s_MainTablePadding)
+							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+						Frame->SetY(yTmp);
+						wind->redraw();
+
+						return 1;
+					case FL_Down:
+						//std::cout<<"Down Pressed\n";
+						yTmp = Frame->GetY() + (Tile_Width_Height + s_InterTileDistance);
+						if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+							yTmp = m_MainTableYpos + s_MainTablePadding;
+						Frame->SetY(yTmp);
+						wind->redraw();
+
+						return 1;
+					case 120:
+						//std::cout<<"x pressed\n";
+						TurnRight_(GetFrameLeftUpperPosition());
+						wind->redraw();
+						CheckSolution();
+						return 1;
+					case 122:
+						//std::cout<<"z pressed\n";
+						TurnLeft_(GetFrameLeftUpperPosition());
+						wind->redraw();
+						CheckSolution();
+						return 1;
+					case 'a':
+
+						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
+						std::transform(Tiles.begin(), Tiles.end(), dataStr.get(), [](const BoxesPreferences& box)
+								{
+									return box.GetData();
+								});
+
+						start = std::chrono::system_clock::now();
+
+						m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
+						m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass.get()), dataStr.get());
+
+						PrgsBar(nullptr);
+						BackList = m_fut.get();
+
+						end = std::chrono::system_clock::now();
+						diff = end - start;
+						std::cout << "Time elapsed: " << diff.count()<<std::endl;
+
+						if (BackList.size() > 0)
+						{
+							std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
+							fl_message("Solution was found through %d steps", BackList.size() - 1);
+							//std::cout<<"iterations: "<<L<<std::endl;
+							//for(unsigned i=0;i<BackList.size();i++)
+							//{
+							//	std::cout<<std::endl;
+							//	for(int j=0;j<TilesInRow*TilesInRow;j++)
+							//		std::cout<<(int)BackList[i][j];
+							//}
+						}
+						else
+						{
+							fl_message("solution is not found");
+							std::cout << "solution is not found\n";
+						}
+						return 1;
+					case 's':
+						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
+						std::transform(Tiles.begin(), Tiles.end(), dataStr.get(), [](const BoxesPreferences& box)
+								{
+									return box.GetData();
+								});
+
+						start = std::chrono::system_clock::now();
+
+						m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
+						m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass.get()), dataStr.get());
+
+						PrgsBar(nullptr);
+						BackList = m_fut.get();
+
+						end = std::chrono::system_clock::now();
+						diff = end - start;
+						std::cout << "Time elapsed: " << diff.count()<<std::endl;
+						if (BackList.size() > 0)
+						{
+							std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
+							//std::cout<<"Solution was find through "<<UsedList.size()<<"steps in UsedList\n";
+							fl_message("Solution was found through %d steps", BackList.size() - 1);
+							//std::cout<<"iterations: "<<L<<std::endl;
+							int _Tmp;
+
+							/*
+							   for (unsigned i = 0; i < BackList.size(); i++)
+							   {
+							   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+							   {
+							   if (k % TilesInRow == 0)std::cout << "\n";
+							   _Tmp = (int)BackList[i][k];
+							   std::cout << std::setw(2) << _Tmp << " ";
+							   }
+							   std::cout << std::endl;
+							   }
+							   */
+							Fl::add_timeout(0.25, TimerR, (void*)this);
+						}
+						else
+						{
+							fl_message("solution is not found");
+							std::cout << "solution is not found\n";
+						}
+						return 1;
+				}
 			}
-
-			start = std::chrono::system_clock::now();
-
-			m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
-			m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass.get()), dataStr.get());
-			
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
-
-			end = std::chrono::system_clock::now();
-			diff = end - start;
-			std::cout << "Time elapsed: " << diff.count()<<std::endl;
-
-			if (BackList.size() > 0)
-			{
-				std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
-				fl_message("Solution was found through %d steps", BackList.size() - 1);
-				//std::cout<<"iterations: "<<L<<std::endl;
-				//for(unsigned i=0;i<BackList.size();i++)
-				//{
-				//	std::cout<<std::endl;
-				//	for(int j=0;j<TilesInRow*TilesInRow;j++)
-				//		std::cout<<(int)BackList[i][j];
-				//}
-			}
-			else
-			{
-				fl_message("solution is not found");
-				std::cout << "solution is not found\n";
-			}
-			return 1;
-		case 's':
-			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
-			for (int i = 0; i < TilesInRow*TilesInRow; i++)
-			{
-				dataStr[i] = Tiles[i].GetData();
-			}
-
-			start = std::chrono::system_clock::now();
-
-			m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
-			m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass.get()), dataStr.get());
-
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
-
-			end = std::chrono::system_clock::now();
-			diff = end - start;
-			std::cout << "Time elapsed: " << diff.count()<<std::endl;
-			if (BackList.size() > 0)
-			{
-				std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
-				//std::cout<<"Solution was find through "<<UsedList.size()<<"steps in UsedList\n";
-				fl_message("Solution was found through %d steps", BackList.size() - 1);
-				//std::cout<<"iterations: "<<L<<std::endl;
-				int _Tmp;
-
-				/*
-				   for (unsigned i = 0; i < BackList.size(); i++)
-				   {
-				   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
-				   {
-				   if (k % TilesInRow == 0)std::cout << "\n";
-				   _Tmp = (int)BackList[i][k];
-				   std::cout << std::setw(2) << _Tmp << " ";
-				   }
-				   std::cout << std::endl;
-				   }
-				   */
-				Fl::add_timeout(0.25, TimerR, (void*)this);
-			}
-			else
-			{
-				fl_message("solution is not found");
-				std::cout << "solution is not found\n";
-			}
-			return 1;
-		}
-	}
 	}
 	return 0;
 }
@@ -317,7 +316,6 @@ void *Mybox::PrgsBar(void *ptr)
 	Fl_Double_Window wd(wind->x() + wind->w() / 2 - 110, wind->y() + wind->h() / 2 - 50, 220, 100, "Wait Please.");
 	wd.border(1);
 	wd.color(FL_LIGHT1);
-	//wd->begin();
 	Fl::check();
 	Fl_Progress progress(10, 50, 200, 30);
 	progress.minimum(0);
@@ -372,7 +370,6 @@ static void TimerR(void* UserData)
 	int K = Mb->TilesInRow;
 	static char* PrevArray = nullptr;
 
-	//if(Mb->BackList.size() > 0)
 	if (currentIndex >= 0)
 	{
 		char* currArray = Mb->BackList[currentIndex];

@@ -17,12 +17,12 @@ public:
 	BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize fontSize, char _data);
 	//~BoxesPreferences();
 	void SetX(int _x);
-	int GetX();
+	int GetX() const;
 	void SetY(int _y);
-	int GetY();
-	char GetData();
+	int GetY() const;
+	char GetData() const;
 	void SetData(int);
-	const char* GetRawData();
+	const char* GetRawData()const;
 };
 
 #endif
