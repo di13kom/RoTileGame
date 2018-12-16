@@ -34,14 +34,15 @@ class Mybox : public Fl_Box
 	//BFS_Class m_bfsClass;
 	std::future<std::vector<char*>> m_fut;
 
-	std::unique_ptr<BoxesPreferences>Frame;
+	BoxesPreferences Frame;
+	BoxesPreferences VisualDraggingElement;
+	bool IsInit;
+	bool IsDragging;
 	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidth;
 	int m_FontSize;
 	int Tile_Width_Height;
 	int Frame_Width_Height;
 	int TilesInRow;
-	bool IsDragging;
-	BoxesPreferences VisualDraggingElement;
 	std::vector<BoxesPreferences> Tiles;
 	std::vector<char> Solution;
 	std::vector<char*> BackList;

@@ -21,7 +21,7 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h) : Fl_Box(bt, _x, _y,
 	m_MainTableXpos = _x;
 	m_MainTableYpos = _y;
 	m_MainTableWidth = _w;
-	Frame = nullptr;
+	IsInit = false;
 	IsDragging = false;
 #ifdef __unix__//To show iterations
 	signal(SIGUSR1, Handler);
@@ -31,10 +31,10 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h) : Fl_Box(bt, _x, _y,
 void Mybox::draw()
 {
 	Fl_Box::draw();
-	if (Frame != nullptr)
+	//std::cout<<"Redraw called\n";
+	if (IsInit == true)
 	{
-		//std::cout<<"Redraw called\n";
-		fl_draw_box(FL_PLASTIC_UP_FRAME, Frame->GetX(), Frame->GetY(), Frame_Width_Height, Frame_Width_Height, Frame->GetColor());
+		//std::cout<<"Redraw called with Frame\n";
 
 		fl_font(FL_HELVETICA_BOLD, m_FontSize);
 		for (auto& item : Tiles)
@@ -44,24 +44,35 @@ void Mybox::draw()
 			fl_draw(item.GetRawData(), item.GetX(), item.GetY(), Tile_Width_Height \
 					, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
 		}
-	}
-	if(IsDragging == true)
-	{
-			fl_draw_box(FL_PLASTIC_UP_BOX
+
+		if(IsDragging == false)
+		{
+			fl_draw_box(FL_PLASTIC_UP_FRAME
+					, Frame.GetX()
+					, Frame.GetY()
+					, Frame_Width_Height
+					, Frame_Width_Height
+					, Frame.GetColor());
+		}
+		else
+		{
+			fl_draw_box(FL_PLASTIC_UP_FRAME
 					, VisualDraggingElement.GetX()
 					, VisualDraggingElement.GetY()
-					, Tile_Width_Height
-					, Tile_Width_Height
-					, FL_YELLOW);
-			fl_color(FL_BLACK);
+					, Frame_Width_Height
+					, Frame_Width_Height
+					, FL_CYAN);
+			//fl_color(FL_BLACK);
 			fl_draw(VisualDraggingElement.GetRawData()
 					, VisualDraggingElement.GetX()
 					, VisualDraggingElement.GetY()
-					, Tile_Width_Height 
-					, Tile_Width_Height
+					, Frame_Width_Height
+					, Frame_Width_Height
 					, FL_ALIGN_CENTER
 					, nullptr
 					, 2);
+		}
+
 	}
 }
 
@@ -75,6 +86,8 @@ void Mybox::SetTilesValue(int elemsCount)
 	std::vector<char> Numb(elemsCount * elemsCount);
 	int FrmPosNum;
 	color(FL_LIGHT1);
+
+	IsInit = true;
 
 	TilesInRow = elemsCount;
 	m_FontSize = s_BasicFontSize * 3 / TilesInRow;
@@ -112,7 +125,10 @@ void Mybox::SetTilesValue(int elemsCount)
 	yPos = (m_MainTableYpos + s_MainTablePadding) + yc * Tile_Width_Height + yc * s_InterTileDistance;
 
 
-	Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame_Width_Height, Frame_Width_Height, FL_RED);
+	//Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame_Width_Height, Frame_Width_Height, FL_RED);
+	Frame.SetX(xPos);
+	Frame.SetY(yPos);
+	Frame.SetColor(FL_RED);
 	wind->redraw();
 }
 
@@ -131,50 +147,63 @@ int Mybox::handle(int e)
 			{
 				if(Fl::event_button() == FL_LEFT_MOUSE)
 				{
-					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
-											{
-												return Fl::event_inside(box.GetX()
-														, box.GetY()
-														, Tile_Width_Height
-														, Tile_Width_Height);
-											});
-					if(itr != Tiles.end())
+					if(Fl::event_inside(Frame.GetX()
+								, Frame.GetY()
+								, Frame_Width_Height
+								, Frame_Width_Height))
 					{
-						//std::cout<<"Inside"<<std::endl;
-						VisualDraggingElement = *itr;
-						auto tmp = itr;
-						auto tmp0 = itr;
-
-						if(itr != Tiles.begin())
-						{
-							tmp = std::prev(itr);
-							tmp->SetColor(FL_BLUE);
-						}
-
-						if(itr != Tiles.end() - 1)
-						{
-							tmp = std::next(itr);
-							tmp->SetColor(FL_BLUE);
-						}
-
-						std::advance(tmp0, -TilesInRow);
-						tmp0->SetColor(FL_BLUE);
-
-						std::advance(itr, TilesInRow);
-						itr->SetColor(FL_BLUE);
-
 						IsDragging = true;
+						VisualDraggingElement = Frame;
 					}
-					else
-						std::cout<<"Outside"<<std::endl;
+					//					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+					//											{
+					//												return Fl::event_inside(box.GetX()
+					//														, box.GetY()
+					//														, Tile_Width_Height
+					//														, Tile_Width_Height);
+					//											});
+					//					if(itr != Tiles.end())
+					//					{
+					//						//std::cout<<"Inside"<<std::endl;
+					//						VisualDraggingElement = *itr;
+					//						auto tmp = itr;
+					//						auto tmp0 = itr;
+					//
+					//						if(itr != Tiles.begin())
+					//						{
+					//							tmp = std::prev(itr);
+					//							tmp->SetColor(FL_BLUE);
+					//						}
+					//
+					//						if(itr != Tiles.end() - 1)
+					//						{
+					//							tmp = std::next(itr);
+					//							tmp->SetColor(FL_BLUE);
+					//						}
+					//
+					//						std::advance(tmp0, -TilesInRow);
+					//						tmp0->SetColor(FL_BLUE);
+					//
+					//						std::advance(itr, TilesInRow);
+					//						itr->SetColor(FL_BLUE);
+					//
+					//						IsDragging = true;
+					//					}
+					//					else
+					//						std::cout<<"Outside"<<std::endl;
 				}
 				return 1;
 			}
 		case FL_DRAG:
 			{
-				VisualDraggingElement.SetX(Fl::event_x() - Tile_Width_Height/2);
-				VisualDraggingElement.SetY(Fl::event_y() - Tile_Width_Height/2);
-				redraw();
+				if(IsDragging)
+				{
+					//Frame.SetX(Fl::event_x() - Frame_Width_Height/2);
+					//Frame.SetY(Fl::event_y() - Frame_Width_Height/2);
+					VisualDraggingElement.SetX(Fl::event_x() - Frame_Width_Height/2);
+					VisualDraggingElement.SetY(Fl::event_y() - Frame_Width_Height/2);
+					redraw();
+				}
 			}
 			return 1;
 		case FL_RELEASE:
@@ -189,37 +218,37 @@ int Mybox::handle(int e)
 				{
 					case FL_Left:
 						//std::cout<<"Left Pressed\n";
-						xTmp = Frame->GetX() - (Tile_Width_Height + s_InterTileDistance);
+						xTmp = Frame.GetX() - (Tile_Width_Height + s_InterTileDistance);
 						if (xTmp < m_MainTableXpos + s_MainTablePadding)
 							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-						Frame->SetX(xTmp);
+						Frame.SetX(xTmp);
 						wind->redraw();
 
 						return 1;
 					case FL_Right:
 						//std::cout<<"Right Pressed\n";
-						xTmp = Frame->GetX() + (Tile_Width_Height + s_InterTileDistance);
+						xTmp = Frame.GetX() + (Tile_Width_Height + s_InterTileDistance);
 						if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
 							xTmp = m_MainTableXpos + s_MainTablePadding;
-						Frame->SetX(xTmp);
+						Frame.SetX(xTmp);
 						wind->redraw();
 
 						return 1;
 					case FL_Up:
 						//std::cout<<"Up Pressed\n";
-						yTmp = Frame->GetY() - (Tile_Width_Height + s_InterTileDistance);
+						yTmp = Frame.GetY() - (Tile_Width_Height + s_InterTileDistance);
 						if (yTmp < m_MainTableYpos + s_MainTablePadding)
 							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
-						Frame->SetY(yTmp);
+						Frame.SetY(yTmp);
 						wind->redraw();
 
 						return 1;
 					case FL_Down:
 						//std::cout<<"Down Pressed\n";
-						yTmp = Frame->GetY() + (Tile_Width_Height + s_InterTileDistance);
+						yTmp = Frame.GetY() + (Tile_Width_Height + s_InterTileDistance);
 						if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
 							yTmp = m_MainTableYpos + s_MainTablePadding;
-						Frame->SetY(yTmp);
+						Frame.SetY(yTmp);
 						wind->redraw();
 
 						return 1;
@@ -240,7 +269,7 @@ int Mybox::handle(int e)
 						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
 						std::transform(Tiles.begin(), Tiles.end(), dataStr.get(), [](const BoxesPreferences& box)
 								{
-									return box.GetData();
+								return box.GetData();
 								});
 
 						start = std::chrono::system_clock::now();
@@ -277,7 +306,7 @@ int Mybox::handle(int e)
 						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
 						std::transform(Tiles.begin(), Tiles.end(), dataStr.get(), [](const BoxesPreferences& box)
 								{
-									return box.GetData();
+								return box.GetData();
 								});
 
 						start = std::chrono::system_clock::now();
@@ -341,8 +370,8 @@ void Mybox::CheckSolution()
 int Mybox::GetFrameLeftUpperPosition()
 {
 	int retVal = 0;
-	int Row = Frame->GetY();
-	int Col = Frame->GetX();
+	int Row = Frame.GetY();
+	int Col = Frame.GetX();
 	for (int i = 0; i < TilesInRow*TilesInRow; i++)
 	{
 		//std::cout<<"enter to loop num:"<<i<<"\n";
@@ -360,8 +389,8 @@ void Mybox::SetFramPositionByTileIndex(int ind)
 	int x = Tiles[ind].GetX();
 	int y = Tiles[ind].GetY();
 
-	Frame->SetX(x - s_FramePadding);
-	Frame->SetY(y - s_FramePadding);
+	Frame.SetX(x - s_FramePadding);
+	Frame.SetY(y - s_FramePadding);
 }
 
 void Mybox::TurnRight_(int bxInd)
@@ -494,7 +523,7 @@ void callBack(Fl_Widget *wg, void *inp)
 	auto* mb = dynamic_cast<Mybox*>(wind->child(1));
 	mb->SetTilesValue(vl);
 	mb->show();
-	wind->flush();
+	//wind->flush();
 	wg->parent()->hide();
 }
 
