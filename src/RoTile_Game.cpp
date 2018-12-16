@@ -22,6 +22,7 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h) : Fl_Box(bt, _x, _y,
 	m_MainTableYpos = _y;
 	m_MainTableWidth = _w;
 	Frame = nullptr;
+	IsDragging = false;
 #ifdef __unix__//To show iterations
 	signal(SIGUSR1, Handler);
 #endif // __unix__//To show 
@@ -33,16 +34,34 @@ void Mybox::draw()
 	if (Frame != nullptr)
 	{
 		//std::cout<<"Redraw called\n";
-		fl_draw_box(FL_PLASTIC_UP_FRAME, Frame->GetX(), Frame->GetY(), Frame_Width_Height, Frame_Width_Height, FL_RED);
+		fl_draw_box(FL_PLASTIC_UP_FRAME, Frame->GetX(), Frame->GetY(), Frame_Width_Height, Frame_Width_Height, Frame->GetColor());
 
 		fl_font(FL_HELVETICA_BOLD, m_FontSize);
 		for (auto& item : Tiles)
 		{
-			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY(), Tile_Width_Height, Tile_Width_Height, FL_GREEN);
+			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY(), Tile_Width_Height, Tile_Width_Height, item.GetColor());
 			fl_color(FL_BLACK);
 			fl_draw(item.GetRawData(), item.GetX(), item.GetY(), Tile_Width_Height \
 					, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
 		}
+	}
+	if(IsDragging == true)
+	{
+			fl_draw_box(FL_PLASTIC_UP_BOX
+					, VisualDraggingElement.GetX()
+					, VisualDraggingElement.GetY()
+					, Tile_Width_Height
+					, Tile_Width_Height
+					, FL_YELLOW);
+			fl_color(FL_BLACK);
+			fl_draw(VisualDraggingElement.GetRawData()
+					, VisualDraggingElement.GetX()
+					, VisualDraggingElement.GetY()
+					, Tile_Width_Height 
+					, Tile_Width_Height
+					, FL_ALIGN_CENTER
+					, nullptr
+					, 2);
 	}
 }
 
@@ -80,7 +99,7 @@ void Mybox::SetTilesValue(int elemsCount)
 			xPos = (m_MainTableXpos + s_MainTablePadding + s_FramePadding) + j * s_InterTileDistance + j * Tile_Width_Height;
 			yPos = (m_MainTableYpos + s_MainTablePadding + s_FramePadding) + i * s_InterTileDistance + i * Tile_Width_Height;
 
-			Tiles.emplace_back(BoxesPreferences(xPos, yPos, Tile_Width_Height, Tile_Width_Height, s_BasicFontSize * 3 / TilesInRow, Numb[p++]));
+			Tiles.emplace_back(BoxesPreferences(xPos, yPos, Tile_Width_Height, Tile_Width_Height, FL_GREEN, s_BasicFontSize * 3 / TilesInRow, Numb[p++]));
 		}
 	}
 
@@ -93,7 +112,7 @@ void Mybox::SetTilesValue(int elemsCount)
 	yPos = (m_MainTableYpos + s_MainTablePadding) + yc * Tile_Width_Height + yc * s_InterTileDistance;
 
 
-	Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame_Width_Height, Frame_Width_Height);
+	Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame_Width_Height, Frame_Width_Height, FL_RED);
 	wind->redraw();
 }
 
@@ -108,6 +127,62 @@ int Mybox::handle(int e)
 	std::chrono::duration<double> diff;
 	switch (e)
 	{
+		case FL_PUSH:
+			{
+				if(Fl::event_button() == FL_LEFT_MOUSE)
+				{
+					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+											{
+												return Fl::event_inside(box.GetX()
+														, box.GetY()
+														, Tile_Width_Height
+														, Tile_Width_Height);
+											});
+					if(itr != Tiles.end())
+					{
+						//std::cout<<"Inside"<<std::endl;
+						VisualDraggingElement = *itr;
+						auto tmp = itr;
+						auto tmp0 = itr;
+
+						if(itr != Tiles.begin())
+						{
+							tmp = std::prev(itr);
+							tmp->SetColor(FL_BLUE);
+						}
+
+						if(itr != Tiles.end() - 1)
+						{
+							tmp = std::next(itr);
+							tmp->SetColor(FL_BLUE);
+						}
+
+						std::advance(tmp0, -TilesInRow);
+						tmp0->SetColor(FL_BLUE);
+
+						std::advance(itr, TilesInRow);
+						itr->SetColor(FL_BLUE);
+
+						IsDragging = true;
+					}
+					else
+						std::cout<<"Outside"<<std::endl;
+				}
+				return 1;
+			}
+		case FL_DRAG:
+			{
+				VisualDraggingElement.SetX(Fl::event_x() - Tile_Width_Height/2);
+				VisualDraggingElement.SetY(Fl::event_y() - Tile_Width_Height/2);
+				redraw();
+			}
+			return 1;
+		case FL_RELEASE:
+			{
+				IsDragging = false;
+				redraw();
+			}
+			return 1;
 		case FL_SHORTCUT:
 			{
 				switch (Fl::event_key())

@@ -1,17 +1,19 @@
 #include "BoxesPreferences.h"
 
-BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w)
+BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Color clr)
 {
 	X = _x;
 	Y = _y;
+	Color = clr;
 	//Box = std::make_unique<Fl_Box>(FL_PLASTIC_UP_FRAME, X, Y, _h, _w, nullptr);
 }
 
-BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Fontsize fontSize, char _data)
+BoxesPreferences::BoxesPreferences(int _x, int _y, int _h, int _w, Fl_Color clr, Fl_Fontsize fontSize, char _data)
 {
 	SetData(_data);
 	X = _x;
 	Y = _y;
+	Color = clr;
 	//std::cout<<"A: "<<std::addressof(str)<<std::endl;
 }
 
@@ -50,4 +52,14 @@ void BoxesPreferences::SetData(int _data)
 const char* BoxesPreferences::GetRawData() const
 {
 	return str.c_str();
+}
+
+Fl_Color BoxesPreferences::GetColor() const
+{
+	return Color;
+}
+
+void BoxesPreferences::SetColor(const Fl_Color& clr)
+{
+	Color = clr;
 }

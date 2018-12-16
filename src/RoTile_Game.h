@@ -40,6 +40,8 @@ class Mybox : public Fl_Box
 	int Tile_Width_Height;
 	int Frame_Width_Height;
 	int TilesInRow;
+	bool IsDragging;
+	BoxesPreferences VisualDraggingElement;
 	std::vector<BoxesPreferences> Tiles;
 	std::vector<char> Solution;
 	std::vector<char*> BackList;
