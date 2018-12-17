@@ -35,10 +35,12 @@ class Mybox : public Fl_Box
 	std::future<std::vector<char*>> m_fut;
 
 	BoxesPreferences Frame;
-	BoxesPreferences VisualDraggingElement;
+	BoxesPreferences VisualDragFrame;
+	BoxesPreferences VisualDragTile;
 	bool IsInit;
-	bool IsDragging;
-	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidth;
+	bool IsFrameDragging;
+	bool IsTileDragging;
+	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidthHeight;
 	int m_FontSize;
 	int Tile_Width_Height;
 	int Frame_Width_Height;
@@ -57,7 +59,7 @@ class Mybox : public Fl_Box
 	void *PrgsBar(void *ptr);
 	void SetFramPositionByTileIndex(int);
 public:
-	Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h);
+	Mybox(Fl_Boxtype bt, int, int, int);
 	~Mybox();
 	void SetTilesValue(int elemsCount);
 };

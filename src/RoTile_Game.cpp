@@ -15,14 +15,14 @@ Mybox::~Mybox()
 {
 }
 
-Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _w, int _h) : Fl_Box(bt, _x, _y, _w, _h, "")
+Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _wh) : Fl_Box(bt, _x, _y, _wh, _wh, "")
 {
 
 	m_MainTableXpos = _x;
 	m_MainTableYpos = _y;
-	m_MainTableWidth = _w;
+	m_MainTableWidthHeight = _wh;
 	IsInit = false;
-	IsDragging = false;
+	IsFrameDragging = false;
 #ifdef __unix__//To show iterations
 	signal(SIGUSR1, Handler);
 #endif // __unix__//To show 
@@ -45,7 +45,7 @@ void Mybox::draw()
 					, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
 		}
 
-		if(IsDragging == false)
+		if(IsFrameDragging == false)
 		{
 			fl_draw_box(FL_PLASTIC_UP_FRAME
 					, Frame.GetX()
@@ -57,15 +57,15 @@ void Mybox::draw()
 		else
 		{
 			fl_draw_box(FL_PLASTIC_UP_FRAME
-					, VisualDraggingElement.GetX()
-					, VisualDraggingElement.GetY()
+					, VisualDragFrame.GetX()
+					, VisualDragFrame.GetY()
 					, Frame_Width_Height
 					, Frame_Width_Height
 					, FL_CYAN);
 			//fl_color(FL_BLACK);
-			fl_draw(VisualDraggingElement.GetRawData()
-					, VisualDraggingElement.GetX()
-					, VisualDraggingElement.GetY()
+			fl_draw(VisualDragFrame.GetRawData()
+					, VisualDragFrame.GetX()
+					, VisualDragFrame.GetY()
 					, Frame_Width_Height
 					, Frame_Width_Height
 					, FL_ALIGN_CENTER
@@ -101,7 +101,7 @@ void Mybox::SetTilesValue(int elemsCount)
 	std::mt19937 g(rd());
 	std::shuffle(Numb.begin(), Numb.end(), g);
 	//
-	Tile_Width_Height = ((m_MainTableWidth - s_MainTablePadding * 2) - (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
+	Tile_Width_Height = ((m_MainTableWidthHeight - s_MainTablePadding * 2) - (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
 	Frame_Width_Height = Tile_Width_Height * 2 + (s_FramePadding * 2) + s_InterTileDistance;
 
 	//std::cout<<"Tile_Width_Height:"<<Tile_Width_Height<<"\n";
@@ -152,75 +152,90 @@ int Mybox::handle(int e)
 								, Frame_Width_Height
 								, Frame_Width_Height))
 					{
-						IsDragging = true;
-						VisualDraggingElement = Frame;
+						IsFrameDragging = true;
+						VisualDragFrame = Frame;
 					}
-//					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
-//											{
-//												return Fl::event_inside(box.GetX()
-//														, box.GetY()
-//														, Tile_Width_Height
-//														, Tile_Width_Height);
-//											});
-//					if(itr != Tiles.end())
-//					{
-//						//std::cout<<"Inside"<<std::endl;
-//						VisualDraggingElement = *itr;
-//						auto tmp = itr;
-//						auto tmp0 = itr;
-//
-//						if(itr != Tiles.begin())
-//						{
-//							tmp = std::prev(itr);
-//							tmp->SetColor(FL_BLUE);
-//						}
-//
-//						if(itr != Tiles.end() - 1)
-//						{
-//							tmp = std::next(itr);
-//							tmp->SetColor(FL_BLUE);
-//						}
-//
-//						std::advance(tmp0, -TilesInRow);
-//						tmp0->SetColor(FL_BLUE);
-//
-//						std::advance(itr, TilesInRow);
-//						itr->SetColor(FL_BLUE);
-//
-//						IsDragging = true;
-//					}
-//					else
-//						std::cout<<"Outside"<<std::endl;
+				}
+				else if(Fl::event_button() == FL_RIGHT_MOUSE)
+				{
+					auto itr = std::find_if(Tiles.begin()
+								, Tiles.end()
+								, [=](const BoxesPreferences& box)
+									{
+										return Fl::event_inside(box.GetX()
+												, box.GetY()
+												, Tile_Width_Height
+												, Tile_Width_Height)
+										&& Fl::event_inside(Frame.GetX()
+												, Frame.GetY()
+												, Frame_Width_Height
+												, Frame_Width_Height);
+									});
+					/*
+					if(itr != Tiles.end())
+					{
+						//std::cout<<"Inside"<<std::endl;
+						VisualDragTile = *itr;
+						auto tmp = itr;
+						auto tmp0 = itr;
+
+						if(itr != Tiles.begin())
+						{
+							tmp = std::prev(itr);
+							tmp->SetColor(FL_BLUE);
+						}
+
+						if(itr != Tiles.end() - 1)
+						{
+							tmp = std::next(itr);
+							tmp->SetColor(FL_BLUE);
+						}
+
+						std::advance(tmp0, -TilesInRow);
+						tmp0->SetColor(FL_BLUE);
+
+						std::advance(itr, TilesInRow);
+						itr->SetColor(FL_BLUE);
+
+						IsTileDragging = true;
+						redraw();
+					}
+					else
+						std::cout<<"Outside"<<std::endl;
+					*/
 				}
 				return 1;
 			}
 		case FL_DRAG:
 			{
-				if(IsDragging)
+				if(IsFrameDragging)
 				{
-					VisualDraggingElement.SetX(Fl::event_x() - Frame_Width_Height/2);
-					VisualDraggingElement.SetY(Fl::event_y() - Frame_Width_Height/2);
+					VisualDragFrame.SetX(Fl::event_x() - Frame_Width_Height/2);
+					VisualDragFrame.SetY(Fl::event_y() - Frame_Width_Height/2);
 					redraw();
 				}
 			}
 			return 1;
 		case FL_RELEASE:
 			{
-				auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+				if(IsFrameDragging)
+				{
+					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
 						{
-						return Fl::event_inside(box.GetX()
+							return Fl::event_inside(box.GetX()
 								, box.GetY()
 								, Frame_Width_Height - s_FramePadding*2
 								, Frame_Width_Height - s_FramePadding*2);
 						});
-				if(itr != Tiles.end())
-				{
-					//std::cout<<"Frame found\n";
-					Frame.SetX(itr->GetX() - s_FramePadding);
-					Frame.SetY(itr->GetY() - s_FramePadding);
+					if(itr != Tiles.end())
+					{
+						//std::cout<<"Frame found\n";
+						Frame.SetX(itr->GetX() - s_FramePadding);
+						Frame.SetY(itr->GetY() - s_FramePadding);
+					}
+					IsFrameDragging = false;
+					redraw();
 				}
-				IsDragging = false;
-				redraw();
 			}
 			return 1;
 		case FL_SHORTCUT:
@@ -547,7 +562,7 @@ int main()
 	menu.add("&File/&Open", "^o", nullptr);
 	menu.add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
 	wind = &windowX;
-	Mybox Mb(FL_DOWN_BOX, 150, 50, 500, 500);
+	Mybox Mb(FL_DOWN_BOX, 150, 50, 500);
 	windowX.end();
 	windowX.show();
 
