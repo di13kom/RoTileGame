@@ -155,42 +155,42 @@ int Mybox::handle(int e)
 						IsDragging = true;
 						VisualDraggingElement = Frame;
 					}
-					//					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
-					//											{
-					//												return Fl::event_inside(box.GetX()
-					//														, box.GetY()
-					//														, Tile_Width_Height
-					//														, Tile_Width_Height);
-					//											});
-					//					if(itr != Tiles.end())
-					//					{
-					//						//std::cout<<"Inside"<<std::endl;
-					//						VisualDraggingElement = *itr;
-					//						auto tmp = itr;
-					//						auto tmp0 = itr;
-					//
-					//						if(itr != Tiles.begin())
-					//						{
-					//							tmp = std::prev(itr);
-					//							tmp->SetColor(FL_BLUE);
-					//						}
-					//
-					//						if(itr != Tiles.end() - 1)
-					//						{
-					//							tmp = std::next(itr);
-					//							tmp->SetColor(FL_BLUE);
-					//						}
-					//
-					//						std::advance(tmp0, -TilesInRow);
-					//						tmp0->SetColor(FL_BLUE);
-					//
-					//						std::advance(itr, TilesInRow);
-					//						itr->SetColor(FL_BLUE);
-					//
-					//						IsDragging = true;
-					//					}
-					//					else
-					//						std::cout<<"Outside"<<std::endl;
+//					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+//											{
+//												return Fl::event_inside(box.GetX()
+//														, box.GetY()
+//														, Tile_Width_Height
+//														, Tile_Width_Height);
+//											});
+//					if(itr != Tiles.end())
+//					{
+//						//std::cout<<"Inside"<<std::endl;
+//						VisualDraggingElement = *itr;
+//						auto tmp = itr;
+//						auto tmp0 = itr;
+//
+//						if(itr != Tiles.begin())
+//						{
+//							tmp = std::prev(itr);
+//							tmp->SetColor(FL_BLUE);
+//						}
+//
+//						if(itr != Tiles.end() - 1)
+//						{
+//							tmp = std::next(itr);
+//							tmp->SetColor(FL_BLUE);
+//						}
+//
+//						std::advance(tmp0, -TilesInRow);
+//						tmp0->SetColor(FL_BLUE);
+//
+//						std::advance(itr, TilesInRow);
+//						itr->SetColor(FL_BLUE);
+//
+//						IsDragging = true;
+//					}
+//					else
+//						std::cout<<"Outside"<<std::endl;
 				}
 				return 1;
 			}
@@ -198,8 +198,6 @@ int Mybox::handle(int e)
 			{
 				if(IsDragging)
 				{
-					//Frame.SetX(Fl::event_x() - Frame_Width_Height/2);
-					//Frame.SetY(Fl::event_y() - Frame_Width_Height/2);
 					VisualDraggingElement.SetX(Fl::event_x() - Frame_Width_Height/2);
 					VisualDraggingElement.SetY(Fl::event_y() - Frame_Width_Height/2);
 					redraw();
@@ -208,6 +206,19 @@ int Mybox::handle(int e)
 			return 1;
 		case FL_RELEASE:
 			{
+				auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+						{
+						return Fl::event_inside(box.GetX()
+								, box.GetY()
+								, Frame_Width_Height - s_FramePadding*2
+								, Frame_Width_Height - s_FramePadding*2);
+						});
+				if(itr != Tiles.end())
+				{
+					//std::cout<<"Frame found\n";
+					Frame.SetX(itr->GetX() - s_FramePadding);
+					Frame.SetY(itr->GetY() - s_FramePadding);
+				}
 				IsDragging = false;
 				redraw();
 			}
