@@ -23,6 +23,7 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _wh) : Fl_Box(bt, _x, _y, _wh, _
 	m_MainTableWidthHeight = _wh;
 	IsInit = false;
 	IsFrameDragging = false;
+	IsTileDragging = false;
 #ifdef __unix__//To show iterations
 	signal(SIGUSR1, Handler);
 #endif // __unix__//To show 
@@ -71,6 +72,15 @@ void Mybox::draw()
 					, FL_ALIGN_CENTER
 					, nullptr
 					, 2);
+		}
+		if(IsTileDragging == true)
+		{
+			fl_draw_box(FL_PLASTIC_UP_BOX
+					, VisualDragTile.GetX()
+					, VisualDragTile.GetY()
+					, Tile_Width_Height
+					, Tile_Width_Height
+					, FL_CYAN);
 		}
 
 	}
@@ -171,38 +181,68 @@ int Mybox::handle(int e)
 												, Frame_Width_Height
 												, Frame_Width_Height);
 									});
-					/*
 					if(itr != Tiles.end())
 					{
+						bool IsLeftTile;
+						bool IsUpperTile;
+
+						//auto LRpairItr = itr;
+						auto ULpairItr = itr;
+
+						//if(prevIter->GetX()>Frame.GetX() && prevIter->GetX()<Frame.GetX() + Frame_Width_Height)
+						if(itr->GetX()>Frame.GetX() + Frame_Width_Height/2)
+						{
+							//std::cout<<"right tile\n";
+							IsLeftTile = false;
+						}
+						else
+						{
+							//std::cout<<"left tile\n";
+							IsLeftTile = true;
+						}
+						if(itr->GetY()<Frame.GetY() + Frame_Width_Height/2)
+						{
+							IsUpperTile = true;
+							//std::cout<<"upper tile\n";
+						}
+						else
+						{
+							IsUpperTile = false;
+							//std::cout<<"lower tile\n";
+						}
+
+						if(IsLeftTile == true)
+						{
+							auto LRpairItr = std::next(itr);
+							LRpairItr->SetColor(FL_BLUE);
+
+						}
+						else
+						{
+							auto LRpairItr = std::prev(itr);
+							LRpairItr->SetColor(FL_BLUE);
+
+						}
+						if(IsUpperTile == true)
+						{
+							std::advance(ULpairItr, TilesInRow);
+							ULpairItr->SetColor(FL_BLUE);
+						}
+						else
+						{
+							std::advance(ULpairItr, -TilesInRow);
+							ULpairItr->SetColor(FL_BLUE);
+						}
+						redraw();
+
 						//std::cout<<"Inside"<<std::endl;
+
 						VisualDragTile = *itr;
-						auto tmp = itr;
-						auto tmp0 = itr;
-
-						if(itr != Tiles.begin())
-						{
-							tmp = std::prev(itr);
-							tmp->SetColor(FL_BLUE);
-						}
-
-						if(itr != Tiles.end() - 1)
-						{
-							tmp = std::next(itr);
-							tmp->SetColor(FL_BLUE);
-						}
-
-						std::advance(tmp0, -TilesInRow);
-						tmp0->SetColor(FL_BLUE);
-
-						std::advance(itr, TilesInRow);
-						itr->SetColor(FL_BLUE);
 
 						IsTileDragging = true;
-						redraw();
 					}
-					else
-						std::cout<<"Outside"<<std::endl;
-					*/
+					//else
+					//	std::cout<<"Outside"<<std::endl;
 				}
 				return 1;
 			}
@@ -212,6 +252,12 @@ int Mybox::handle(int e)
 				{
 					VisualDragFrame.SetX(Fl::event_x() - Frame_Width_Height/2);
 					VisualDragFrame.SetY(Fl::event_y() - Frame_Width_Height/2);
+					redraw();
+				}
+				if(IsTileDragging)
+				{
+					VisualDragTile.SetX(Fl::event_x() - Tile_Width_Height/2);
+					VisualDragTile.SetY(Fl::event_y() - Tile_Width_Height/2);
 					redraw();
 				}
 			}
@@ -234,6 +280,18 @@ int Mybox::handle(int e)
 						Frame.SetY(itr->GetY() - s_FramePadding);
 					}
 					IsFrameDragging = false;
+					redraw();
+				}
+				if(IsTileDragging)
+				{
+					//auto LRpairItr = std::next(itr);
+					//LRpairItr->SetColor(FL_BLUE);
+					for(auto& vl : Tiles)
+					{
+						vl.SetColor(FL_GREEN);
+					}
+
+					IsTileDragging = false;
 					redraw();
 				}
 			}
