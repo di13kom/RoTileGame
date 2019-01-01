@@ -40,7 +40,8 @@ void Mybox::draw()
 		fl_font(FL_HELVETICA_BOLD, m_FontSize);
 		for (auto& item : Tiles)
 		{
-			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY(), Tile_Width_Height, Tile_Width_Height, item.GetColor());
+			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY()
+					, Tile_Width_Height, Tile_Width_Height, item.GetColor());
 			fl_color(FL_BLACK);
 			fl_draw(item.GetRawData(), item.GetX(), item.GetY(), Tile_Width_Height \
 					, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
@@ -111,7 +112,8 @@ void Mybox::SetTilesValue(int elemsCount)
 	std::mt19937 g(rd());
 	std::shuffle(Numb.begin(), Numb.end(), g);
 	//
-	Tile_Width_Height = ((m_MainTableWidthHeight - s_MainTablePadding * 2) - (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
+	Tile_Width_Height = ((m_MainTableWidthHeight - s_MainTablePadding * 2)\
+				- (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
 	Frame_Width_Height = Tile_Width_Height * 2 + (s_FramePadding * 2) + s_InterTileDistance;
 
 	//std::cout<<"Tile_Width_Height:"<<Tile_Width_Height<<"\n";
@@ -119,10 +121,18 @@ void Mybox::SetTilesValue(int elemsCount)
 	{
 		for (int j = 0; j < TilesInRow; j++)
 		{
-			xPos = (m_MainTableXpos + s_MainTablePadding + s_FramePadding) + j * s_InterTileDistance + j * Tile_Width_Height;
-			yPos = (m_MainTableYpos + s_MainTablePadding + s_FramePadding) + i * s_InterTileDistance + i * Tile_Width_Height;
+			xPos = (m_MainTableXpos + s_MainTablePadding + s_FramePadding)\
+			       + j * s_InterTileDistance + j * Tile_Width_Height;
+			yPos = (m_MainTableYpos + s_MainTablePadding + s_FramePadding)\
+			       + i * s_InterTileDistance + i * Tile_Width_Height;
 
-			Tiles.emplace_back(BoxesPreferences(xPos, yPos, Tile_Width_Height, Tile_Width_Height, FL_GREEN, s_BasicFontSize * 3 / TilesInRow, Numb[p++]));
+			Tiles.emplace_back(BoxesPreferences(xPos
+						, yPos
+						, Tile_Width_Height
+						, Tile_Width_Height
+						, FL_GREEN
+						, s_BasicFontSize * 3 / TilesInRow
+						, Numb[p++]));
 		}
 	}
 
@@ -186,10 +196,10 @@ int Mybox::handle(int e)
 						bool IsLeftTile;
 						bool IsUpperTile;
 
-						//auto LRpairItr = itr;
-						auto ULpairItr = itr;
+						std::vector<BoxesPreferences>::iterator ULpairItr = itr;
 
-						//if(prevIter->GetX()>Frame.GetX() && prevIter->GetX()<Frame.GetX() + Frame_Width_Height)
+						//if(prevIter->GetX()>Frame.GetX() 
+						//&& prevIter->GetX()<Frame.GetX() + Frame_Width_Height)
 						if(itr->GetX()>Frame.GetX() + Frame_Width_Height/2)
 						{
 							//std::cout<<"right tile\n";
@@ -304,7 +314,8 @@ int Mybox::handle(int e)
 						//std::cout<<"Left Pressed\n";
 						xTmp = Frame.GetX() - (Tile_Width_Height + s_InterTileDistance);
 						if (xTmp < m_MainTableXpos + s_MainTablePadding)
-							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
+							       * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
 						Frame.SetX(xTmp);
 						wind->redraw();
 
@@ -312,7 +323,8 @@ int Mybox::handle(int e)
 					case FL_Right:
 						//std::cout<<"Right Pressed\n";
 						xTmp = Frame.GetX() + (Tile_Width_Height + s_InterTileDistance);
-						if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+						if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
+								* s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
 							xTmp = m_MainTableXpos + s_MainTablePadding;
 						Frame.SetX(xTmp);
 						wind->redraw();
@@ -322,7 +334,8 @@ int Mybox::handle(int e)
 						//std::cout<<"Up Pressed\n";
 						yTmp = Frame.GetY() - (Tile_Width_Height + s_InterTileDistance);
 						if (yTmp < m_MainTableYpos + s_MainTablePadding)
-							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
+							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
+							       * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height;
 						Frame.SetY(yTmp);
 						wind->redraw();
 
@@ -330,19 +343,20 @@ int Mybox::handle(int e)
 					case FL_Down:
 						//std::cout<<"Down Pressed\n";
 						yTmp = Frame.GetY() + (Tile_Width_Height + s_InterTileDistance);
-						if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2) * s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
+						if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
+								* s_InterTileDistance + (TilesInRow - 2)*Tile_Width_Height))
 							yTmp = m_MainTableYpos + s_MainTablePadding;
 						Frame.SetY(yTmp);
 						wind->redraw();
 
 						return 1;
-					case 120:
+					case 'x':
 						//std::cout<<"x pressed\n";
 						TurnRight_(GetFrameLeftUpperPosition());
 						wind->redraw();
 						CheckSolution();
 						return 1;
-					case 122:
+					case 'z':
 						//std::cout<<"z pressed\n";
 						TurnLeft_(GetFrameLeftUpperPosition());
 						wind->redraw();
@@ -351,15 +365,20 @@ int Mybox::handle(int e)
 					case 'a':
 
 						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
-						std::transform(Tiles.begin(), Tiles.end(), dataStr.get(), [](const BoxesPreferences& box)
+						std::transform(Tiles.begin()
+								, Tiles.end()
+								, dataStr.get()
+								, [](const BoxesPreferences& box)
 								{
-								return box.GetData();
+									return box.GetData();
 								});
 
 						start = std::chrono::system_clock::now();
 
 						m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
-						m_fut = std::async(&BFS_Class::FindSolution, dynamic_cast<BFS_Class*>(m_fsClass.get()), dataStr.get());
+						m_fut = std::async(&BFS_Class::FindSolution
+									, dynamic_cast<BFS_Class*>(m_fsClass.get())
+									, dataStr.get());
 
 						PrgsBar(nullptr);
 						BackList = m_fut.get();
@@ -370,7 +389,8 @@ int Mybox::handle(int e)
 
 						if (BackList.size() > 0)
 						{
-							std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
+							std::cout << "Solution was found through " \
+								<< BackList.size() - 1 << "steps in BackList\n";
 							fl_message("Solution was found through %d steps", BackList.size() - 1);
 							//std::cout<<"iterations: "<<L<<std::endl;
 							//for(unsigned i=0;i<BackList.size();i++)
@@ -388,15 +408,20 @@ int Mybox::handle(int e)
 						return 1;
 					case 's':
 						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
-						std::transform(Tiles.begin(), Tiles.end(), dataStr.get(), [](const BoxesPreferences& box)
+						std::transform(Tiles.begin()
+								, Tiles.end()
+								, dataStr.get()
+								, [](const BoxesPreferences& box)
 								{
-								return box.GetData();
+									return box.GetData();
 								});
 
 						start = std::chrono::system_clock::now();
 
 						m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
-						m_fut = std::async(&EFS_Class::FindSolution, dynamic_cast<EFS_Class*>(m_fsClass.get()), dataStr.get());
+						m_fut = std::async(&EFS_Class::FindSolution
+									, dynamic_cast<EFS_Class*>(m_fsClass.get())
+									, dataStr.get());
 
 						PrgsBar(nullptr);
 						BackList = m_fut.get();
@@ -406,8 +431,10 @@ int Mybox::handle(int e)
 						std::cout << "Time elapsed: " << diff.count()<<std::endl;
 						if (BackList.size() > 0)
 						{
-							std::cout << "Solution was found through " << BackList.size() - 1 << "steps in BackList\n";
-							//std::cout<<"Solution was find through "<<UsedList.size()<<"steps in UsedList\n";
+							std::cout << "Solution was found through "\
+							       	<< BackList.size() - 1 << "steps in BackList\n";
+							//std::cout<<"Solution was find through "\
+							//<<UsedList.size()<<"steps in UsedList\n";
 							fl_message("Solution was found through %d steps", BackList.size() - 1);
 							//std::cout<<"iterations: "<<L<<std::endl;
 							int _Tmp;
