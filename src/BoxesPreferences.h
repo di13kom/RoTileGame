@@ -1,8 +1,6 @@
 #ifndef BOXESPREFERENCES_H
 #define BOXESPREFERENCES_H
 #include <iostream>
-#include <array>
-#include <memory>
 #include <FL/Fl_Box.H>
 #include <string>
 class BoxesPreferences

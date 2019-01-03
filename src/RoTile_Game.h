@@ -7,17 +7,16 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Int_Input.H>
 #include <FL/Fl_Return_Button.H>
-#include <ctime>        // std::time
-#include <cstdlib>
 #include <signal.h>
 #include "BFS_Lib.h"
 #include "A_Star_Lib.h"
+#include "BoxesPreferences.h"
+#include "GameStateEnum.h"
 #include <thread>
 #include <future>
 #include <array>
 #include <random>
 #include <algorithm>
-#include "BoxesPreferences.h"
 
 static void TimerR(void*);//To preserve static
 
@@ -25,7 +24,6 @@ static int s_FramePadding = 5;
 static int s_InterTileDistance = 10;
 static int s_MainTablePadding = 35;
 static int s_BasicFontSize = 40;
-
 
 class Mybox : public Fl_Box
 {
@@ -37,9 +35,10 @@ class Mybox : public Fl_Box
 	BoxesPreferences Frame;
 	BoxesPreferences VisualDragFrame;
 	BoxesPreferences VisualDragTile;
-	bool IsInit;
-	bool IsFrameDragging;
-	bool IsTileDragging;
+	GameStateEnum GameState;
+	//bool IsInit;
+	//bool IsFrameDragging;
+	//bool IsTileDragging;
 	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidthHeight;
 	int m_FontSize;
 	int Tile_Width_Height;

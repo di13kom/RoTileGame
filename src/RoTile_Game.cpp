@@ -21,9 +21,7 @@ Mybox::Mybox(Fl_Boxtype bt, int _x, int _y, int _wh) : Fl_Box(bt, _x, _y, _wh, _
 	m_MainTableXpos = _x;
 	m_MainTableYpos = _y;
 	m_MainTableWidthHeight = _wh;
-	IsInit = false;
-	IsFrameDragging = false;
-	IsTileDragging = false;
+	GameState = GameStateEnum::Empty;
 #ifdef __unix__//To show iterations
 	signal(SIGUSR1, Handler);
 #endif // __unix__//To show 
@@ -33,7 +31,7 @@ void Mybox::draw()
 {
 	Fl_Box::draw();
 	//std::cout<<"Redraw called\n";
-	if (IsInit == true)
+	if (GameState >= GameStateEnum::Initialization)
 	{
 		//std::cout<<"Redraw called with Frame\n";
 
@@ -47,7 +45,7 @@ void Mybox::draw()
 					, Tile_Width_Height, FL_ALIGN_CENTER, nullptr, 2);
 		}
 
-		if(IsFrameDragging == false)
+		if(GameState != GameStateEnum::FrameDragging)
 		{
 			fl_draw_box(FL_PLASTIC_UP_FRAME
 					, Frame.GetX()
@@ -74,7 +72,7 @@ void Mybox::draw()
 					, nullptr
 					, 2);
 		}
-		if(IsTileDragging == true)
+		if(GameState == GameStateEnum::TileDragging)
 		{
 			fl_draw_box(FL_PLASTIC_UP_BOX
 					, VisualDragTile.GetX()
@@ -98,7 +96,7 @@ void Mybox::SetTilesValue(int elemsCount)
 	int FrmPosNum;
 	color(FL_LIGHT1);
 
-	IsInit = true;
+	GameState = GameStateEnum::Initialization;
 
 	TilesInRow = elemsCount;
 	m_FontSize = s_BasicFontSize * 3 / TilesInRow;
@@ -172,7 +170,7 @@ int Mybox::handle(int e)
 								, Frame_Width_Height
 								, Frame_Width_Height))
 					{
-						IsFrameDragging = true;
+						GameState = GameStateEnum::FrameDragging;
 						VisualDragFrame = Frame;
 					}
 				}
@@ -249,7 +247,7 @@ int Mybox::handle(int e)
 
 						VisualDragTile = *itr;
 
-						IsTileDragging = true;
+						GameState = GameStateEnum::TileDragging;
 					}
 					//else
 					//	std::cout<<"Outside"<<std::endl;
@@ -258,54 +256,68 @@ int Mybox::handle(int e)
 			}
 		case FL_DRAG:
 			{
-				if(IsFrameDragging)
+				switch(GameState)
 				{
-					VisualDragFrame.SetX(Fl::event_x() - Frame_Width_Height/2);
-					VisualDragFrame.SetY(Fl::event_y() - Frame_Width_Height/2);
-					redraw();
+					case GameStateEnum::FrameDragging:
+					{
+						VisualDragFrame.SetX(Fl::event_x() - Frame_Width_Height/2);
+						VisualDragFrame.SetY(Fl::event_y() - Frame_Width_Height/2);
+						redraw();
+						break;
+					}
+					case GameStateEnum::TileDragging:
+					{
+						VisualDragTile.SetX(Fl::event_x() - Tile_Width_Height/2);
+						VisualDragTile.SetY(Fl::event_y() - Tile_Width_Height/2);
+						redraw();
+						break;
+					}
+					default:
+						break;
 				}
-				if(IsTileDragging)
-				{
-					VisualDragTile.SetX(Fl::event_x() - Tile_Width_Height/2);
-					VisualDragTile.SetY(Fl::event_y() - Tile_Width_Height/2);
-					redraw();
-				}
+				return 1;
 			}
-			return 1;
 		case FL_RELEASE:
 			{
-				if(IsFrameDragging)
+				switch(GameState)
 				{
-					auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+					case GameStateEnum::FrameDragging:
+					{
+						auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+							{
+								return Fl::event_inside(box.GetX()
+									, box.GetY()
+									, Frame_Width_Height - s_FramePadding*2
+									, Frame_Width_Height - s_FramePadding*2);
+							});
+						if(itr != Tiles.end())
 						{
-							return Fl::event_inside(box.GetX()
-								, box.GetY()
-								, Frame_Width_Height - s_FramePadding*2
-								, Frame_Width_Height - s_FramePadding*2);
-						});
-					if(itr != Tiles.end())
-					{
-						//std::cout<<"Frame found\n";
-						Frame.SetX(itr->GetX() - s_FramePadding);
-						Frame.SetY(itr->GetY() - s_FramePadding);
+							//std::cout<<"Frame found\n";
+							Frame.SetX(itr->GetX() - s_FramePadding);
+							Frame.SetY(itr->GetY() - s_FramePadding);
+						}
+						GameState = GameStateEnum::Normal;
+						redraw();
+						break;
 					}
-					IsFrameDragging = false;
-					redraw();
-				}
-				if(IsTileDragging)
-				{
-					//auto LRpairItr = std::next(itr);
-					//LRpairItr->SetColor(FL_BLUE);
-					for(auto& vl : Tiles)
+					case GameStateEnum::TileDragging:
 					{
-						vl.SetColor(FL_GREEN);
-					}
+						//auto LRpairItr = std::next(itr);
+						//LRpairItr->SetColor(FL_BLUE);
+						for(auto& vl : Tiles)
+						{
+							vl.SetColor(FL_GREEN);
+						}
 
-					IsTileDragging = false;
-					redraw();
+						GameState = GameStateEnum::Normal;
+						redraw();
+						break;
+					}
+					default:
+						break;
 				}
+				return 1;
 			}
-			return 1;
 		case FL_SHORTCUT:
 			{
 				switch (Fl::event_key())

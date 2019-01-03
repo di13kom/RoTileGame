@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 project(RoTile_Game)
 
 #packages
-find_package(FLTK REQUIRED MODULE)
+set(FLTK_SKIP_FLUID TRUE)
+find_package(FLTK REQUIRED)
 #if(NOT MSYS)
 	include_directories(${FLTK_INCLUDE_DIRS})
 #endif(NOT MSYS)
