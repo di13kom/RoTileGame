@@ -7,11 +7,15 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Int_Input.H>
 #include <FL/Fl_Return_Button.H>
-#include <signal.h>
+
 #include "BFS_Lib.h"
 #include "A_Star_Lib.h"
 #include "BoxesPreferences.h"
 #include "GameStateEnum.h"
+#include "Tile.h"
+#include "Frame.h"
+
+#include <signal.h>
 #include <thread>
 #include <future>
 #include <array>
@@ -27,14 +31,11 @@ static int s_BasicFontSize = 40;
 
 class Mybox : public Fl_Box
 {
-	//std::unique_ptr<Fs> m_fsClass;
-	//EFS_Class m_efsClass;
-	//BFS_Class m_bfsClass;
 	std::future<std::vector<char*>> m_fut;
 
-	BoxesPreferences Frame;
-	BoxesPreferences VisualDragFrame;
-	BoxesPreferences VisualDragTile;
+	Frame m_Frame;
+	Frame m_VisualDragFrame;
+	Tile m_VisualDragTile;
 	GameStateEnum GameState;
 	//bool IsInit;
 	//bool IsFrameDragging;
@@ -42,9 +43,9 @@ class Mybox : public Fl_Box
 	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidthHeight;
 	int m_FontSize;
 	int Tile_Width_Height;
-	int Frame_Width_Height;
+	int m_Frame_Width_Height;
 	int TilesInRow;
-	std::vector<BoxesPreferences> Tiles;
+	std::vector<Tile> Tiles;
 	std::vector<char> Solution;
 	std::vector<char*> BackList;
 

@@ -3,6 +3,8 @@ cmake_minimum_required(VERSION 3.0)
 project(RoTile_Game)
 
 #packages
+set(FLTK_SKIP_OPENGL TRUE)
+set(FLTK_SKIP_FORMS TRUE)
 set(FLTK_SKIP_FLUID TRUE)
 find_package(FLTK REQUIRED)
 #if(NOT MSYS)
