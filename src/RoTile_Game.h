@@ -22,6 +22,8 @@
 #include <random>
 #include <algorithm>
 
+using namespace Solver;
+
 static void TimerR(void*);//To preserve static
 
 static int s_FramePadding = 5;
