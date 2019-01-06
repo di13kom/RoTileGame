@@ -1,7 +1,11 @@
 #ifndef BOXESPREFERENCES_H
 #define BOXESPREFERENCES_H
 #include <iostream>
+#include <vector>
+#include <iterator>
+
 #include <FL/Fl_Box.H>
+
 class BoxesPreferences
 {
  protected:

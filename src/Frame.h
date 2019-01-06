@@ -2,10 +2,19 @@
 #define FRAME_H
 #include "BoxesPreferences.h"
 
-class Frame:public BoxesPreferences
+class Tile;
+
+class Frame : public BoxesPreferences
 {
  public:
+	int static Width_Height;
+
 	Frame() = default;
 	Frame(int _x, int _y, int _h, int _w, Fl_Color);
+ protected:
+	std::vector<Tile>::iterator UpperLeftTile;
+	std::vector<Tile>::iterator UpperRightTile;
+	std::vector<Tile>::iterator LowerLeftTile;
+	std::vector<Tile>::iterator LowerRightTile;
 };
 #endif

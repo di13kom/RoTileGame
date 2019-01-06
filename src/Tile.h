@@ -11,6 +11,7 @@ class Tile:public BoxesPreferences
 	std::string str;
 	char Data;
  public:
+	static int Width_Height;
 	Tile() = default;
 	Tile(int _x, int _y, int _h, int _w, Fl_Color, Fl_Fontsize fontSize, char _data);
 	char GetData() const;

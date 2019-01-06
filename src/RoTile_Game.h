@@ -39,13 +39,8 @@ class Mybox : public Fl_Box
 	Frame m_VisualDragFrame;
 	Tile m_VisualDragTile;
 	GameStateEnum GameState;
-	//bool IsInit;
-	//bool IsFrameDragging;
-	//bool IsTileDragging;
 	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidthHeight;
 	int m_FontSize;
-	int Tile_Width_Height;
-	int m_Frame_Width_Height;
 	int TilesInRow;
 	std::vector<Tile> Tiles;
 	std::vector<char> Solution;
@@ -59,7 +54,7 @@ class Mybox : public Fl_Box
 	void TurnRight_(int bxInd);
 	void TurnLeft_(int bxInd);
 	void *PrgsBar(void *ptr);
-	void SetFramPositionByTileIndex(int);
+	void SetFramePositionByTileIndex(int);
 public:
 	Mybox(Fl_Boxtype bt, int, int, int);
 	~Mybox();
