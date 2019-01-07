@@ -12,6 +12,8 @@ class Tile:public BoxesPreferences
 	char Data;
  public:
 	static int Width_Height;
+	static int FontSize;
+
 	Tile() = default;
 	Tile(int _x, int _y, int _h, int _w, Fl_Color, Fl_Fontsize fontSize, char _data);
 	char GetData() const;

@@ -29,7 +29,7 @@ static void TimerR(void*);//To preserve static
 static int s_FramePadding = 5;
 static int s_InterTileDistance = 10;
 static int s_MainTablePadding = 35;
-static int s_BasicFontSize = 40;
+static int s_BasicFontValue = 120;
 
 class Mybox : public Fl_Box
 {
@@ -40,7 +40,6 @@ class Mybox : public Fl_Box
 	Tile m_VisualDragTile;
 	GameStateEnum GameState;
 	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidthHeight;
-	int m_FontSize;
 	int TilesInRow;
 	std::vector<Tile> Tiles;
 	std::vector<char> Solution;

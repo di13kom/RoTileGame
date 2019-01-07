@@ -5,6 +5,8 @@ Fl_Double_Window *wind;
 
 //Define static
 int Tile::Width_Height = 0;
+int Tile::FontSize = 0;
+
 int Frame::Width_Height = 0;
 
 static void TimerR(void*);
@@ -39,7 +41,7 @@ void Mybox::draw()
 	{
 		//std::cout<<"Redraw called with Frame\n";
 
-		fl_font(FL_HELVETICA_BOLD, m_FontSize);
+		fl_font(FL_HELVETICA_BOLD, Tile::FontSize);
 		for (auto& item : Tiles)
 		{
 			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY()
@@ -94,7 +96,7 @@ void Mybox::SetTilesValue(int elemsCount)
 	GameState = GameStateEnum::Initialization;
 
 	TilesInRow = elemsCount;
-	m_FontSize = s_BasicFontSize * 3 / TilesInRow;
+	Tile::FontSize = s_BasicFontValue / TilesInRow;
 
 	std::iota(Numb.begin(), Numb.end(), 1);
 	std::copy(Numb.begin(), Numb.end(), std::back_inserter(Solution));
@@ -124,7 +126,7 @@ void Mybox::SetTilesValue(int elemsCount)
 						, Tile::Width_Height
 						, Tile::Width_Height
 						, FL_GREEN
-						, s_BasicFontSize * 3 / TilesInRow
+						, Tile::FontSize
 						, Numb[p++]));
 		}
 	}
@@ -142,7 +144,7 @@ void Mybox::SetTilesValue(int elemsCount)
 	m_Frame.SetX(xPos);
 	m_Frame.SetY(yPos);
 	m_Frame.SetColor(FL_RED);
-	wind->redraw();
+	redraw();
 }
 
 int Mybox::handle(int e)
@@ -324,7 +326,7 @@ int Mybox::handle(int e)
 							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
 							       * s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
 						m_Frame.SetX(xTmp);
-						wind->redraw();
+						redraw();
 
 						return 1;
 					case FL_Right:
@@ -334,7 +336,7 @@ int Mybox::handle(int e)
 								* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
 							xTmp = m_MainTableXpos + s_MainTablePadding;
 						m_Frame.SetX(xTmp);
-						wind->redraw();
+						redraw();
 
 						return 1;
 					case FL_Up:
@@ -344,7 +346,7 @@ int Mybox::handle(int e)
 							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
 							       * s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
 						m_Frame.SetY(yTmp);
-						wind->redraw();
+						redraw();
 
 						return 1;
 					case FL_Down:
@@ -354,19 +356,19 @@ int Mybox::handle(int e)
 								* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
 							yTmp = m_MainTableYpos + s_MainTablePadding;
 						m_Frame.SetY(yTmp);
-						wind->redraw();
+						redraw();
 
 						return 1;
 					case 'x':
 						//std::cout<<"x pressed\n";
 						TurnRight_(GetFrameLeftUpperPosition());
-						wind->redraw();
+						redraw();
 						CheckSolution();
 						return 1;
 					case 'z':
 						//std::cout<<"z pressed\n";
 						TurnLeft_(GetFrameLeftUpperPosition());
-						wind->redraw();
+						redraw();
 						CheckSolution();
 						return 1;
 					case 'a':
