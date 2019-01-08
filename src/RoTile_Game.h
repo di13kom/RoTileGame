@@ -50,8 +50,8 @@ class Mybox : public Fl_Box
 	int handle(int e);
 	void CheckSolution();
 	int GetFrameLeftUpperPosition();
-	void TurnRight_(int bxInd);
-	void TurnLeft_(int bxInd);
+	void TurnRight(int bxInd);
+	void TurnLeft(int bxInd);
 	void *PrgsBar(void *ptr);
 	void SetFramePositionByTileIndex(int);
 public:

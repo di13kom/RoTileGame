@@ -90,7 +90,7 @@ void Mybox::SetTilesValue(int elemsCount)
 	int xc;
 	int p = 0;
 	std::vector<char> Numb(elemsCount * elemsCount);
-	int FrmPosNum;
+	//int FrmPosNum;
 	color(FL_LIGHT1);
 
 	GameState = GameStateEnum::Initialization;
@@ -131,6 +131,7 @@ void Mybox::SetTilesValue(int elemsCount)
 		}
 	}
 
+	/*
 	FrmPosNum = (((TilesInRow - 1)*(TilesInRow - 1)) / 2) + 1;
 	yc = FrmPosNum / (TilesInRow - 1);
 	xc = (FrmPosNum % (TilesInRow - 1)) - 1;
@@ -138,11 +139,16 @@ void Mybox::SetTilesValue(int elemsCount)
 
 	xPos = (m_MainTableXpos + s_MainTablePadding) + xc * Tile::Width_Height + xc * s_InterTileDistance;
 	yPos = (m_MainTableYpos + s_MainTablePadding) + yc * Tile::Width_Height + yc * s_InterTileDistance;
+	*/
 
 
 	//Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame::Width_Height, Frame::Width_Height, FL_RED);
+	/*
 	m_Frame.SetX(xPos);
 	m_Frame.SetY(yPos);
+	*/
+	SetFramePositionByTileIndex(0);
+	
 	m_Frame.SetColor(FL_RED);
 	redraw();
 }
@@ -361,13 +367,13 @@ int Mybox::handle(int e)
 						return 1;
 					case 'x':
 						//std::cout<<"x pressed\n";
-						TurnRight_(GetFrameLeftUpperPosition());
+						TurnRight(GetFrameLeftUpperPosition());
 						redraw();
 						CheckSolution();
 						return 1;
 					case 'z':
 						//std::cout<<"z pressed\n";
-						TurnLeft_(GetFrameLeftUpperPosition());
+						TurnLeft(GetFrameLeftUpperPosition());
 						redraw();
 						CheckSolution();
 						return 1;
@@ -514,7 +520,7 @@ void Mybox::SetFramePositionByTileIndex(int ind)
 	m_Frame.SetY(y - s_FramePadding);
 }
 
-void Mybox::TurnRight_(int bxInd)
+void Mybox::TurnRight(int bxInd)
 {
 	int Buff;
 	Buff = Tiles[bxInd + 1].GetData();
@@ -524,7 +530,7 @@ void Mybox::TurnRight_(int bxInd)
 	Tiles[bxInd + TilesInRow + 1].SetData(Buff);
 }
 
-void Mybox::TurnLeft_(int bxInd)
+void Mybox::TurnLeft(int bxInd)
 {
 	int Buff;
 	Buff = Tiles[bxInd].GetData();
@@ -616,11 +622,11 @@ static void TimerR(void* UserData)
 
 			if (*currArrayElement == *(prevArraElement + 1))
 			{
-				Mb->TurnLeft_(changedElemIndex);
+				Mb->TurnLeft(changedElemIndex);
 			}
 			else
 			{
-				Mb->TurnRight_(changedElemIndex);
+				Mb->TurnRight(changedElemIndex);
 			}
 			wind->redraw();
 		}
