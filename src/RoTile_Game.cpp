@@ -291,7 +291,12 @@ int Mybox::handle(int e)
 								return Fl::event_inside(box.GetX()
 									, box.GetY()
 									, Frame::Width_Height - s_FramePadding*2
-									, Frame::Width_Height - s_FramePadding*2);
+									, Frame::Width_Height - s_FramePadding*2)
+									&& Fl::event_inside(m_MainTableXpos
+										, m_MainTableYpos
+										, m_MainTableWidthHeight - s_MainTablePadding*2
+										, m_MainTableWidthHeight - s_MainTablePadding*2);
+								;
 							});
 						if(itr != Tiles.end())
 						{
