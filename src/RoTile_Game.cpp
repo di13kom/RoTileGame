@@ -652,11 +652,27 @@ void callBack(Fl_Widget *wg, void *inp)
 {
 	//std::cout << "test" << std::endl;
 	int vl = atoi(((Fl_Int_Input*)inp)->value());
-	auto* mb = dynamic_cast<Mybox*>(wind->child(1));
+	auto* inpt = dynamic_cast<Fl_Int_Input*>(wind->child(0));
+	auto* btn = dynamic_cast<Fl_Return_Button*>(wind->child(1));
+	auto* mb = dynamic_cast<Mybox*>(wind->child(2));
 	mb->SetTilesValue(vl);
+
+	inpt->deactivate();
+	//inpt->clear_visible_focus();
+	//inpt->clear_active();
+	//inpt->hide();
+
+	btn->deactivate();
+	//btn->clear_active();
+
+	//mb->draw_focus();
+	mb->active();
+	//mb->take_focus();
+	//mb->set_visible_focus();
 	mb->show();
+
 	//wind->flush();
-	wg->parent()->hide();
+	//wg->parent()->hide();
 }
 
 int main()
@@ -664,14 +680,20 @@ int main()
 	Fl::scheme("gtk+");
 
 	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
+	Fl_Int_Input vl(10, 250, 180, 30);
+	Fl_Return_Button btn(140, 290, 50, 20, "Ok");
+	btn.callback(callBack, (void*)&vl);
+	/*
 	Fl_Menu_Bar menu(0, 0, 800, 25);
 	menu.add("&File/&Open", "^o", nullptr);
 	menu.add("&File/&Save", "^s", nullptr, 0, FL_MENU_DIVIDER);
+	*/
 	wind = &windowX;
-	Mybox Mb(FL_DOWN_BOX, 150, 50, 500);
+	Mybox Mb(FL_DOWN_BOX, 250, 50, 500);
 	windowX.end();
 	windowX.show();
 
+	/*
 	Fl_Double_Window window0(150, 150, 200, 70, "Enter value");
 	Fl_Int_Input vl(10, 10, 180, 30);
 	Fl_Return_Button btn(140, 45, 50, 20, "Ok");
@@ -679,6 +701,7 @@ int main()
 	window0.fullscreen_off();
 	window0.end();
 	window0.show();
+	*/
 
 	return Fl::run();
 }
