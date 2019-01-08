@@ -650,29 +650,36 @@ static void TimerR(void* UserData)
 
 void callBack(Fl_Widget *wg, void *inp)
 {
-	//std::cout << "test" << std::endl;
-	int vl = atoi(((Fl_Int_Input*)inp)->value());
-	auto* inpt = dynamic_cast<Fl_Int_Input*>(wind->child(0));
-	auto* btn = dynamic_cast<Fl_Return_Button*>(wind->child(1));
-	auto* mb = dynamic_cast<Mybox*>(wind->child(2));
-	mb->SetTilesValue(vl);
+	auto* inpt = dynamic_cast<Fl_Int_Input*>(wind->child(1));
+	auto* btn = dynamic_cast<Fl_Return_Button*>(wind->child(2));
+	auto* mb = dynamic_cast<Mybox*>(wind->child(3));
 
-	inpt->deactivate();
-	//inpt->clear_visible_focus();
-	//inpt->clear_active();
-	//inpt->hide();
+	int vl = atoi(inpt->value());
+	if(vl >= 3 && vl <= 9)
+	{
+		mb->SetTilesValue(vl);
 
-	btn->deactivate();
-	//btn->clear_active();
+		inpt->deactivate();
+		//inpt->clear_visible_focus();
+		//inpt->clear_active();
+		//inpt->hide();
 
-	//mb->draw_focus();
-	mb->active();
-	//mb->take_focus();
-	//mb->set_visible_focus();
-	mb->show();
+		btn->deactivate();
+		//btn->clear_active();
 
-	//wind->flush();
-	//wg->parent()->hide();
+		//mb->draw_focus();
+		mb->active();
+		//mb->take_focus();
+		//mb->set_visible_focus();
+		mb->show();
+
+		//wind->flush();
+		//wg->parent()->hide();
+	}
+	else
+	{
+		inpt->value(NULL);
+	}
 }
 
 int main()
@@ -680,8 +687,9 @@ int main()
 	Fl::scheme("gtk+");
 
 	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
+	Fl_Box lbl(FL_EMBOSSED_BOX, 10, 215, 180, 30, "value from 3 to 9");
 	Fl_Int_Input vl(10, 250, 180, 30);
-	Fl_Return_Button btn(140, 290, 50, 20, "Ok");
+	Fl_Return_Button btn(10, 285, 180, 30, "Ok");
 	btn.callback(callBack, (void*)&vl);
 	/*
 	Fl_Menu_Bar menu(0, 0, 800, 25);
