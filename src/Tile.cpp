@@ -25,3 +25,19 @@ const char* Tile::GetRawData() const
 {
 	return str.c_str();
 }
+void Tile::SetIsVerticalBorder(bool vl)
+{
+	IsVerticalBorder = vl;
+}
+bool Tile::GetIsVerticalBorder() const
+{
+	return IsVerticalBorder;
+}
+void Tile::SetIsHorizontalBorder(bool vl)
+{
+	IsHorizontalBorder = vl;
+}
+bool Tile::GetIsHorizontalBorder() const
+{
+	return IsHorizontalBorder;
+}

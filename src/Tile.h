@@ -10,6 +10,8 @@ class Tile:public BoxesPreferences
  private:
 	std::string str;
 	char Data;
+	bool IsVerticalBorder;
+	bool IsHorizontalBorder;
  public:
 	static int Width_Height;
 	static int FontSize;
@@ -19,5 +21,9 @@ class Tile:public BoxesPreferences
 	char GetData() const;
 	void SetData(int);
 	const char* GetRawData()const;
+	void SetIsVerticalBorder(bool);
+	bool GetIsVerticalBorder() const;
+	void SetIsHorizontalBorder(bool);
+	bool GetIsHorizontalBorder() const;
 };
 #endif
