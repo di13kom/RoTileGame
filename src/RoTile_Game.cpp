@@ -86,9 +86,8 @@ void Mybox::SetTilesValue(int elemsCount)
 {
 	int xPos;
 	int yPos;
-	int yc;
-	int xc;
 	int p = 0;
+	bool isBorderTile;
 	std::vector<char> Numb(elemsCount * elemsCount);
 	//int FrmPosNum;
 	color(FL_LIGHT1);
@@ -116,6 +115,11 @@ void Mybox::SetTilesValue(int elemsCount)
 	{
 		for (int j = 0; j < TilesInRow; j++)
 		{
+			if(i == TilesInRow - 1 || j == TilesInRow -1)
+				isBorderTile = true;
+			else
+				isBorderTile = false;
+
 			xPos = (m_MainTableXpos + s_MainTablePadding + s_FramePadding)\
 			       + j * s_InterTileDistance + j * Tile::Width_Height;
 			yPos = (m_MainTableYpos + s_MainTablePadding + s_FramePadding)\
@@ -125,28 +129,13 @@ void Mybox::SetTilesValue(int elemsCount)
 						, yPos
 						, Tile::Width_Height
 						, Tile::Width_Height
+						, isBorderTile
 						, FL_GREEN
 						, Tile::FontSize
 						, Numb[p++]));
 		}
 	}
 
-	/*
-	FrmPosNum = (((TilesInRow - 1)*(TilesInRow - 1)) / 2) + 1;
-	yc = FrmPosNum / (TilesInRow - 1);
-	xc = (FrmPosNum % (TilesInRow - 1)) - 1;
-
-
-	xPos = (m_MainTableXpos + s_MainTablePadding) + xc * Tile::Width_Height + xc * s_InterTileDistance;
-	yPos = (m_MainTableYpos + s_MainTablePadding) + yc * Tile::Width_Height + yc * s_InterTileDistance;
-	*/
-
-
-	//Frame = std::make_unique<BoxesPreferences>(xPos, yPos, Frame::Width_Height, Frame::Width_Height, FL_RED);
-	/*
-	m_Frame.SetX(xPos);
-	m_Frame.SetY(yPos);
-	*/
 	SetFramePositionByTileIndex(0);
 	
 	m_Frame.SetColor(FL_RED);
@@ -181,7 +170,7 @@ int Mybox::handle(int e)
 				{
 					auto itr = std::find_if(Tiles.begin()
 								, Tiles.end()
-								, [=](const BoxesPreferences& box)
+								, [&](const Tile& box)
 									{
 										return Fl::event_inside(box.GetX()
 												, box.GetY()
@@ -286,16 +275,14 @@ int Mybox::handle(int e)
 				{
 					case GameStateEnum::FrameDragging:
 					{
-						auto itr = std::find_if(Tiles.begin(), Tiles.end(), [=](const BoxesPreferences& box)
+						auto itr = std::find_if(Tiles.begin(), Tiles.end(), [&](const Tile& box)
 							{
 								return Fl::event_inside(box.GetX()
-									, box.GetY()
-									, Frame::Width_Height - s_FramePadding*2
-									, Frame::Width_Height - s_FramePadding*2)
-									&& Fl::event_inside(m_MainTableXpos
-										, m_MainTableYpos
-										, m_MainTableWidthHeight - s_MainTablePadding*2
-										, m_MainTableWidthHeight - s_MainTablePadding*2);
+										, box.GetY()
+										, Frame::Width_Height - s_FramePadding*2
+										, Frame::Width_Height - s_FramePadding*2)
+									&&
+										box.GetIsBorderTile() == false;
 								;
 							});
 						if(itr != Tiles.end())
@@ -331,7 +318,6 @@ int Mybox::handle(int e)
 				switch (Fl::event_key())
 				{
 					case FL_Left:
-						//std::cout<<"Left Pressed\n";
 						xTmp = m_Frame.GetX() - (Tile::Width_Height + s_InterTileDistance);
 						if (xTmp < m_MainTableXpos + s_MainTablePadding)
 							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
@@ -341,7 +327,6 @@ int Mybox::handle(int e)
 
 						return 1;
 					case FL_Right:
-						//std::cout<<"Right Pressed\n";
 						xTmp = m_Frame.GetX() + (Tile::Width_Height + s_InterTileDistance);
 						if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
 								* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
@@ -351,7 +336,6 @@ int Mybox::handle(int e)
 
 						return 1;
 					case FL_Up:
-						//std::cout<<"Up Pressed\n";
 						yTmp = m_Frame.GetY() - (Tile::Width_Height + s_InterTileDistance);
 						if (yTmp < m_MainTableYpos + s_MainTablePadding)
 							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
@@ -361,7 +345,6 @@ int Mybox::handle(int e)
 
 						return 1;
 					case FL_Down:
-						//std::cout<<"Down Pressed\n";
 						yTmp = m_Frame.GetY() + (Tile::Width_Height + s_InterTileDistance);
 						if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
 								* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
@@ -371,13 +354,11 @@ int Mybox::handle(int e)
 
 						return 1;
 					case 'x':
-						//std::cout<<"x pressed\n";
 						TurnRight(GetFrameLeftUpperPosition());
 						redraw();
 						CheckSolution();
 						return 1;
 					case 'z':
-						//std::cout<<"z pressed\n";
 						TurnLeft(GetFrameLeftUpperPosition());
 						redraw();
 						CheckSolution();
@@ -512,7 +493,6 @@ int Mybox::GetFrameLeftUpperPosition()
 			break;
 		}
 	}
-	//std::cout<<"come out\n";
 	return retVal;
 }
 

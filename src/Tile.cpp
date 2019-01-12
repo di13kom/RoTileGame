@@ -1,10 +1,11 @@
 #include "Tile.h"
 
-Tile::Tile(int _x, int _y, int _h, int _w, Fl_Color clr, Fl_Fontsize fontSize, char _data)
+Tile::Tile(int _x, int _y, int _h, int _w, bool isVertB, Fl_Color clr, Fl_Fontsize fontSize, char _data)
 {
 	SetData(_data);
 	X = _x;
 	Y = _y;
+	IsBorderTile = isVertB;
 	Color = clr;
 	//std::cout<<"A: "<<std::addressof(str)<<std::endl;
 }
@@ -25,19 +26,11 @@ const char* Tile::GetRawData() const
 {
 	return str.c_str();
 }
-void Tile::SetIsVerticalBorder(bool vl)
+void Tile::SetIsBorderTile(bool vl)
 {
-	IsVerticalBorder = vl;
+	IsBorderTile = vl;
 }
-bool Tile::GetIsVerticalBorder() const
+bool Tile::GetIsBorderTile() const
 {
-	return IsVerticalBorder;
-}
-void Tile::SetIsHorizontalBorder(bool vl)
-{
-	IsHorizontalBorder = vl;
-}
-bool Tile::GetIsHorizontalBorder() const
-{
-	return IsHorizontalBorder;
+	return IsBorderTile;
 }
