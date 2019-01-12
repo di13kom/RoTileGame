@@ -6,7 +6,7 @@ class Tile;
 
 class Frame : public BoxesPreferences
 {
-private:
+ private:
 	std::vector<Tile>::iterator UpperLeftTile;
 	std::vector<Tile>::iterator UpperRightTile;
 	std::vector<Tile>::iterator LowerLeftTile;
