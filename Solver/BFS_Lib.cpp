@@ -2,6 +2,10 @@
 
 namespace Solver
 {
+	int BFS_Class::GetIteration()
+	{
+		return IterationCount;
+	}
 	BFS_Class::BFS_Class(int _n)
 	{
 		ElementsInRow = _n;

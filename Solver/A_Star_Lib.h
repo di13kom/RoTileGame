@@ -14,6 +14,7 @@ namespace Solver
 		int GetManhattan(char*);
 		public:
 		EFS_Class(int);
+		int GetIteration();
 		std::vector<char*> FindSolution(char*);
 	};
 }

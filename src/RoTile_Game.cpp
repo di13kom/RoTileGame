@@ -391,7 +391,7 @@ int Mybox::handle(int e)
 						if (BackList.size() > 0)
 						{
 							std::cout << "Solution was found through " \
-								<< BackList.size() - 1 << "steps in BackList\n";
+								<< BackList.size() - 1 << " steps in BackList\n";
 							fl_message("Solution was found through %d steps", BackList.size() - 1);
 							//std::cout<<"iterations: "<<L<<std::endl;
 							//for(unsigned i=0;i<BackList.size();i++)
@@ -432,26 +432,24 @@ int Mybox::handle(int e)
 						std::cout << "Time elapsed: " << diff.count()<<std::endl;
 						if (BackList.size() > 0)
 						{
-							std::cout << "Solution was found through "\
-							       	<< BackList.size() - 1 << "steps in BackList\n";
-							//std::cout<<"Solution was find through "\
-							//<<UsedList.size()<<"steps in UsedList\n";
 							fl_message("Solution was found through %d steps", BackList.size() - 1);
-							//std::cout<<"iterations: "<<L<<std::endl;
+#ifdef DEBUGLOG
+							std::cout << "Solution was found through "\
+							       	<< BackList.size() - 1 << " steps in BackList\n";
+							std::cout<<"iterations: "<<m_fsClass->GetIteration()<<std::endl;
 							int _Tmp;
 
-							/*
 							   for (unsigned i = 0; i < BackList.size(); i++)
 							   {
-							   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
-							   {
-							   if (k % TilesInRow == 0)std::cout << "\n";
-							   _Tmp = (int)BackList[i][k];
-							   std::cout << std::setw(2) << _Tmp << " ";
+								   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+								   {
+									   if (k % TilesInRow == 0)std::cout << "\n";
+									   _Tmp = (int)BackList[i][k];
+									   std::cout << std::setw(2) << _Tmp << " ";
+								   }
+								   std::cout << std::endl;
 							   }
-							   std::cout << std::endl;
-							   }
-							   */
+#endif
 							Fl::add_timeout(0.25, TimerR, (void*)this);
 						}
 						else

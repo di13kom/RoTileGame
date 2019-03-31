@@ -14,6 +14,7 @@ namespace Solver
 		public:
 		BFS_Class(int);
 		std::vector<char*> FindSolution(char*);
+		int GetIteration();
 		~BFS_Class();
 	};
 }

@@ -105,6 +105,7 @@ namespace Solver
 			virtual std::vector<char*> FindSolution(char*) = 0;
 			Fs(int);
 			Fs() = default;
+			virtual int GetIteration() = 0;
 	};
 
 	//void *PrgsBar(void *ptr);

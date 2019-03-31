@@ -3,6 +3,10 @@
 
 namespace Solver
 {
+	int EFS_Class::GetIteration()
+	{
+		return IterationCount;
+	}
 	int EFS_Class::Calc(char Num, int Pos)
 	{
 		int Dif = 0;
@@ -102,9 +106,6 @@ namespace Solver
 			//Add to CloseList
 			UsedList.insert(Node->Positions);//insert combination
 
-			// Create child
-
-
 			//StartRecursiveFunction
 			while (1)
 			{
@@ -119,33 +120,26 @@ namespace Solver
 						}
 					}
 				}
-				//auto It = std::min_element(Queue.begin(),Queue.end(),Comp1Func()); 
 				auto It = Queue.begin();
 				Node = *It;
 				if (Node->hValue == 0)
 				{
 
-					//if(std::equal(Tmp, Tmp+(ElementsInRow*ElementsInRow), Solution))
-					//{
-					//std::cout<<"match with ideal\n";
 					while (Node)
 					{
 						BackList.push_back(Node->Positions);
 						if (Node->Parent) Node = Node->Parent;
 						else break;
-						//std::cout<<"ura\n";
 					}
-					//Calculated = 1;
-					//return 1;
 					return BackList;
 				}
 				Queue.erase(It);
-				}
 			}
-			catch (std::exception& ex)
-			{
-				std::cout << ex.what() << std::endl;
-			}
-			return std::vector<char*>();
 		}
+		catch (std::exception& ex)
+		{
+			std::cout << ex.what() << std::endl;
+		}
+		return std::vector<char*>();
 	}
+}
