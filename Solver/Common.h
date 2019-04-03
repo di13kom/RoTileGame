@@ -27,7 +27,6 @@ namespace Solver
 		int gValue;
 		int fValue;
 		char* Positions;
-		_Nd** Child;
 	};
 
 	//

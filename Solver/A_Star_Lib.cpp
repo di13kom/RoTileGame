@@ -7,19 +7,19 @@ namespace Solver
 	{
 		return IterationCount;
 	}
-	int EFS_Class::Calc(char Num, int Pos)
+	int EFS_Class::Calc(char value, int position)
 	{
 		int Dif = 0;
-		int x1, y1, x, y;
-		x1 = Pos % ElementsInRow;
-		y1 = Pos / ElementsInRow;
+		int xPositionIndex, yPositionIndex, xValueIndex, yValueIndex;
+		xPositionIndex = position % ElementsInRow;
+		yPositionIndex = position / ElementsInRow;
 
-		x = ((int)Num - 1) % ElementsInRow;
-		//x = (std::stoi(&Num) - 1) % ElementsInRow;
-		y = ((int)Num - 1) / ElementsInRow;
-		//y = (std::stoi(&Num) - 1) / ElementsInRow;
+		xValueIndex = ((int)value - 1) % ElementsInRow;
+		//xValueIndex = (std::stoi(&value) - 1) % ElementsInRow;
+		yValueIndex = ((int)value - 1) / ElementsInRow;
+		//yValueIndex = (std::stoi(&value) - 1) / ElementsInRow;
 
-		Dif = std::abs(x - x1) + std::abs(y - y1);
+		Dif = std::abs(xValueIndex - xPositionIndex) + std::abs(yValueIndex - yPositionIndex);
 		return Dif;
 	}
 	int EFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
@@ -77,6 +77,18 @@ namespace Solver
 
 	int EFS_Class::GetManhattan(char *Value)
 	{
+		/*
+		- State -
+		675
+		432
+		198
+		- Manhattan values-
+		331
+		022
+		211
+		- Sum -
+		3+3+1+0+2+2+1+1=13
+		*/
 		int Sum = 0;
 		for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
 			Sum += Calc(Value[i], i);
@@ -116,7 +128,7 @@ namespace Solver
 						for (char Left = 0; Left < 2; Left++)
 						{
 							//Creation
-							/*Node->Child[x] = */Rotate(ElementsInRow*(int)i + (int)j, Node, (bool)Left);
+							/*Node->Child[xValueIndex] = */Rotate(ElementsInRow*(int)i + (int)j, Node, (bool)Left);
 						}
 					}
 				}
