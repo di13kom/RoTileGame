@@ -363,6 +363,7 @@ int Mybox::handle(int e)
 						redraw();
 						CheckSolution();
 						return 1;
+						/* Too much memory consume
 					case 'a':
 
 						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
@@ -407,6 +408,7 @@ int Mybox::handle(int e)
 							std::cout << "solution is not found\n";
 						}
 						return 1;
+						*/
 					case 's':
 						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
 						std::transform(Tiles.begin()
