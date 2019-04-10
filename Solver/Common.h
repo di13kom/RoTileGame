@@ -26,7 +26,7 @@ namespace Solver
 		int hValue;
 		int gValue;
 		int fValue;
-		char* Positions;
+		std::unique_ptr<char[]> Positions;
 	};
 
 	//

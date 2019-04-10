@@ -2,14 +2,15 @@ cmake_minimum_required(VERSION 3.0)
 
 project(RoTile_Game)
 
-if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+if(NOT WIN32)
+	if(NOT CMAKE_BUILD_TYPE)
+	  set(CMAKE_BUILD_TYPE Release)
+	endif()
+
+	set(CMAKE_CXX_FLAGS "-Wall")
+	set(CMAKE_CXX_FLAGS_DEBUG "-g")
+	set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 endif()
-
-set(CMAKE_CXX_FLAGS "-Wall")
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-
 #packages
 set(FLTK_SKIP_OPENGL TRUE)
 set(FLTK_SKIP_FORMS TRUE)

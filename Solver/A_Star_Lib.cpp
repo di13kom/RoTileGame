@@ -31,9 +31,9 @@ namespace Solver
 		if (_Node == nullptr)std::cout << "memory exhausted\n";
 		//std::memset(Node,0,sizeof(_Nd));
 		_Node->Parent = ParNode;
-		char *Tmp = new char[ElementsInRow*ElementsInRow + 1];
+		auto Tmp = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
 		if (Tmp == nullptr)std::cout << "memory exhausted\n";
-		std::copy(ParNode->Positions, ParNode->Positions + ElementsInRow * ElementsInRow, Tmp);
+		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
 		char *Buff = new char;
 		if (IsLeft)//Left Rotate
 		{
@@ -52,23 +52,21 @@ namespace Solver
 			Tmp[(int)M + 1] = *Buff;
 		}
 		delete Buff;
-		Tmp[ElementsInRow*ElementsInRow] = '\0';
-		_Node->Positions = Tmp;
+		Tmp.get()[ElementsInRow*ElementsInRow + 1] = '\0';
+		_Node->Positions = std::move(Tmp);
 		_Node->gValue = ParNode->gValue + 1;
-		_Node->hValue = GetManhattan(_Node->Positions);
+		_Node->hValue = GetManhattan(_Node->Positions.get());
 		_Node->fValue = _Node->gValue + _Node->hValue;
 		//Insert combination to UsedList
 		bool result;
-		std::tie(std::ignore, result) = UsedList.insert(_Node->Positions);
+		std::tie(std::ignore, result) = UsedList.insert(_Node->Positions.get());
 		//Check existance in UsedList
 		if (result == true || _Node->hValue == 0)
 		{
-			Queue.insert(_Node);
+			Queue.insert(std::move(_Node));
 		}
 		else
 		{
-			delete _Node->Positions;
-			delete _Node;
 			return 1;
 		}
 		return 0;
@@ -102,21 +100,21 @@ namespace Solver
 	};
 	std::vector<char*> EFS_Class::FindSolution(char *inData)
 	{
-		char *Comb = new char[ElementsInRow*ElementsInRow + 1];
+		auto Comb = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
 		try
 
 		{
 			Node = new _Nd;
 			//_Nd *TmpNode = Node;
 			std::memset(Node, 0, sizeof(_Nd));
-			std::copy(inData, inData + ElementsInRow * ElementsInRow, Comb);
+			std::copy(inData, inData + ElementsInRow * ElementsInRow, Comb.get());
 			Comb[ElementsInRow*ElementsInRow] = '\0';
-			Node->Positions = Comb;
+			Node->Positions = std::move(Comb);
 			Node->gValue = 0;
-			Node->hValue = GetManhattan(Node->Positions);
+			Node->hValue = GetManhattan(Node->Positions.get());
 			Node->fValue = Node->gValue + Node->hValue;
 			//Add to CloseList
-			UsedList.insert(Node->Positions);//insert combination
+			UsedList.insert(Node->Positions.get());//insert combination
 
 			//StartRecursiveFunction
 			while (1)
@@ -139,7 +137,7 @@ namespace Solver
 
 					while (Node)
 					{
-						BackList.push_back(Node->Positions);
+						BackList.push_back(Node->Positions.get());
 						if (Node->Parent) Node = Node->Parent;
 						else break;
 					}

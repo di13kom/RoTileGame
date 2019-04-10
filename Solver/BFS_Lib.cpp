@@ -25,7 +25,7 @@ namespace Solver
 
 	std::vector<char*> BFS_Class::FindSolution(char* inData)
 	{
-		char *Comb = new char[ElementsInRow*ElementsInRow + 1];
+		auto Comb = std::make_unique<char[]>(ElementsInRow*ElementsInRow);
 		try
 		{
 			Node = new _Nd;
@@ -36,8 +36,8 @@ namespace Solver
 				Comb[i] = inData[i];
 			}
 			Comb[ElementsInRow*ElementsInRow] = '\0';
-			Node->Positions = Comb;
-			UsedList.insert(Comb);
+			Node->Positions = std::move(Comb);
+			UsedList.insert(Comb.get());
 			//StartRecursiveFunction
 			for (char i = 0; i < (ElementsInRow - 1); i++)
 			{
@@ -66,9 +66,8 @@ namespace Solver
 		_Nd *TmpNode = Node;
 		if (Node == NULL)std::cout << "memory exhausted\n";
 		Node->Parent = ParNode;
-		char *Tmp = new char[ElementsInRow*ElementsInRow + 1];
-		if (Tmp == NULL)std::cout << "memory exhausted\n";
-		std::copy(ParNode->Positions, ParNode->Positions + ElementsInRow * ElementsInRow, Tmp);
+		auto Tmp = std::make_unique<char[]>(ElementsInRow*ElementsInRow);
+		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
 		if (IsLeft)//Left Rotate
 		{
 			std::swap(Tmp[(int)M + 1], Tmp[(int)M]);
@@ -82,13 +81,13 @@ namespace Solver
 			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow]);
 		}
 		Tmp[ElementsInRow*ElementsInRow] = '\0';
-		Node->Positions = Tmp;
-		if (std::equal(Tmp, Tmp + (ElementsInRow*ElementsInRow/*(ElementsInRow-1)*/), Solution))
+		Node->Positions = std::move(Tmp);
+		if (std::equal(Tmp.get(), Tmp.get() + (ElementsInRow*ElementsInRow/*(ElementsInRow-1)*/), Solution))
 		{
 			//std::cout<<"match with ideal\n";
 			while (Node)
 			{
-				BackList.push_back(Node->Positions);
+				BackList.push_back(Node->Positions.get());
 				if (Node->Parent) Node = Node->Parent;
 				else break;
 				//std::cout<<"ura\n";
@@ -97,7 +96,7 @@ namespace Solver
 		}
 		else
 		{
-			auto vl = UsedList.insert(Tmp);
+			auto vl = UsedList.insert(Tmp.get());
 			if (vl.second == true)
 			{
 				for (char i = 0; i < (ElementsInRow - 1); i++)
@@ -117,7 +116,6 @@ namespace Solver
 			else
 			{
 				delete Node;
-				delete Tmp;
 			}
 			return 0;
 		}
