@@ -63,7 +63,7 @@ namespace Solver
 		//Check existance in UsedList
 		if (result == true || _Node->hValue == 0)
 		{
-			Queue.insert(std::move(_Node));
+			GreenQueue.insert(std::move(_Node));
 		}
 		else
 		{
@@ -130,7 +130,7 @@ namespace Solver
 						}
 					}
 				}
-				auto It = Queue.begin();
+				auto It = GreenQueue.begin();
 				Node = *It;
 				if (Node->hValue == 0)
 				{
@@ -143,7 +143,9 @@ namespace Solver
 					}
 					return BackList;
 				}
-				Queue.erase(It);
+				RedQueue.push_back(*It);
+				//std::move(GreenQueue.begin, std::next(it), std::back_inserter(RedQueue));
+				GreenQueue.erase(It);
 			}
 		}
 		catch (std::exception& ex)
