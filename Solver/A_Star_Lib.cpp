@@ -34,24 +34,18 @@ namespace Solver
 		auto Tmp = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
 		if (Tmp == nullptr)std::cout << "memory exhausted\n";
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
-		char *Buff = new char;
 		if (IsLeft)//Left Rotate
 		{
-			*Buff = Tmp[(int)M];
-			Tmp[(int)M] = Tmp[(int)M + 1];
-			Tmp[(int)M + 1] = Tmp[(int)M + ElementsInRow + 1];
-			Tmp[(int)M + ElementsInRow + 1] = Tmp[(int)M + ElementsInRow];
-			Tmp[(int)M + ElementsInRow] = *Buff;
+			std::swap(Tmp[(int)M + 1], Tmp[(int)M]);
+			std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow]);
+			std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow + 1]);
 		}
 		else//Right Rotate
 		{
-			*Buff = Tmp[(int)M];
-			Tmp[(int)M] = Tmp[(int)M + ElementsInRow];
-			Tmp[(int)M + ElementsInRow] = Tmp[(int)M + ElementsInRow + 1];
-			Tmp[(int)M + ElementsInRow + 1] = Tmp[(int)M + 1];
-			Tmp[(int)M + 1] = *Buff;
+			std::swap(Tmp[(int)M], Tmp[(int)M + 1]);
+			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow + 1]);
+			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow]);
 		}
-		delete Buff;
 		Tmp.get()[ElementsInRow*ElementsInRow + 1] = '\0';
 		_Node->Positions = std::move(Tmp);
 		_Node->gValue = ParNode->gValue + 1;

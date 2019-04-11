@@ -563,7 +563,7 @@ void *Mybox::PrgsBar(void *ptr)
 		if (b > strlen(Txt))b = 10;
 		progress.label(percent);
 		Fl::check();
-		std::this_thread::sleep_for(0.5s);
+		std::this_thread::sleep_for(0.9s);
 		//usleep(200000);
 		if (ToLeft)t++;
 		else t--;
