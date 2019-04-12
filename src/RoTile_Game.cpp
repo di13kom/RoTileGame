@@ -436,21 +436,21 @@ int Mybox::handle(int e)
 						{
 							fl_message("Solution was found through %d steps", BackList.size() - 1);
 #ifdef DEBUGLOG
+							int _Tmp;
+
+						   for (int i = BackList.size() - 1; i >= 0; i--)
+						   {
+							   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+							   {
+								   if (k % TilesInRow == 0)std::cout << "\n";
+								   _Tmp = (int)BackList[i][k];
+								   std::cout << std::setw(2) << _Tmp << " ";
+							   }
+							   std::cout << std::endl;
+						   }
 							std::cout << "Solution was found through "\
 							       	<< BackList.size() - 1 << " steps in BackList\n";
 							std::cout<<"iterations: "<<m_fsClass->GetIteration()<<std::endl;
-							int _Tmp;
-
-							   for (unsigned i = 0; i < BackList.size(); i++)
-							   {
-								   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
-								   {
-									   if (k % TilesInRow == 0)std::cout << "\n";
-									   _Tmp = (int)BackList[i][k];
-									   std::cout << std::setw(2) << _Tmp << " ";
-								   }
-								   std::cout << std::endl;
-							   }
 #endif
 							Fl::add_timeout(0.25, TimerR, (void*)this);
 						}
@@ -583,42 +583,63 @@ static void TimerR(void* UserData)
 {
 	Mybox* Mb = (Mybox*)UserData;
 	static int currentIndex = Mb->BackList.size() - 1;
-	int K = Mb->TilesInRow;
-	static char* PrevArray = nullptr;
+	//int K = Mb->TilesInRow;
+	//static char* PrevArray = nullptr;
 
-	if (currentIndex >= 0)
+	if (currentIndex >= 1)
 	{
-		char* currArray = Mb->BackList[currentIndex];
+		auto& previousData = Mb->BackList[currentIndex];
+		auto& currentData = Mb->BackList[currentIndex - 1];
 
-		char* currArrayElement = currArray;
-		char* prevArraElement = PrevArray;
-		int changedElemIndex;
-		if (PrevArray != nullptr)
+		auto mismatch = std::mismatch(std::begin(previousData), std::end(previousData), std::begin(currentData), std::end(currentData));
+		auto distance = std::distance(std::begin(currentData), mismatch.second);
+
+		Mb->SetFramePositionByTileIndex(distance);
+		if (mismatch.first[0] == mismatch.second[1])
 		{
-			while (*currArrayElement == *prevArraElement)
-			{
-				currArrayElement++;
-				prevArraElement++;
-			}
-			changedElemIndex = currArrayElement - currArray;
-
-			Mb->SetFramePositionByTileIndex(changedElemIndex);
-			//std::this_thread::sleep_for(0.2s);
-
-			if (*currArrayElement == *(prevArraElement + 1))
-			{
-				Mb->TurnLeft(changedElemIndex);
-			}
-			else
-			{
-				Mb->TurnRight(changedElemIndex);
-			}
-			wind->redraw();
+			Mb->TurnRight(distance);
 		}
-		PrevArray = Mb->BackList[currentIndex];
+		else
+		{
+			Mb->TurnLeft(distance);
+		}
+		wind->redraw();
+
+		/*Old*/
+
+		//std::vector<char>& previousData = Mb->BackList[currentIndex];
+
+		//char currArrayElement = previousData;
+		//char prevArraElement = currentData;
+		//int changedElemIndex;
+		//if (currentData != nullptr)
+		//{
+		//	std::mismatch(std::begin(previousData), std::end(previousData), currentData);
+
+		//	while (*currArrayElement == *prevArraElement)
+		//	{
+		//		currArrayElement++;
+		//		prevArraElement++;
+		//	}
+		//	changedElemIndex = currArrayElement - previousData;
+
+		//	Mb->SetFramePositionByTileIndex(changedElemIndex);
+		//	//std::this_thread::sleep_for(0.2s);
+
+		//	if (*currArrayElement == *(prevArraElement + 1))
+		//	{
+		//		Mb->TurnLeft(changedElemIndex);
+		//	}
+		//	else
+		//	{
+		//		Mb->TurnRight(changedElemIndex);
+		//	}
+		//	wind->redraw();
+		//}
+		//currentData = Mb->BackList[currentIndex];
 
 		currentIndex--;
-		Fl::repeat_timeout(0.5, TimerR, UserData);
+		Fl::repeat_timeout(0.9, TimerR, UserData);
 	}
 	else
 	{
@@ -680,16 +701,6 @@ int main()
 	Mybox Mb(FL_DOWN_BOX, 250, 50, 500);
 	windowX.end();
 	windowX.show();
-
-	/*
-	Fl_Double_Window window0(150, 150, 200, 70, "Enter value");
-	Fl_Int_Input vl(10, 10, 180, 30);
-	Fl_Return_Button btn(140, 45, 50, 20, "Ok");
-	btn.callback(callBack, (void*)&vl);
-	window0.fullscreen_off();
-	window0.end();
-	window0.show();
-	*/
 
 	return Fl::run();
 }

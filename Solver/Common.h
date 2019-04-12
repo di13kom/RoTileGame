@@ -98,10 +98,10 @@ namespace Solver
 			//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
 			std::unordered_set<char*, hashFunc, compHashFunc> UsedList;//Checking list for used combinations
 			_Nd *Node;
-			std::vector<char*> BackList;
+			std::vector<std::vector<char>> BackList;
 			virtual int Rotate(char M, _Nd*, char) = 0;
 		public:
-			virtual std::vector<char*> FindSolution(char*) = 0;
+			virtual std::vector<std::vector<char>> FindSolution(char*) = 0;
 			Fs(int);
 			Fs() = default;
 			virtual int GetIteration() = 0;

@@ -13,7 +13,7 @@ namespace Solver
 		int Rotate(char M, _Nd*, char);
 		public:
 		BFS_Class(int);
-		std::vector<char*> FindSolution(char*);
+		std::vector<std::vector<char>> FindSolution(char*);
 		int GetIteration();
 		~BFS_Class();
 	};

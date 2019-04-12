@@ -33,7 +33,7 @@ static int s_BasicFontValue = 120;
 
 class Mybox : public Fl_Box
 {
-	std::future<std::vector<char*>> m_fut;
+	std::future<std::vector<std::vector<char>>> m_fut;
 
 	Frame m_Frame;
 	Frame m_VisualDragFrame;
@@ -43,7 +43,7 @@ class Mybox : public Fl_Box
 	int TilesInRow;
 	std::vector<Tile> Tiles;
 	std::vector<char> Solution;
-	std::vector<char*> BackList;
+	std::vector<std::vector<char>> BackList;
 
 	friend void TimerR(void*);
 	void draw();

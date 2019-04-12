@@ -23,7 +23,7 @@ namespace Solver
 		delete[] Solution;
 	}
 
-	std::vector<char*> BFS_Class::FindSolution(char* inData)
+	std::vector<std::vector<char>> BFS_Class::FindSolution(char* inData)
 	{
 		auto Comb = std::make_unique<char[]>(ElementsInRow*ElementsInRow);
 		try
@@ -56,7 +56,7 @@ namespace Solver
 		{
 			std::cout << ex.what() << std::endl;
 		}
-		return std::vector<char*>();
+		return std::vector<std::vector<char>>();
 	}
 
 	int BFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
@@ -87,7 +87,7 @@ namespace Solver
 			//std::cout<<"match with ideal\n";
 			while (Node)
 			{
-				BackList.push_back(Node->Positions.get());
+				BackList.push_back({ Node->Positions.get(),Node->Positions.get() + ElementsInRow * ElementsInRow + 1 });
 				if (Node->Parent) Node = Node->Parent;
 				else break;
 				//std::cout<<"ura\n";

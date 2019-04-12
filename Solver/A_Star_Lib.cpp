@@ -57,6 +57,13 @@ namespace Solver
 		//Check existance in UsedList
 		if (result == true || _Node->hValue == 0)
 		{
+			//auto v = GreenQueue.lower_bound(_Node);
+			//if (v == GreenQueue.begin()
+			//	&& v != GreenQueue.end()
+			//	&& v.operator*()->fValue == _Node->fValue
+			//	&& v.operator*()->hValue > _Node->hValue)
+			//	GreenQueue.emplace_hint(v, std::move(_Node));
+			//else
 			GreenQueue.insert(std::move(_Node));
 		}
 		else
@@ -92,7 +99,7 @@ namespace Solver
 		ElementsInRow = _n;
 		IterationCount = 0;
 	};
-	std::vector<char*> EFS_Class::FindSolution(char *inData)
+	std::vector<std::vector<char>> EFS_Class::FindSolution(char *inData)
 	{
 		auto Comb = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
 		try
@@ -131,7 +138,7 @@ namespace Solver
 
 					while (Node)
 					{
-						BackList.push_back(Node->Positions.get());
+						BackList.push_back({ Node->Positions.get(),Node->Positions.get() + ElementsInRow * ElementsInRow + 1 });
 						if (Node->Parent) Node = Node->Parent;
 						else break;
 					}
@@ -146,6 +153,6 @@ namespace Solver
 		{
 			std::cout << ex.what() << std::endl;
 		}
-		return std::vector<char*>();
+		return std::vector<std::vector<char>>();
 	}
 }
