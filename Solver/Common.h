@@ -73,6 +73,37 @@ namespace Solver
 		}
 	};
 
+	//Node unique_ptr impl
+	struct NodeHashFunc
+	{
+		inline size_t operator()(const std::unique_ptr<_Nd>& nd) const
+		{
+			size_t result = 0;
+			const size_t prime = 31;
+			const char* s1 = nd->Positions.get();
+			int len = strlen(s1);
+			for (size_t i = 0; i < len; ++i) {
+				result = s1[i] + (result * prime);
+			}
+			return result;
+		}
+	};
+	struct compNodeHashFunc
+	{
+		bool operator()(const std::unique_ptr<_Nd>& nd1, const std::unique_ptr<_Nd>& nd2) const
+		{
+			bool retVal;
+			char* s1 = nd1->Positions.get();
+			char* s2 = nd2->Positions.get();
+			if (strcmp(s1, s2) == 0)
+				retVal = true;
+			else
+				retVal = false;
+
+			return retVal;
+		}
+	};
+	//
 	///-----------
 	struct Comp1Func
 	{
@@ -92,19 +123,18 @@ namespace Solver
 
 	class Fs
 	{
-		protected:
-			int ElementsInRow, IterationCount;
-			char* Solution;
-			//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
-			std::unordered_set<char*, hashFunc, compHashFunc> UsedList;//Checking list for used combinations
-			_Nd *Node;
-			std::vector<std::vector<char>> BackList;
-			virtual int Rotate(char M, _Nd*, char) = 0;
-		public:
-			virtual std::vector<std::vector<char>> FindSolution(char*) = 0;
-			Fs(int);
-			Fs() = default;
-			virtual int GetIteration() = 0;
+	protected:
+		int ElementsInRow, IterationCount;
+		char* Solution;
+		//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
+		std::unordered_set<std::unique_ptr<_Nd>, NodeHashFunc, compNodeHashFunc> UsedList;//Checking list for used combinations
+		std::vector<std::vector<char>> BackList;
+		virtual int Rotate(char M, _Nd*, char) = 0;
+	public:
+		virtual std::vector<std::vector<char>> FindSolution(char*) = 0;
+		Fs(int);
+		Fs() = default;
+		virtual int GetIteration() = 0;
 	};
 
 	//void *PrgsBar(void *ptr);
