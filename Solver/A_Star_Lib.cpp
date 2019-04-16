@@ -92,6 +92,7 @@ namespace Solver
 		return Sum;
 	}
 
+	EFS_Class::~EFS_Class() {}
 	EFS_Class::EFS_Class(int _n)
 	{
 		ElementsInRow = _n;
@@ -139,8 +140,6 @@ namespace Solver
 						if (currentNode->Parent) currentNode = currentNode->Parent;
 						else break;
 					}
-					GreenQueue.clear();//Mandatory
-					//UsedList.clear();//Skip
 					return BackList;
 				}
 				//std::move(GreenQueue.begin, std::next(it), std::back_inserter(RedQueue));

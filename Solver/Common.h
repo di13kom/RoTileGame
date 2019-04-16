@@ -124,8 +124,8 @@ namespace Solver
 	class Fs
 	{
 	protected:
+		std::unique_ptr<char[]> Solution;
 		int ElementsInRow, IterationCount;
-		char* Solution;
 		//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
 		std::unordered_set<std::unique_ptr<_Nd>, NodeHashFunc, compNodeHashFunc> UsedList;//Checking list for used combinations
 		std::vector<std::vector<char>> BackList;
@@ -134,6 +134,7 @@ namespace Solver
 		virtual std::vector<std::vector<char>> FindSolution(char*) = 0;
 		Fs(int);
 		Fs() = default;
+		virtual ~Fs() = default;
 		virtual int GetIteration() = 0;
 	};
 

@@ -10,7 +10,7 @@ namespace Solver
 	{
 		ElementsInRow = _n;
 		IterationCount = 0;
-		Solution = new char[ElementsInRow*ElementsInRow];
+		Solution = std::make_unique<char[]>(ElementsInRow*ElementsInRow);
 		for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
 		{
 			//Solution.push_back(i+1);
@@ -18,10 +18,7 @@ namespace Solver
 		}
 	};
 
-	BFS_Class::~BFS_Class()
-	{
-		delete[] Solution;
-	}
+	BFS_Class::~BFS_Class() {}
 
 	std::vector<std::vector<char>> BFS_Class::FindSolution(char* inData)
 	{
@@ -78,7 +75,7 @@ namespace Solver
 		}
 		Tmp[ElementsInRow*ElementsInRow] = '\0';
 		_Node->Positions = std::move(Tmp);
-		if (std::equal(Tmp.get(), Tmp.get() + (ElementsInRow*ElementsInRow/*(ElementsInRow-1)*/), Solution))
+		if (std::equal(Tmp.get(), Tmp.get() + (ElementsInRow*ElementsInRow/*(ElementsInRow-1)*/), Solution.get()))
 		{
 			//std::cout<<"match with ideal\n";
 			while (currentNode)

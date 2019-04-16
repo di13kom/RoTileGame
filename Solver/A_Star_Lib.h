@@ -8,8 +8,9 @@ namespace Solver
 		int Calc(char, int);
 		int Rotate(char, _Nd*, char);
 		int GetManhattan(char*);
-		public:
+	public:
 		EFS_Class(int);
+		~EFS_Class();
 		int GetIteration();
 		std::vector<std::vector<char>> FindSolution(char*);
 	};
