@@ -55,7 +55,7 @@ namespace Solver
 
 	int BFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
 	{
-		_Nd* currentNode;
+		_Nd* currentNode = nullptr;
 		IterationCount++;
 		auto _Node = std::make_unique<_Nd>();
 		_Node->Parent = ParNode;
