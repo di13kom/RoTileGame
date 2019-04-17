@@ -410,7 +410,8 @@ int Mybox::handle(int e)
 						return 1;
 						*/
 					case 's':
-						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
+						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow + 1);
+						dataStr[TilesInRow*TilesInRow] = '\0';
 						std::transform(Tiles.begin()
 								, Tiles.end()
 								, dataStr.get()
@@ -424,7 +425,7 @@ int Mybox::handle(int e)
 						m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
 						m_fut = std::async(&EFS_Class::FindSolution
 									, dynamic_cast<EFS_Class*>(m_fsClass.get())
-									, dataStr.get());
+									, std::move(dataStr));
 
 						PrgsBar(nullptr);
 						BackList = m_fut.get();
@@ -541,34 +542,34 @@ void *Mybox::PrgsBar(void *ptr)
 	progress.labelcolor(FL_WHITE);
 	wind->end();
 	wd.show();
-	int t = 1;
+	float progressLineFillValue = 1;
 	bool ToLeft = true;
-	unsigned b = 10;
+	unsigned counter = 10;
 	std::future_status status;
 	do
 	{
 		status = m_fut.wait_for(std::chrono::milliseconds(100));
-		progress.value(t / 50.0);
+		progress.value(progressLineFillValue / 50.0);
 		//std::array<char,15> percent{"Processing..."};
 		char percent[15];
 		char Txt[] = "Processing...";
-		//sprintf(percent, "%d%%", int((t/500.0)*100.0));
-		strncpy(percent, Txt, b);
-		for (unsigned i = 0; i < 14 - b; i++)
+		//sprintf(percent, "%d%%", int((progressLineFillValue/500.0)*100.0));
+		strncpy(percent, Txt, counter);
+		for (unsigned i = 0; i < 14 - counter; i++)
 		{
-			percent[b + i] = ' ';
+			percent[counter + i] = ' ';
 		}
 		percent[14] = '\0';
-		b++;
-		if (b > strlen(Txt))b = 10;
+		counter++;
+		if (counter > strlen(Txt))counter = 10;
 		progress.label(percent);
 		Fl::check();
 		std::this_thread::sleep_for(0.9s);
 		//usleep(200000);
-		if (ToLeft)t++;
-		else t--;
-		if (t >= 50)ToLeft = false;
-		if (t <= 1)ToLeft = true;
+		if (ToLeft)progressLineFillValue++;
+		else progressLineFillValue--;
+		if (progressLineFillValue >= 50)ToLeft = false;
+		if (progressLineFillValue <= 1)ToLeft = true;
 	} while (status != std::future_status::ready);
 	wd.remove(&progress);
 	//delete progress;

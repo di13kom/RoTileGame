@@ -131,7 +131,7 @@ namespace Solver
 		std::vector<std::vector<char>> BackList;
 		virtual int Rotate(char M, _Nd*, char) = 0;
 	public:
-		virtual std::vector<std::vector<char>> FindSolution(char*) = 0;
+		virtual std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) = 0;
 		Fs(int);
 		Fs() = default;
 		virtual ~Fs() = default;

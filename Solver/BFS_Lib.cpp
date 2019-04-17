@@ -20,18 +20,13 @@ namespace Solver
 
 	BFS_Class::~BFS_Class() {}
 
-	std::vector<std::vector<char>> BFS_Class::FindSolution(char* inData)
+	std::vector<std::vector<char>> BFS_Class::FindSolution(std::unique_ptr<char[]> inData)
 	{
-		auto Comb = std::make_unique<char[]>(ElementsInRow*ElementsInRow);
 		try
 		{
 			auto _Node = std::make_unique<_Nd>();
-			for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
-			{
-				Comb[i] = inData[i];
-			}
-			Comb[ElementsInRow*ElementsInRow] = '\0';
-			_Node->Positions = std::move(Comb);
+			inData[ElementsInRow*ElementsInRow] = '\0';
+			_Node->Positions = std::move(inData);
 			UsedList.insert(std::move(_Node));
 			//StartRecursiveFunction
 			for (char i = 0; i < (ElementsInRow - 1); i++)

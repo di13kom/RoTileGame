@@ -12,6 +12,6 @@ namespace Solver
 		EFS_Class(int);
 		~EFS_Class();
 		int GetIteration();
-		std::vector<std::vector<char>> FindSolution(char*);
+		std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) override;
 	};
 }

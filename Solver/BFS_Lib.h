@@ -7,7 +7,7 @@ namespace Solver
 		int Rotate(char M, _Nd*, char);
 	public:
 		BFS_Class(int);
-		std::vector<std::vector<char>> FindSolution(char*);
+		std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) override;
 		int GetIteration();
 		~BFS_Class();
 	};

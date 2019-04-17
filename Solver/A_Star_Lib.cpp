@@ -98,17 +98,15 @@ namespace Solver
 		ElementsInRow = _n;
 		IterationCount = 0;
 	};
-	std::vector<std::vector<char>> EFS_Class::FindSolution(char *inData)
+	std::vector<std::vector<char>> EFS_Class::FindSolution(std::unique_ptr<char[]> inData)
 	{
-		auto Comb = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
 		try
 		{
 			_Nd* currentNode;
 			auto _Node = std::make_unique<_Nd>();
 
-			std::copy(inData, inData + ElementsInRow * ElementsInRow, Comb.get());
-			Comb[ElementsInRow*ElementsInRow] = '\0';
-			_Node->Positions = std::move(Comb);
+			inData[ElementsInRow*ElementsInRow] = '\0';
+			_Node->Positions = std::move(inData);
 			_Node->gValue = 0;
 			_Node->hValue = GetManhattan(_Node->Positions.get());
 			_Node->fValue = _Node->gValue + _Node->hValue;
