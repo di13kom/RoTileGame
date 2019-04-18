@@ -449,10 +449,11 @@ int Mybox::handle(int e)
 							   }
 							   std::cout << std::endl;
 						   }
+#endif
 							std::cout << "Solution was found through "\
 							       	<< BackList.size() - 1 << " steps in BackList\n";
 							std::cout<<"iterations: "<<m_fsClass->GetIteration()<<std::endl;
-#endif
+
 							Fl::add_timeout(0.25, TimerR, (void*)this);
 						}
 						else

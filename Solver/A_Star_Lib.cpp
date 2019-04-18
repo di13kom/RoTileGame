@@ -7,17 +7,15 @@ namespace Solver
 	{
 		return IterationCount;
 	}
-	int EFS_Class::Calc(char value, int position)
+	short int EFS_Class::Calc(char value, short int position)
 	{
-		int Dif = 0;
-		int xPositionIndex, yPositionIndex, xValueIndex, yValueIndex;
+		short int Dif = 0;
+		short int xPositionIndex, yPositionIndex, xValueIndex, yValueIndex;
 		xPositionIndex = position % ElementsInRow;
 		yPositionIndex = position / ElementsInRow;
 
-		xValueIndex = ((int)value - 1) % ElementsInRow;
-		//xValueIndex = (std::stoi(&value) - 1) % ElementsInRow;
-		yValueIndex = ((int)value - 1) / ElementsInRow;
-		//yValueIndex = (std::stoi(&value) - 1) / ElementsInRow;
+		xValueIndex = ((short int)value - 1) % ElementsInRow;
+		yValueIndex = ((short int)value - 1) / ElementsInRow;
 
 		Dif = std::abs(xValueIndex - xPositionIndex) + std::abs(yValueIndex - yPositionIndex);
 		return Dif;
@@ -72,7 +70,7 @@ namespace Solver
 	}
 
 
-	int EFS_Class::GetManhattan(char *Value)
+	short int EFS_Class::GetManhattan(char *Value)
 	{
 		/*
 		- State -
@@ -86,8 +84,8 @@ namespace Solver
 		- Sum -
 		3+3+1+0+2+2+1+1=13
 		*/
-		int Sum = 0;
-		for (int i = 0; i < ElementsInRow*ElementsInRow; i++)
+		short int Sum = 0;
+		for (short int i = 0; i < ElementsInRow*ElementsInRow; i++)
 			Sum += Calc(Value[i], i);
 		return Sum;
 	}

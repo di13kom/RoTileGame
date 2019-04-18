@@ -23,9 +23,9 @@ namespace Solver
 	struct _Nd
 	{
 		_Nd* Parent;
-		int hValue;
-		int gValue;
-		int fValue;
+		short int hValue;
+		short int gValue;
+		short int fValue;
 		std::unique_ptr<char[]> Positions;
 	};
 

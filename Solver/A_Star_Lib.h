@@ -5,9 +5,9 @@ namespace Solver
 	class EFS_Class :public Fs
 	{
 		std::multiset<_Nd *, Comp1Func> GreenQueue;//Checking list for used combinations
-		int Calc(char, int);
+		short int Calc(char, short int);
 		int Rotate(char, _Nd*, char);
-		int GetManhattan(char*);
+		short int GetManhattan(char*);
 	public:
 		EFS_Class(int);
 		~EFS_Class();
