@@ -16,6 +16,7 @@
 #include "Frame.h"
 
 #include <fstream>
+#include <regex>
 #include <signal.h>
 #include <thread>
 #include <future>

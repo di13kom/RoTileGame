@@ -439,7 +439,7 @@ int Mybox::handle(int e)
 						std::cout << "Time elapsed: " << diff.count()<<std::endl;
 						if (BackList.size() > 0)
 						{
-							fl_message("Solution was found through %d steps", BackList.size() - 1);
+							fl_message("Solution was found through %lu steps", BackList.size() - 1);
 #ifdef DEBUGLOG
 							int _Tmp;
 
@@ -693,6 +693,13 @@ void OpenFileAndLaunch()
 {
 	std::fstream inFile;
 	std::string linecontent;
+	std::regex reg("(\\d{1,2})");
+	std::smatch reg_match;
+	std::vector<int> retVal;
+	int linesCount = 0;
+	int prevRowsCount = 0;
+	int curRowsCount = 0;
+	int inputValuesCount;
 
 	inFile.open(s_FileName, std::ifstream::in);
 	if (!inFile.is_open())
@@ -700,7 +707,36 @@ void OpenFileAndLaunch()
 
 	while (std::getline(inFile, linecontent))
 	{
+		linesCount++;
+		curRowsCount = 0;
+		std::cout<<"Line: "<<linecontent<<std::endl;
+		while(std::regex_search(linecontent, reg_match, reg))
+		{
+			//std::cout<<"match size:"<<reg_match.size()<<std::endl;
+			int vl = stoi(reg_match[1]);
+			auto itr = std::find(std::begin(retVal), std::end(retVal), vl);
+			if(itr == retVal.end())
+				retVal.push_back(vl);
+			else
+				Fl::fatal("duplicate value in '%s' file", s_FileName);
+			curRowsCount++;
+			linecontent = reg_match.suffix().str();
+		}
+		if(prevRowsCount > 0 && prevRowsCount != curRowsCount)
+			Fl::fatal("mismatch of rows count in lines in '%s' file", s_FileName);
+		else
+			prevRowsCount = curRowsCount;
 	}
+	if(prevRowsCount != linesCount)
+		Fl::fatal("mismatch of rows - lines in '%s' file", s_FileName);
+	inputValuesCount = retVal.size();
+	for(int i = 1; i < inputValuesCount; i++)
+	{
+		auto itr = std::find(std::begin(retVal), std::end(retVal), i);
+		if(itr == retVal.end())
+			Fl::fatal("fail on sorting values in '%s' file", s_FileName);
+	}
+
 
 	inFile.close();
 }
