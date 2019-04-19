@@ -15,6 +15,7 @@
 #include "Tile.h"
 #include "Frame.h"
 
+#include <fstream>
 #include <signal.h>
 #include <thread>
 #include <future>

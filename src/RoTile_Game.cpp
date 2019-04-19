@@ -1,5 +1,9 @@
 #include "RoTile_Game.h"
 using namespace std::chrono_literals;
+//args
+int helpFlag = 0;
+char *s_FileName = nullptr;
+//
 int L;
 Fl_Double_Window *wind;
 
@@ -685,15 +689,79 @@ void callBack(Fl_Widget *wg, void *inp)
 	}
 }
 
-int main()
+void OpenFileAndLaunch()
+{
+	std::fstream inFile;
+	std::string linecontent;
+
+	inFile.open(s_FileName, std::ifstream::in);
+	if (!inFile.is_open())
+		Fl::fatal("error on open '%s' file",s_FileName);
+
+	while (std::getline(inFile, linecontent))
+	{
+	}
+
+	inFile.close();
+}
+int arg(int argc, char **argv, int &i)
+{
+	if (strcmp("-h", argv[i]) == 0 || strcmp("--help", argv[i]) == 0) 
+	{
+		helpFlag = 1;
+		i += 1;
+		return 1;
+	}
+	if (strcmp("-f", argv[i]) == 0 || strcmp("--file", argv[i]) == 0) 
+	{
+		if (i < argc - 1 && argv[i + 1] != 0) {
+			s_FileName = argv[i + 1];
+			i += 2;
+			return 2;
+		}
+	}
+	return 0;
+}
+
+int main(int argc, char** argv)
 {
 	Fl::scheme("gtk+");
+
+	//
+	int i = 1;
+	if (Fl::args(argc, argv, i, arg) < argc)
+	{
+		// note the concatenated strings to give a single format string!
+		Fl::fatal("error: unknown option: %s\n"
+			"usage: %s [options]\n"
+			" -h | --help : print help message\n"
+			" -f | --file : specify file \n"
+			" plus standard fltk options\n",
+			argv[i], argv[0]);
+	}
+	if (helpFlag)
+	{
+		Fl::fatal("usage: %s [options]\n"
+			" -h | --help : print help message\n"
+			" -f | --file : specify file \n"
+			" plus standard fltk options:\n"
+			"%s\n",
+			argv[0], Fl::help);
+	}
+	//
 
 	Fl_Double_Window windowX(0, 0, 800, 600, "Rotate N-Tiles Game");
 	Fl_Box lbl(FL_EMBOSSED_BOX, 10, 215, 180, 30, "value from 3 to 9");
 	Fl_Int_Input vl(10, 250, 180, 30);
 	Fl_Return_Button btn(10, 285, 180, 30, "Ok");
-	btn.callback(callBack, (void*)&vl);
+	if (s_FileName != nullptr)
+	{
+		OpenFileAndLaunch();
+	}
+	else
+	{
+		btn.callback(callBack, (void*)&vl);
+	}
 	/*
 	Fl_Menu_Bar menu(0, 0, 800, 25);
 	menu.add("&File/&Open", "^o", nullptr);
