@@ -693,7 +693,7 @@ void OpenFileAndLaunch()
 {
 	std::fstream inFile;
 	std::string linecontent;
-	std::regex reg("(\\d{1,2})");
+	std::regex reg("(\\d{1,2})(?,|$)");
 	std::smatch reg_match;
 	std::vector<int> retVal;
 	int linesCount = 0;
