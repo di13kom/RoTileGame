@@ -833,6 +833,7 @@ int main(int argc, char** argv)
 			Fl::error(s_FileNameOpt.second.c_str());
 			btn.callback(callBack, (void*)&vl);
 		}
+		else
 		{
 			Mb.SetTilesValue(valuesVector);
 			vl.deactivate();
