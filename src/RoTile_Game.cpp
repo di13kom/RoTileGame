@@ -3,6 +3,7 @@ using namespace std::chrono_literals;
 //args
 int helpFlag = 0;
 char *s_FileName = nullptr;
+std::pair<std::string, std::string> s_FileNameOpt;
 //
 int L;
 Fl_Double_Window *wind;
@@ -86,29 +87,20 @@ void Mybox::draw()
 	}
 }
 
-void Mybox::SetTilesValue(int elemsCount)
+void Mybox::SetTilesValue(std::vector<int> inValues)
 {
 	int xPos;
 	int yPos;
 	int p = 0;
 	bool isBorderTile;
-	std::vector<char> Numb(elemsCount * elemsCount);
 	//int FrmPosNum;
 	color(FL_LIGHT1);
 
 	GameState = GameStateEnum::Initialization;
 
-	TilesInRow = elemsCount;
+	TilesInRow = std::sqrt(inValues.size());
 	Tile::FontSize = s_BasicFontValue / TilesInRow;
 
-	std::iota(Numb.begin(), Numb.end(), 1);
-	std::copy(Numb.begin(), Numb.end(), std::back_inserter(Solution));
-	//
-	//std::sort(std::begin(Numb), std::end(Numb), std::greater<char>());
-
-	std::random_device rd;
-	std::mt19937 g(rd());
-	std::shuffle(Numb.begin(), Numb.end(), g);
 	//
 	Tile::Width_Height = ((m_MainTableWidthHeight - s_MainTablePadding * 2)\
 				- (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
@@ -119,29 +111,29 @@ void Mybox::SetTilesValue(int elemsCount)
 	{
 		for (int j = 0; j < TilesInRow; j++)
 		{
-			if(i == TilesInRow - 1 || j == TilesInRow -1)
+			if (i == TilesInRow - 1 || j == TilesInRow - 1)
 				isBorderTile = true;
 			else
 				isBorderTile = false;
 
 			xPos = (m_MainTableXpos + s_MainTablePadding + s_FramePadding)\
-			       + j * s_InterTileDistance + j * Tile::Width_Height;
+				+ j * s_InterTileDistance + j * Tile::Width_Height;
 			yPos = (m_MainTableYpos + s_MainTablePadding + s_FramePadding)\
-			       + i * s_InterTileDistance + i * Tile::Width_Height;
+				+ i * s_InterTileDistance + i * Tile::Width_Height;
 
 			Tiles.emplace_back(Tile(xPos
-						, yPos
-						, Tile::Width_Height
-						, Tile::Width_Height
-						, isBorderTile
-						, FL_GREEN
-						, Tile::FontSize
-						, Numb[p++]));
+				, yPos
+				, Tile::Width_Height
+				, Tile::Width_Height
+				, isBorderTile
+				, FL_GREEN
+				, Tile::FontSize
+				, static_cast<char>(inValues[p++])));
 		}
 	}
 
 	SetFramePositionByTileIndex(0);
-	
+
 	m_Frame.SetColor(FL_RED);
 	redraw();
 }
@@ -157,317 +149,317 @@ int Mybox::handle(int e)
 	std::chrono::duration<double> diff;
 	switch (e)
 	{
-		case FL_PUSH:
+	case FL_PUSH:
+	{
+		if (Fl::event_button() == FL_LEFT_MOUSE)
+		{
+			if (Fl::event_inside(m_Frame.GetX()
+				, m_Frame.GetY()
+				, Frame::Width_Height
+				, Frame::Width_Height))
 			{
-				if(Fl::event_button() == FL_LEFT_MOUSE)
-				{
-					if(Fl::event_inside(m_Frame.GetX()
-								, m_Frame.GetY()
-								, Frame::Width_Height
-								, Frame::Width_Height))
-					{
-						GameState = GameStateEnum::FrameDragging;
-						m_VisualDragFrame = m_Frame;
-					}
-				}
-				else if(Fl::event_button() == FL_RIGHT_MOUSE)
-				{
-					auto itr = std::find_if(Tiles.begin()
-								, Tiles.end()
-								, [&](const Tile& box)
-									{
-										return Fl::event_inside(box.GetX()
-												, box.GetY()
-												, Tile::Width_Height
-												, Tile::Width_Height)
-										&& Fl::event_inside(m_Frame.GetX()
-												, m_Frame.GetY()
-												, Frame::Width_Height
-												, Frame::Width_Height);
-									});
-					if(itr != Tiles.end())
-					{
-						bool IsLeftTile;
-						bool IsUpperTile;
-
-						std::vector<Tile>::iterator ULpairItr = itr;
-
-						//if(prevIter->GetX()>m_Frame.GetX() 
-						//&& prevIter->GetX()<m_Frame.GetX() + Frame::Width_Height)
-						if(itr->GetX()>m_Frame.GetX() + Frame::Width_Height/2)
-						{
-							//std::cout<<"right tile\n";
-							IsLeftTile = false;
-						}
-						else
-						{
-							//std::cout<<"left tile\n";
-							IsLeftTile = true;
-						}
-						if(itr->GetY()<m_Frame.GetY() + Frame::Width_Height/2)
-						{
-							IsUpperTile = true;
-							//std::cout<<"upper tile\n";
-						}
-						else
-						{
-							IsUpperTile = false;
-							//std::cout<<"lower tile\n";
-						}
-
-						if(IsLeftTile == true)
-						{
-							auto LRpairItr = std::next(itr);
-							LRpairItr->SetColor(FL_BLUE);
-
-						}
-						else
-						{
-							auto LRpairItr = std::prev(itr);
-							LRpairItr->SetColor(FL_BLUE);
-
-						}
-						if(IsUpperTile == true)
-						{
-							std::advance(ULpairItr, TilesInRow);
-							ULpairItr->SetColor(FL_BLUE);
-						}
-						else
-						{
-							std::advance(ULpairItr, -TilesInRow);
-							ULpairItr->SetColor(FL_BLUE);
-						}
-						redraw();
-
-						//std::cout<<"Inside"<<std::endl;
-
-						m_VisualDragTile = *itr;
-
-						GameState = GameStateEnum::TileDragging;
-					}
-					//else
-					//	std::cout<<"Outside"<<std::endl;
-				}
-				return 1;
+				GameState = GameStateEnum::FrameDragging;
+				m_VisualDragFrame = m_Frame;
 			}
-		case FL_DRAG:
+		}
+		else if (Fl::event_button() == FL_RIGHT_MOUSE)
+		{
+			auto itr = std::find_if(Tiles.begin()
+				, Tiles.end()
+				, [&](const Tile& box)
 			{
-				switch(GameState)
+				return Fl::event_inside(box.GetX()
+					, box.GetY()
+					, Tile::Width_Height
+					, Tile::Width_Height)
+					&& Fl::event_inside(m_Frame.GetX()
+						, m_Frame.GetY()
+						, Frame::Width_Height
+						, Frame::Width_Height);
+			});
+			if (itr != Tiles.end())
+			{
+				bool IsLeftTile;
+				bool IsUpperTile;
+
+				std::vector<Tile>::iterator ULpairItr = itr;
+
+				//if(prevIter->GetX()>m_Frame.GetX() 
+				//&& prevIter->GetX()<m_Frame.GetX() + Frame::Width_Height)
+				if (itr->GetX() > m_Frame.GetX() + Frame::Width_Height / 2)
 				{
-					case GameStateEnum::FrameDragging:
-					{
-						m_VisualDragFrame.SetX(Fl::event_x() - Frame::Width_Height/2);
-						m_VisualDragFrame.SetY(Fl::event_y() - Frame::Width_Height/2);
-						redraw();
-						break;
-					}
-					case GameStateEnum::TileDragging:
-					{
-						m_VisualDragTile.SetX(Fl::event_x() - Tile::Width_Height/2);
-						m_VisualDragTile.SetY(Fl::event_y() - Tile::Width_Height/2);
-						redraw();
-						break;
-					}
-					default:
-						break;
+					//std::cout<<"right tile\n";
+					IsLeftTile = false;
 				}
-				return 1;
-			}
-		case FL_RELEASE:
-			{
-				switch(GameState)
+				else
 				{
-					case GameStateEnum::FrameDragging:
-					{
-						auto itr = std::find_if(Tiles.begin(), Tiles.end(), [&](const Tile& box)
-							{
-								return Fl::event_inside(box.GetX()
-										, box.GetY()
-										, Frame::Width_Height - s_FramePadding*2
-										, Frame::Width_Height - s_FramePadding*2)
-									&&
-										box.GetIsBorderTile() == false;
-								;
-							});
-						if(itr != Tiles.end())
-						{
-							//std::cout<<"Frame found\n";
-							m_Frame.SetX(itr->GetX() - s_FramePadding);
-							m_Frame.SetY(itr->GetY() - s_FramePadding);
-						}
-						GameState = GameStateEnum::Normal;
-						redraw();
-						break;
-					}
-					case GameStateEnum::TileDragging:
-					{
-						//auto LRpairItr = std::next(itr);
-						//LRpairItr->SetColor(FL_BLUE);
-						for(auto& vl : Tiles)
-						{
-							vl.SetColor(FL_GREEN);
-						}
-
-						GameState = GameStateEnum::Normal;
-						redraw();
-						break;
-					}
-					default:
-						break;
+					//std::cout<<"left tile\n";
+					IsLeftTile = true;
 				}
-				return 1;
-			}
-		case FL_SHORTCUT:
-			{
-				switch (Fl::event_key())
+				if (itr->GetY() < m_Frame.GetY() + Frame::Width_Height / 2)
 				{
-					case FL_Left:
-						xTmp = m_Frame.GetX() - (Tile::Width_Height + s_InterTileDistance);
-						if (xTmp < m_MainTableXpos + s_MainTablePadding)
-							xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
-							       * s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
-						m_Frame.SetX(xTmp);
-						redraw();
+					IsUpperTile = true;
+					//std::cout<<"upper tile\n";
+				}
+				else
+				{
+					IsUpperTile = false;
+					//std::cout<<"lower tile\n";
+				}
 
-						return 1;
-					case FL_Right:
-						xTmp = m_Frame.GetX() + (Tile::Width_Height + s_InterTileDistance);
-						if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
-								* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
-							xTmp = m_MainTableXpos + s_MainTablePadding;
-						m_Frame.SetX(xTmp);
-						redraw();
+				if (IsLeftTile == true)
+				{
+					auto LRpairItr = std::next(itr);
+					LRpairItr->SetColor(FL_BLUE);
 
-						return 1;
-					case FL_Up:
-						yTmp = m_Frame.GetY() - (Tile::Width_Height + s_InterTileDistance);
-						if (yTmp < m_MainTableYpos + s_MainTablePadding)
-							yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
-							       * s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
-						m_Frame.SetY(yTmp);
-						redraw();
+				}
+				else
+				{
+					auto LRpairItr = std::prev(itr);
+					LRpairItr->SetColor(FL_BLUE);
 
-						return 1;
-					case FL_Down:
-						yTmp = m_Frame.GetY() + (Tile::Width_Height + s_InterTileDistance);
-						if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
-								* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
-							yTmp = m_MainTableYpos + s_MainTablePadding;
-						m_Frame.SetY(yTmp);
-						redraw();
+				}
+				if (IsUpperTile == true)
+				{
+					std::advance(ULpairItr, TilesInRow);
+					ULpairItr->SetColor(FL_BLUE);
+				}
+				else
+				{
+					std::advance(ULpairItr, -TilesInRow);
+					ULpairItr->SetColor(FL_BLUE);
+				}
+				redraw();
 
-						return 1;
-					case 'x':
-						TurnRight(GetFrameLeftUpperPosition());
-						redraw();
-						CheckSolution();
-						return 1;
-					case 'z':
-						TurnLeft(GetFrameLeftUpperPosition());
-						redraw();
-						CheckSolution();
-						return 1;
-						/* Too much memory consume
-					case 'a':
+				//std::cout<<"Inside"<<std::endl;
 
-						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
-						std::transform(Tiles.begin()
-								, Tiles.end()
-								, dataStr.get()
-								, [](const Tile& box)
-								{
-									return box.GetData();
-								});
+				m_VisualDragTile = *itr;
 
-						start = std::chrono::system_clock::now();
+				GameState = GameStateEnum::TileDragging;
+			}
+			//else
+			//	std::cout<<"Outside"<<std::endl;
+		}
+		return 1;
+	}
+	case FL_DRAG:
+	{
+		switch (GameState)
+		{
+		case GameStateEnum::FrameDragging:
+		{
+			m_VisualDragFrame.SetX(Fl::event_x() - Frame::Width_Height / 2);
+			m_VisualDragFrame.SetY(Fl::event_y() - Frame::Width_Height / 2);
+			redraw();
+			break;
+		}
+		case GameStateEnum::TileDragging:
+		{
+			m_VisualDragTile.SetX(Fl::event_x() - Tile::Width_Height / 2);
+			m_VisualDragTile.SetY(Fl::event_y() - Tile::Width_Height / 2);
+			redraw();
+			break;
+		}
+		default:
+			break;
+		}
+		return 1;
+	}
+	case FL_RELEASE:
+	{
+		switch (GameState)
+		{
+		case GameStateEnum::FrameDragging:
+		{
+			auto itr = std::find_if(Tiles.begin(), Tiles.end(), [&](const Tile& box)
+			{
+				return Fl::event_inside(box.GetX()
+					, box.GetY()
+					, Frame::Width_Height - s_FramePadding * 2
+					, Frame::Width_Height - s_FramePadding * 2)
+					&&
+					box.GetIsBorderTile() == false;
+				;
+			});
+			if (itr != Tiles.end())
+			{
+				//std::cout<<"Frame found\n";
+				m_Frame.SetX(itr->GetX() - s_FramePadding);
+				m_Frame.SetY(itr->GetY() - s_FramePadding);
+			}
+			GameState = GameStateEnum::Normal;
+			redraw();
+			break;
+		}
+		case GameStateEnum::TileDragging:
+		{
+			//auto LRpairItr = std::next(itr);
+			//LRpairItr->SetColor(FL_BLUE);
+			for (auto& vl : Tiles)
+			{
+				vl.SetColor(FL_GREEN);
+			}
 
-						m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
-						m_fut = std::async(&BFS_Class::FindSolution
-									, dynamic_cast<BFS_Class*>(m_fsClass.get())
-									, dataStr.get());
+			GameState = GameStateEnum::Normal;
+			redraw();
+			break;
+		}
+		default:
+			break;
+		}
+		return 1;
+	}
+	case FL_SHORTCUT:
+	{
+		switch (Fl::event_key())
+		{
+		case FL_Left:
+			xTmp = m_Frame.GetX() - (Tile::Width_Height + s_InterTileDistance);
+			if (xTmp < m_MainTableXpos + s_MainTablePadding)
+				xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
+				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
+			m_Frame.SetX(xTmp);
+			redraw();
 
-						PrgsBar(nullptr);
-						BackList = m_fut.get();
+			return 1;
+		case FL_Right:
+			xTmp = m_Frame.GetX() + (Tile::Width_Height + s_InterTileDistance);
+			if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
+				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
+				xTmp = m_MainTableXpos + s_MainTablePadding;
+			m_Frame.SetX(xTmp);
+			redraw();
 
-						end = std::chrono::system_clock::now();
-						diff = end - start;
-						std::cout << "Time elapsed: " << diff.count()<<std::endl;
+			return 1;
+		case FL_Up:
+			yTmp = m_Frame.GetY() - (Tile::Width_Height + s_InterTileDistance);
+			if (yTmp < m_MainTableYpos + s_MainTablePadding)
+				yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
+				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
+			m_Frame.SetY(yTmp);
+			redraw();
 
-						if (BackList.size() > 0)
-						{
-							std::cout << "Solution was found through " \
-								<< BackList.size() - 1 << " steps in BackList\n";
-							fl_message("Solution was found through %d steps", BackList.size() - 1);
-							//std::cout<<"iterations: "<<L<<std::endl;
-							//for(unsigned i=0;i<BackList.size();i++)
-							//{
-							//	std::cout<<std::endl;
-							//	for(int j=0;j<TilesInRow*TilesInRow;j++)
-							//		std::cout<<(int)BackList[i][j];
-							//}
-						}
-						else
-						{
-							fl_message("solution is not found");
-							std::cout << "solution is not found\n";
-						}
-						return 1;
-						*/
-					case 's':
-						dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow + 1);
-						dataStr[TilesInRow*TilesInRow] = '\0';
-						std::transform(Tiles.begin()
-								, Tiles.end()
-								, dataStr.get()
-								, [](const Tile& box)
-								{
-									return box.GetData();
-								});
+			return 1;
+		case FL_Down:
+			yTmp = m_Frame.GetY() + (Tile::Width_Height + s_InterTileDistance);
+			if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
+				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
+				yTmp = m_MainTableYpos + s_MainTablePadding;
+			m_Frame.SetY(yTmp);
+			redraw();
 
-						start = std::chrono::system_clock::now();
+			return 1;
+		case 'x':
+			TurnRight(GetFrameLeftUpperPosition());
+			redraw();
+			CheckSolution();
+			return 1;
+		case 'z':
+			TurnLeft(GetFrameLeftUpperPosition());
+			redraw();
+			CheckSolution();
+			return 1;
+			/* Too much memory consume
+		case 'a':
 
-						m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
-						m_fut = std::async(&EFS_Class::FindSolution
-									, dynamic_cast<EFS_Class*>(m_fsClass.get())
-									, std::move(dataStr));
+			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
+			std::transform(Tiles.begin()
+					, Tiles.end()
+					, dataStr.get()
+					, [](const Tile& box)
+					{
+						return box.GetData();
+					});
 
-						PrgsBar(nullptr);
-						BackList = m_fut.get();
+			start = std::chrono::system_clock::now();
 
-						end = std::chrono::system_clock::now();
-						diff = end - start;
-						std::cout << "Time elapsed: " << diff.count()<<std::endl;
-						if (BackList.size() > 0)
-						{
-							fl_message("Solution was found through %lu steps", BackList.size() - 1);
+			m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
+			m_fut = std::async(&BFS_Class::FindSolution
+						, dynamic_cast<BFS_Class*>(m_fsClass.get())
+						, dataStr.get());
+
+			PrgsBar(nullptr);
+			BackList = m_fut.get();
+
+			end = std::chrono::system_clock::now();
+			diff = end - start;
+			std::cout << "Time elapsed: " << diff.count()<<std::endl;
+
+			if (BackList.size() > 0)
+			{
+				std::cout << "Solution was found through " \
+					<< BackList.size() - 1 << " steps in BackList\n";
+				fl_message("Solution was found through %d steps", BackList.size() - 1);
+				//std::cout<<"iterations: "<<L<<std::endl;
+				//for(unsigned i=0;i<BackList.size();i++)
+				//{
+				//	std::cout<<std::endl;
+				//	for(int j=0;j<TilesInRow*TilesInRow;j++)
+				//		std::cout<<(int)BackList[i][j];
+				//}
+			}
+			else
+			{
+				fl_message("solution is not found");
+				std::cout << "solution is not found\n";
+			}
+			return 1;
+			*/
+		case 's':
+			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow + 1);
+			dataStr[TilesInRow*TilesInRow] = '\0';
+			std::transform(Tiles.begin()
+				, Tiles.end()
+				, dataStr.get()
+				, [](const Tile& box)
+			{
+				return box.GetData();
+			});
+
+			start = std::chrono::system_clock::now();
+
+			m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
+			m_fut = std::async(&EFS_Class::FindSolution
+				, dynamic_cast<EFS_Class*>(m_fsClass.get())
+				, std::move(dataStr));
+
+			PrgsBar(nullptr);
+			BackList = m_fut.get();
+
+			end = std::chrono::system_clock::now();
+			diff = end - start;
+			std::cout << "Time elapsed: " << diff.count() << std::endl;
+			if (BackList.size() > 0)
+			{
+				fl_message("Solution was found through %lu steps", BackList.size() - 1);
 #ifdef DEBUGLOG
-							int _Tmp;
+				int _Tmp;
 
-						   for (int i = BackList.size() - 1; i >= 0; i--)
-						   {
-							   for (auto k = 0; k < TilesInRow*TilesInRow; k++)
-							   {
-								   if (k % TilesInRow == 0)std::cout << "\n";
-								   _Tmp = (int)BackList[i][k];
-								   std::cout << std::setw(2) << _Tmp << " ";
-							   }
-							   std::cout << std::endl;
-						   }
-#endif
-							std::cout << "Solution was found through "\
-							       	<< BackList.size() - 1 << " steps in BackList\n";
-							std::cout<<"iterations: "<<m_fsClass->GetIteration()<<std::endl;
-
-							Fl::add_timeout(0.25, TimerR, (void*)this);
-						}
-						else
-						{
-							fl_message("solution is not found");
-							std::cout << "solution is not found\n";
-						}
-						return 1;
+				for (int i = BackList.size() - 1; i >= 0; i--)
+				{
+					for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+					{
+						if (k % TilesInRow == 0)std::cout << "\n";
+						_Tmp = (int)BackList[i][k];
+						std::cout << std::setw(2) << _Tmp << " ";
+					}
+					std::cout << std::endl;
 				}
+#endif
+				std::cout << "Solution was found through "\
+					<< BackList.size() - 1 << " steps in BackList\n";
+				std::cout << "iterations: " << m_fsClass->GetIteration() << std::endl;
+
+				Fl::add_timeout(0.25, TimerR, (void*)this);
 			}
+			else
+			{
+				fl_message("solution is not found");
+				std::cout << "solution is not found\n";
+			}
+			return 1;
+		}
+	}
 	}
 	return 0;
 }
@@ -655,6 +647,22 @@ static void TimerR(void* UserData)
 
 }
 
+std::vector<int> CreateRandomField(int elemsCount)
+{
+	std::vector<int> retVal(elemsCount * elemsCount);
+
+	std::iota(retVal.begin(), retVal.end(), 1);
+	//std::copy(retVal.begin(), retVal.end(), std::back_inserter(Solution));
+	//
+	//std::sort(std::begin(retVal), std::end(retVal), std::greater<char>());
+
+	std::random_device rd;
+	std::mt19937 g(rd());
+	std::shuffle(retVal.begin(), retVal.end(), g);
+
+	return retVal;
+}
+
 void callBack(Fl_Widget *wg, void *inp)
 {
 	auto* inpt = dynamic_cast<Fl_Int_Input*>(wind->child(1));
@@ -662,9 +670,9 @@ void callBack(Fl_Widget *wg, void *inp)
 	auto* mb = dynamic_cast<Mybox*>(wind->child(3));
 
 	int vl = atoi(inpt->value());
-	if(vl >= 3 && vl <= 9)
+	if (vl >= 3 && vl <= 9)
 	{
-		mb->SetTilesValue(vl);
+		mb->SetTilesValue(CreateRandomField(vl));
 
 		inpt->deactivate();
 		//inpt->clear_visible_focus();
@@ -689,7 +697,7 @@ void callBack(Fl_Widget *wg, void *inp)
 	}
 }
 
-void OpenFileAndLaunch()
+std::vector<int> OpenFileAndLaunch(char * fileName)
 {
 	std::fstream inFile;
 	std::string linecontent;
@@ -701,54 +709,72 @@ void OpenFileAndLaunch()
 	int curRowsCount = 0;
 	int inputValuesCount;
 
-	inFile.open(s_FileName, std::ifstream::in);
+	inFile.open(fileName, std::ifstream::in);
 	if (!inFile.is_open())
-		Fl::fatal("error on open '%s' file",s_FileName);
-
-	while (std::getline(inFile, linecontent))
 	{
-		linesCount++;
-		curRowsCount = 0;
-		std::cout<<"Line: "<<linecontent<<std::endl;
-		while(std::regex_search(linecontent, reg_match, reg))
+		s_FileNameOpt.second = "error on open '%s' file";
+	}
+	else
+	{
+		while (std::getline(inFile, linecontent))
 		{
-			//std::cout<<"match size:"<<reg_match.size()<<std::endl;
-			int vl = stoi(reg_match[1]);
-			auto itr = std::find(std::begin(retVal), std::end(retVal), vl);
-			if(itr == retVal.end())
-				retVal.push_back(vl);
+			linesCount++;
+			curRowsCount = 0;
+			std::cout << "Line: " << linecontent << std::endl;
+			while (std::regex_search(linecontent, reg_match, reg))
+			{
+				//std::cout<<"match size:"<<reg_match.size()<<std::endl;
+				int vl = stoi(reg_match[1]);
+				auto itr = std::find(std::begin(retVal), std::end(retVal), vl);
+				if (itr == retVal.end())
+					retVal.push_back(vl);
+				else
+				{
+					s_FileNameOpt.second = "duplicate values in file";
+					return std::vector<int>();
+				}
+				curRowsCount++;
+				linecontent = reg_match.suffix().str();
+			}
+			if (prevRowsCount > 0 && prevRowsCount != curRowsCount)
+			{
+				s_FileNameOpt.second = "mismatch of rows count in lines";
+				return std::vector<int>();
+			}
 			else
-				Fl::fatal("duplicate value in '%s' file", s_FileName);
-			curRowsCount++;
-			linecontent = reg_match.suffix().str();
+				prevRowsCount = curRowsCount;
 		}
-		if(prevRowsCount > 0 && prevRowsCount != curRowsCount)
-			Fl::fatal("mismatch of rows count in lines in '%s' file", s_FileName);
-		else
-			prevRowsCount = curRowsCount;
-	}
-	if(prevRowsCount != linesCount)
-		Fl::fatal("mismatch of rows - lines in '%s' file", s_FileName);
-	inputValuesCount = retVal.size();
-	for(int i = 1; i < inputValuesCount; i++)
-	{
-		auto itr = std::find(std::begin(retVal), std::end(retVal), i);
-		if(itr == retVal.end())
-			Fl::fatal("fail on sorting values in '%s' file", s_FileName);
+		if (prevRowsCount != linesCount)
+		{
+			s_FileNameOpt.second = "mismatch of rows count in lines";
+			return std::vector<int>();
+		}
+		inputValuesCount = retVal.size();
+		for (int i = 1; i < inputValuesCount; i++)
+		{
+			auto itr = std::find(std::begin(retVal), std::end(retVal), i);
+			if (itr == retVal.end())
+			{
+				s_FileNameOpt.second = "fail on sorting values in file";
+				return std::vector<int>();
+			}
+		}
+
 	}
 
-
-	inFile.close();
+	return retVal;
+	//inFile.close();
 }
-int arg(int argc, char **argv, int &i)
+
+int ArgsHandler(int argc, char **argv, int &i)
 {
-	if (strcmp("-h", argv[i]) == 0 || strcmp("--help", argv[i]) == 0) 
+	if (strcmp("-h", argv[i]) == 0 || strcmp("--help", argv[i]) == 0)
 	{
 		helpFlag = 1;
 		i += 1;
 		return 1;
 	}
-	if (strcmp("-f", argv[i]) == 0 || strcmp("--file", argv[i]) == 0) 
+	if (strcmp("-f", argv[i]) == 0 || strcmp("--file", argv[i]) == 0)
 	{
 		if (i < argc - 1 && argv[i + 1] != 0) {
 			s_FileName = argv[i + 1];
@@ -765,7 +791,7 @@ int main(int argc, char** argv)
 
 	//
 	int i = 1;
-	if (Fl::args(argc, argv, i, arg) < argc)
+	if (Fl::args(argc, argv, i, ArgsHandler) < argc)
 	{
 		// note the concatenated strings to give a single format string!
 		Fl::fatal("error: unknown option: %s\n"
@@ -790,14 +816,6 @@ int main(int argc, char** argv)
 	Fl_Box lbl(FL_EMBOSSED_BOX, 10, 215, 180, 30, "value from 3 to 9");
 	Fl_Int_Input vl(10, 250, 180, 30);
 	Fl_Return_Button btn(10, 285, 180, 30, "Ok");
-	if (s_FileName != nullptr)
-	{
-		OpenFileAndLaunch();
-	}
-	else
-	{
-		btn.callback(callBack, (void*)&vl);
-	}
 	/*
 	Fl_Menu_Bar menu(0, 0, 800, 25);
 	menu.add("&File/&Open", "^o", nullptr);
@@ -805,6 +823,28 @@ int main(int argc, char** argv)
 	*/
 	wind = &windowX;
 	Mybox Mb(FL_DOWN_BOX, 250, 50, 500);
+
+	if (s_FileName != nullptr)
+	{
+		auto valuesVector = OpenFileAndLaunch(s_FileName);
+		if (s_FileNameOpt.second.empty() == false)
+		{
+			//Fl::fatal(s_FileNameOpt.second.c_str());
+			Fl::error(s_FileNameOpt.second.c_str());
+			btn.callback(callBack, (void*)&vl);
+		}
+		{
+			Mb.SetTilesValue(valuesVector);
+			vl.deactivate();
+			btn.deactivate();
+			Mb.active();
+			Mb.show();
+		}
+	}
+	else
+	{
+		btn.callback(callBack, (void*)&vl);
+	}
 	windowX.end();
 	windowX.show();
 

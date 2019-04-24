@@ -59,6 +59,6 @@ class Mybox : public Fl_Box
 public:
 	Mybox(Fl_Boxtype bt, int, int, int);
 	~Mybox();
-	void SetTilesValue(int elemsCount);
+	void SetTilesValue(std::vector<int>);
 };
 
