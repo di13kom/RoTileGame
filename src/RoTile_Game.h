@@ -33,6 +33,16 @@ static int s_InterTileDistance = 10;
 static int s_MainTablePadding = 35;
 static int s_BasicFontValue = 120;
 
+char *s_FileName = nullptr;
+//args
+int helpFlag = 0;
+
+struct ParseFileValue
+{
+	std::vector<int> Values;
+	std::string ErrorMsg;
+};
+
 class Mybox : public Fl_Box
 {
 	std::future<std::vector<std::vector<char>>> m_fut;

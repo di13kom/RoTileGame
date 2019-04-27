@@ -1,9 +1,5 @@
 #include "RoTile_Game.h"
 using namespace std::chrono_literals;
-//args
-int helpFlag = 0;
-char *s_FileName = nullptr;
-std::pair<std::string, std::string> s_FileNameOpt;
 //
 int L;
 Fl_Double_Window *wind;
@@ -431,7 +427,7 @@ int Mybox::handle(int e)
 			std::cout << "Time elapsed: " << diff.count() << std::endl;
 			if (BackList.size() > 0)
 			{
-				fl_message("Solution was found through %ui steps", BackList.size() - 1);
+				fl_message("Solution was found through %u steps", BackList.size() - 1);
 #ifdef DEBUGLOG
 				int _Tmp;
 
@@ -697,23 +693,25 @@ void callBack(Fl_Widget *wg, void *inp)
 	}
 }
 
-std::vector<int> OpenFileAndLaunch(char * fileName)
+ParseFileValue OpenFileAndLaunch(char * fileName)
 {
 	std::fstream inFile;
 	std::string linecontent;
 	std::regex reg("(\\d{1,2})(?:,|$)");
 	std::smatch reg_match;
-	std::vector<int> retVal;
+	std::vector<int> targetVector;
 	int linesCount = 0;
 	int prevRowsCount = 0;
 	int curRowsCount = 0;
 	int inputValuesCount;
 	std::ostringstream errorStringStream;
+	ParseFileValue retVal;
 
 	inFile.open(fileName, std::ifstream::in);
 	if (!inFile.is_open())
 	{
-		s_FileNameOpt.second = "error on open '%s' file";
+		errorStringStream<<"error on open file: "<<fileName;
+		retVal.ErrorMsg = errorStringStream.str();
 	}
 	else
 	{
@@ -726,45 +724,47 @@ std::vector<int> OpenFileAndLaunch(char * fileName)
 			{
 				//std::cout<<"match size:"<<reg_match.size()<<std::endl;
 				int vl = stoi(reg_match[1]);
-				auto itr = std::find(std::begin(retVal), std::end(retVal), vl);
-				if (itr == retVal.end())
-					retVal.push_back(vl);
+				auto itr = std::find(std::begin(targetVector), std::end(targetVector), vl);
+				if (itr == targetVector.end())
+					targetVector.push_back(vl);
 				else
 				{
-					errorStringStream<<"duplicated value: "<<vl<<" in file";
-					s_FileNameOpt.second = errorStringStream.str();
-					return std::vector<int>();
+					errorStringStream<<"duplicated value: "<<vl<<" in file: "<<fileName;
+					retVal.ErrorMsg = errorStringStream.str();
+					return retVal;
 				}
 				curRowsCount++;
 				linecontent = reg_match.suffix().str();
 			}
 			if (prevRowsCount > 0 && prevRowsCount != curRowsCount)
 			{
-				s_FileNameOpt.second = "mismatch of rows count in file";
-				return std::vector<int>();
+				errorStringStream<<"mismatch of rows count in file: "<<fileName;
+				retVal.ErrorMsg = errorStringStream.str();
+				return retVal;
 			}
 			else
 				prevRowsCount = curRowsCount;
 		}
 		if (prevRowsCount != linesCount)
 		{
-			s_FileNameOpt.second = "mismatch of lines count in file";
-			return std::vector<int>();
+			errorStringStream<<"mismatch of lines count in file: "<<fileName;
+			retVal.ErrorMsg = errorStringStream.str();
+			return retVal;
 		}
-		inputValuesCount = retVal.size();
+		inputValuesCount = targetVector.size();
 		for (int i = 1; i < inputValuesCount; i++)
 		{
-			auto itr = std::find(std::begin(retVal), std::end(retVal), i);
-			if (itr == retVal.end())
+			auto itr = std::find(std::begin(targetVector), std::end(targetVector), i);
+			if (itr == targetVector.end())
 			{
-				errorStringStream<<"fail on sorting value: "<<i<<" in file";
-				s_FileNameOpt.second = errorStringStream.str();
-				return std::vector<int>();
+				errorStringStream<<"fail on sorting value: "<<i<<" in file: "<<fileName;
+				retVal.ErrorMsg = errorStringStream.str();
+				return retVal;
 			}
 		}
 
 	}
-
+	retVal.Values = targetVector;
 	return retVal;
 }
 
@@ -828,16 +828,15 @@ int main(int argc, char** argv)
 
 	if (s_FileName != nullptr)
 	{
-		auto valuesVector = OpenFileAndLaunch(s_FileName);
-		if (s_FileNameOpt.second.empty() == false)
+		auto parseVal = OpenFileAndLaunch(s_FileName);
+		if (parseVal.ErrorMsg.empty() == false)
 		{
-			//Fl::fatal(s_FileNameOpt.second.c_str());
-			Fl::error(s_FileNameOpt.second.c_str());
+			Fl::error(parseVal.ErrorMsg.c_str());
 			btn.callback(callBack, (void*)&vl);
 		}
 		else
 		{
-			Mb.SetTilesValue(valuesVector);
+			Mb.SetTilesValue(parseVal.Values);
 			vl.deactivate();
 			btn.deactivate();
 			Mb.active();
