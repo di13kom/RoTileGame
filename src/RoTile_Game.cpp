@@ -431,7 +431,7 @@ int Mybox::handle(int e)
 			std::cout << "Time elapsed: " << diff.count() << std::endl;
 			if (BackList.size() > 0)
 			{
-				fl_message("Solution was found through %lu steps", BackList.size() - 1);
+				fl_message("Solution was found through %ui steps", BackList.size() - 1);
 #ifdef DEBUGLOG
 				int _Tmp;
 
@@ -708,6 +708,7 @@ std::vector<int> OpenFileAndLaunch(char * fileName)
 	int prevRowsCount = 0;
 	int curRowsCount = 0;
 	int inputValuesCount;
+	std::ostringstream errorStringStream;
 
 	inFile.open(fileName, std::ifstream::in);
 	if (!inFile.is_open())
@@ -730,7 +731,8 @@ std::vector<int> OpenFileAndLaunch(char * fileName)
 					retVal.push_back(vl);
 				else
 				{
-					s_FileNameOpt.second = "duplicate values in file";
+					errorStringStream<<"duplicated value: "<<vl<<" in file";
+					s_FileNameOpt.second = errorStringStream.str();
 					return std::vector<int>();
 				}
 				curRowsCount++;
@@ -738,7 +740,7 @@ std::vector<int> OpenFileAndLaunch(char * fileName)
 			}
 			if (prevRowsCount > 0 && prevRowsCount != curRowsCount)
 			{
-				s_FileNameOpt.second = "mismatch of rows count in lines";
+				s_FileNameOpt.second = "mismatch of rows count in file";
 				return std::vector<int>();
 			}
 			else
@@ -746,7 +748,7 @@ std::vector<int> OpenFileAndLaunch(char * fileName)
 		}
 		if (prevRowsCount != linesCount)
 		{
-			s_FileNameOpt.second = "mismatch of rows count in lines";
+			s_FileNameOpt.second = "mismatch of lines count in file";
 			return std::vector<int>();
 		}
 		inputValuesCount = retVal.size();
@@ -755,7 +757,8 @@ std::vector<int> OpenFileAndLaunch(char * fileName)
 			auto itr = std::find(std::begin(retVal), std::end(retVal), i);
 			if (itr == retVal.end())
 			{
-				s_FileNameOpt.second = "fail on sorting values in file";
+				errorStringStream<<"fail on sorting value: "<<i<<" in file";
+				s_FileNameOpt.second = errorStringStream.str();
 				return std::vector<int>();
 			}
 		}
@@ -763,7 +766,6 @@ std::vector<int> OpenFileAndLaunch(char * fileName)
 	}
 
 	return retVal;
-	//inFile.close();
 }
 
 int ArgsHandler(int argc, char **argv, int &i)
