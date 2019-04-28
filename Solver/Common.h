@@ -136,6 +136,7 @@ namespace Solver
 		Fs() = default;
 		virtual ~Fs() = default;
 		virtual int GetIteration() = 0;
+		virtual int GetUsedListCount() = 0;
 	};
 
 	//void *PrgsBar(void *ptr);

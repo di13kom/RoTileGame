@@ -148,4 +148,8 @@ namespace Solver
 		}
 		return std::vector<std::vector<char>>();
 	}
+	int EFS_Class::GetUsedListCount()
+	{
+		return UsedList.size();
+	}
 }

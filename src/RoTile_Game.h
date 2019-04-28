@@ -23,6 +23,7 @@
 #include <array>
 #include <random>
 #include <algorithm>
+#include <sstream>
 
 using namespace Solver;
 

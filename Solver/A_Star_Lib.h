@@ -11,7 +11,10 @@ namespace Solver
 	public:
 		EFS_Class(int);
 		~EFS_Class();
-		int GetIteration();
+
+		// Inherited via Fs
 		std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) override;
+		int GetIteration() override;
+		int GetUsedListCount() override;
 	};
 }

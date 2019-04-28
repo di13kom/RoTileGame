@@ -445,6 +445,7 @@ int Mybox::handle(int e)
 				std::cout << "Solution was found through "\
 					<< BackList.size() - 1 << " steps in BackList\n";
 				std::cout << "iterations: " << m_fsClass->GetIteration() << std::endl;
+				std::cout << "UsedList: " << m_fsClass->GetUsedListCount() << std::endl;
 
 				Fl::add_timeout(0.25, TimerR, (void*)this);
 			}

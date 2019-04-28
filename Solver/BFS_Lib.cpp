@@ -20,6 +20,11 @@ namespace Solver
 
 	BFS_Class::~BFS_Class() {}
 
+	int BFS_Class::GetUsedListCount()
+	{
+		return UsedList.size;
+	}
+
 	std::vector<std::vector<char>> BFS_Class::FindSolution(std::unique_ptr<char[]> inData)
 	{
 		try
