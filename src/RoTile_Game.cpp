@@ -97,6 +97,9 @@ void Mybox::SetTilesValue(std::vector<int> inValues)
 	TilesInRow = std::sqrt(inValues.size());
 	Tile::FontSize = s_BasicFontValue / TilesInRow;
 
+	//set Solution
+	std::copy(std::begin(inValues), std::end(inValues), std::back_inserter(Solution));
+	std::sort(std::begin(Solution), std::end(Solution));
 	//
 	Tile::Width_Height = ((m_MainTableWidthHeight - s_MainTablePadding * 2)\
 				- (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
