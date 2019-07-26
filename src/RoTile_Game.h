@@ -44,13 +44,21 @@ struct ParseFileValue
 	std::string ErrorMsg;
 };
 
+struct VisualDragTile
+{
+	std::vector<Tile>::iterator TileIterator;
+	Tile VisualTile;
+	bool IsLeftTile;
+	bool IsUpperTile;
+};
+
 class Mybox : public Fl_Box
 {
 	std::future<std::vector<std::vector<char>>> m_fut;
 
 	Frame m_Frame;
 	Frame m_VisualDragFrame;
-	Tile m_VisualDragTile;
+	VisualDragTile m_VisualDragTile;
 	GameStateEnum GameState;
 	int m_MainTableXpos, m_MainTableYpos, m_MainTableWidthHeight;
 	int TilesInRow;

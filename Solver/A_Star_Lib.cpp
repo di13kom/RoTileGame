@@ -98,6 +98,7 @@ namespace Solver
 	};
 	std::vector<std::vector<char>> EFS_Class::FindSolution(std::unique_ptr<char[]> inData)
 	{
+		//std::cout<<"sizeof _Nd: "<<sizeof(_Nd);
 		try
 		{
 			_Nd* currentNode;

@@ -73,11 +73,19 @@ void Mybox::draw()
 		if(GameState == GameStateEnum::TileDragging)
 		{
 			fl_draw_box(FL_PLASTIC_UP_BOX
-					, m_VisualDragTile.GetX()
-					, m_VisualDragTile.GetY()
+					, m_VisualDragTile.VisualTile.GetX()
+					, m_VisualDragTile.VisualTile.GetY()
 					, Tile::Width_Height
 					, Tile::Width_Height
 					, FL_CYAN);
+			fl_color(FL_BLACK);
+			fl_draw(m_VisualDragTile.VisualTile.GetRawData()
+					, m_VisualDragTile.VisualTile.GetX()
+					, m_VisualDragTile.VisualTile.GetY()
+					, Tile::Width_Height
+					, Tile::Width_Height
+					, FL_ALIGN_CENTER
+					, nullptr, 2);
 		}
 
 	}
@@ -168,45 +176,44 @@ int Mybox::handle(int e)
 				, [&](const Tile& box)
 			{
 				return Fl::event_inside(box.GetX()
-					, box.GetY()
-					, Tile::Width_Height
-					, Tile::Width_Height)
-					&& Fl::event_inside(m_Frame.GetX()
+						, box.GetY()
+						, Tile::Width_Height
+						, Tile::Width_Height)
+					&&
+					Fl::event_inside(m_Frame.GetX()
 						, m_Frame.GetY()
 						, Frame::Width_Height
 						, Frame::Width_Height);
 			});
 			if (itr != Tiles.end())
 			{
-				bool IsLeftTile;
-				bool IsUpperTile;
+				bool isLeftTile;
+				bool isUpperTile;
 
 				std::vector<Tile>::iterator ULpairItr = itr;
 
-				//if(prevIter->GetX()>m_Frame.GetX() 
-				//&& prevIter->GetX()<m_Frame.GetX() + Frame::Width_Height)
 				if (itr->GetX() > m_Frame.GetX() + Frame::Width_Height / 2)
 				{
 					//std::cout<<"right tile\n";
-					IsLeftTile = false;
+					isLeftTile = false;
 				}
 				else
 				{
 					//std::cout<<"left tile\n";
-					IsLeftTile = true;
+					isLeftTile = true;
 				}
 				if (itr->GetY() < m_Frame.GetY() + Frame::Width_Height / 2)
 				{
-					IsUpperTile = true;
+					isUpperTile = true;
 					//std::cout<<"upper tile\n";
 				}
 				else
 				{
-					IsUpperTile = false;
+					isUpperTile = false;
 					//std::cout<<"lower tile\n";
 				}
 
-				if (IsLeftTile == true)
+				if (isLeftTile == true)
 				{
 					auto LRpairItr = std::next(itr);
 					LRpairItr->SetColor(FL_BLUE);
@@ -218,7 +225,7 @@ int Mybox::handle(int e)
 					LRpairItr->SetColor(FL_BLUE);
 
 				}
-				if (IsUpperTile == true)
+				if (isUpperTile == true)
 				{
 					std::advance(ULpairItr, TilesInRow);
 					ULpairItr->SetColor(FL_BLUE);
@@ -232,7 +239,10 @@ int Mybox::handle(int e)
 
 				//std::cout<<"Inside"<<std::endl;
 
-				m_VisualDragTile = *itr;
+				m_VisualDragTile.VisualTile = *itr;
+				m_VisualDragTile.TileIterator = itr;
+				m_VisualDragTile.IsUpperTile = isUpperTile;
+				m_VisualDragTile.IsLeftTile = isLeftTile;
 
 				GameState = GameStateEnum::TileDragging;
 			}
@@ -254,8 +264,8 @@ int Mybox::handle(int e)
 		}
 		case GameStateEnum::TileDragging:
 		{
-			m_VisualDragTile.SetX(Fl::event_x() - Tile::Width_Height / 2);
-			m_VisualDragTile.SetY(Fl::event_y() - Tile::Width_Height / 2);
+			m_VisualDragTile.VisualTile.SetX(Fl::event_x() - Tile::Width_Height / 2);
+			m_VisualDragTile.VisualTile.SetY(Fl::event_y() - Tile::Width_Height / 2);
 			redraw();
 			break;
 		}
@@ -292,8 +302,67 @@ int Mybox::handle(int e)
 		}
 		case GameStateEnum::TileDragging:
 		{
-			//auto LRpairItr = std::next(itr);
-			//LRpairItr->SetColor(FL_BLUE);
+			//std::cout<<"X: "<<m_VisualDragTile.VisualTile.GetX()<<"Y: "<<m_VisualDragTile.VisualTile.GetY()<<std::endl;
+			std::vector<Tile>::iterator clockWiseTileIter = m_VisualDragTile.TileIterator;
+			std::vector<Tile>::iterator counterClockWiseTileIter = m_VisualDragTile.TileIterator;
+
+			if(m_VisualDragTile.IsLeftTile == true
+				&& m_VisualDragTile.IsUpperTile == true)
+			{
+
+				std::advance(clockWiseTileIter, 1);
+				std::advance(counterClockWiseTileIter, TilesInRow);
+				//std::cout<<"LU"<<std::endl;
+			}
+			else if(m_VisualDragTile.IsLeftTile == true
+				&& m_VisualDragTile.IsUpperTile == false)
+			{
+				std::advance(clockWiseTileIter, -TilesInRow);
+				std::advance(counterClockWiseTileIter, 1);
+				//std::cout<<"LD"<<std::endl;
+			}
+			else if(m_VisualDragTile.IsLeftTile == false
+				&& m_VisualDragTile.IsUpperTile == false)
+			{
+				std::advance(clockWiseTileIter, -1);
+				std::advance(counterClockWiseTileIter, TilesInRow*-1);
+				//std::cout<<"RD"<<std::endl;
+			}
+			else if(m_VisualDragTile.IsLeftTile == false
+				&& m_VisualDragTile.IsUpperTile == true)
+			{
+				std::advance(clockWiseTileIter, TilesInRow);
+				std::advance(counterClockWiseTileIter, -1);
+				//std::cout<<"RU"<<std::endl;
+			}
+			else
+			{
+				clockWiseTileIter = Tiles.end();
+				counterClockWiseTileIter = Tiles.end();
+			}
+
+		
+			if(clockWiseTileIter != Tiles.end()
+					&& counterClockWiseTileIter != Tiles.end())
+			{
+				if(Fl::event_inside(clockWiseTileIter->GetX()
+					, clockWiseTileIter->GetY()
+					, Tile::Width_Height
+					, Tile::Width_Height))
+				{
+					TurnRight(GetFrameLeftUpperPosition());
+					//std::cout<<"clockWise"<<std::endl;
+				}
+				else if (Fl::event_inside(counterClockWiseTileIter->GetX()
+					, counterClockWiseTileIter->GetY()
+					, Tile::Width_Height
+					, Tile::Width_Height))
+				{
+					TurnLeft(GetFrameLeftUpperPosition());
+					//std::cout<<"coutnerClockWise"<<std::endl;
+				}
+			}
+
 			for (auto& vl : Tiles)
 			{
 				vl.SetColor(FL_GREEN);
