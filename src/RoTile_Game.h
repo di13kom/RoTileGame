@@ -74,6 +74,7 @@ class Mybox : public Fl_Box
 	void TurnRight(int bxInd);
 	void TurnLeft(int bxInd);
 	void *PrgsBar(void *ptr);
+	static void CancelCallback(Fl_Widget*, void*);
 	void SetFramePositionByTileIndex(int);
 public:
 	Mybox(Fl_Boxtype bt, int, int, int);

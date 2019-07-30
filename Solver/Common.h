@@ -130,6 +130,7 @@ namespace Solver
 		std::unordered_set<std::unique_ptr<_Nd>, NodeHashFunc, compNodeHashFunc> UsedList;//Checking list for used combinations
 		std::vector<std::vector<char>> BackList;
 		virtual int Rotate(char M, _Nd*, char) = 0;
+		bool CancelationFlag;
 	public:
 		virtual std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) = 0;
 		Fs(int);
@@ -137,6 +138,7 @@ namespace Solver
 		virtual ~Fs() = default;
 		virtual int GetIteration() = 0;
 		virtual int GetUsedListCount() = 0;
+		virtual void CancelTask() = 0;
 	};
 
 	//void *PrgsBar(void *ptr);

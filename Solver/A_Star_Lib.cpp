@@ -95,10 +95,11 @@ namespace Solver
 	{
 		ElementsInRow = _n;
 		IterationCount = 0;
+		CancelationFlag = false;
 	};
 	std::vector<std::vector<char>> EFS_Class::FindSolution(std::unique_ptr<char[]> inData)
 	{
-		//std::cout<<"sizeof _Nd: "<<sizeof(_Nd);
+		std::cout<<"sizeof _Nd: "<<sizeof(_Nd);
 		try
 		{
 			_Nd* currentNode;
@@ -114,7 +115,7 @@ namespace Solver
 			UsedList.insert(std::move(_Node));//insert combination
 
 			//StartRecursiveFunction
-			while (1)
+			while (CancelationFlag == false)
 			{
 				for (char i = 0; i < (ElementsInRow - 1); i++)
 				{
@@ -152,5 +153,9 @@ namespace Solver
 	int EFS_Class::GetUsedListCount()
 	{
 		return UsedList.size();
+	}
+	void EFS_Class::CancelTask()
+	{
+		CancelationFlag = true;
 	}
 }

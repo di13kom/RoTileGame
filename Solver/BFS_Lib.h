@@ -13,5 +13,6 @@ namespace Solver
 		std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) override;
 		int GetIteration() override;
 		virtual int GetUsedListCount() override;
+		void CancelTask() override;
 	};
 }

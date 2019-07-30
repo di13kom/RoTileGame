@@ -596,7 +596,7 @@ void Mybox::TurnLeft(int bxInd)
 void *Mybox::PrgsBar(void *ptr)
 {
 	wind->begin();
-	Fl_Double_Window wd(wind->x() + wind->w() / 2 - 110, wind->y() + wind->h() / 2 - 50, 220, 100, "Wait Please.");
+	Fl_Double_Window wd(wind->x() + wind->w() / 2 - 110, wind->y() + wind->h() / 2 - 50, 220, 120, "Wait Please.");
 	wd.border(1);
 	wd.color(FL_LIGHT1);
 	Fl::check();
@@ -606,6 +606,10 @@ void *Mybox::PrgsBar(void *ptr)
 	progress.color(0x88888800);
 	progress.selection_color(0x4444ff00);
 	progress.labelcolor(FL_WHITE);
+	Fl_Return_Button btnX(130, 90, 80, 25, "Cancel");
+
+	btnX.callback(&Mybox::CancelCallback, (void*)ptr);
+
 	wind->end();
 	wd.show();
 	float progressLineFillValue = 1;
@@ -645,6 +649,12 @@ void *Mybox::PrgsBar(void *ptr)
 	return nullptr;
 }
 
+
+void Mybox::CancelCallback(Fl_Widget *wg, void* v)
+{
+	Fs* cls = static_cast<Fs*>(v);
+	cls->CancelTask();
+}
 
 static void TimerR(void* UserData)
 {

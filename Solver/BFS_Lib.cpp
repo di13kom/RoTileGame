@@ -25,6 +25,10 @@ namespace Solver
 		return UsedList.size();
 	}
 
+	void BFS_Class::CancelTask()
+	{
+	}
+
 	std::vector<std::vector<char>> BFS_Class::FindSolution(std::unique_ptr<char[]> inData)
 	{
 		try
