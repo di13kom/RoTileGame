@@ -46,46 +46,46 @@ void Mybox::draw()
 		for (auto& item : Tiles)
 		{
 			fl_draw_box(FL_PLASTIC_UP_BOX, item.GetX(), item.GetY()
-					, Tile::Width_Height, Tile::Width_Height, item.GetColor());
+				, Tile::Width_Height, Tile::Width_Height, item.GetColor());
 			fl_color(FL_BLACK);
 			fl_draw(item.GetRawData(), item.GetX(), item.GetY(), Tile::Width_Height \
-					, Tile::Width_Height, FL_ALIGN_CENTER, nullptr, 2);
+				, Tile::Width_Height, FL_ALIGN_CENTER, nullptr, 2);
 		}
 
-		if(GameState != GameStateEnum::FrameDragging)
+		if (GameState != GameStateEnum::FrameDragging)
 		{
 			fl_draw_box(FL_PLASTIC_UP_FRAME
-					, m_Frame.GetX()
-					, m_Frame.GetY()
-					, Frame::Width_Height
-					, Frame::Width_Height
-					, m_Frame.GetColor());
+				, m_Frame.GetX()
+				, m_Frame.GetY()
+				, Frame::Width_Height
+				, Frame::Width_Height
+				, m_Frame.GetColor());
 		}
 		else
 		{
 			fl_draw_box(FL_PLASTIC_UP_FRAME
-					, m_VisualDragFrame.GetX()
-					, m_VisualDragFrame.GetY()
-					, Frame::Width_Height
-					, Frame::Width_Height
-					, FL_CYAN);
+				, m_VisualDragFrame.GetX()
+				, m_VisualDragFrame.GetY()
+				, Frame::Width_Height
+				, Frame::Width_Height
+				, FL_CYAN);
 		}
-		if(GameState == GameStateEnum::TileDragging)
+		if (GameState == GameStateEnum::TileDragging)
 		{
 			fl_draw_box(FL_PLASTIC_UP_BOX
-					, m_VisualDragTile.VisualTile.GetX()
-					, m_VisualDragTile.VisualTile.GetY()
-					, Tile::Width_Height
-					, Tile::Width_Height
-					, FL_CYAN);
+				, m_VisualDragTile.VisualTile.GetX()
+				, m_VisualDragTile.VisualTile.GetY()
+				, Tile::Width_Height
+				, Tile::Width_Height
+				, FL_CYAN);
 			fl_color(FL_BLACK);
 			fl_draw(m_VisualDragTile.VisualTile.GetRawData()
-					, m_VisualDragTile.VisualTile.GetX()
-					, m_VisualDragTile.VisualTile.GetY()
-					, Tile::Width_Height
-					, Tile::Width_Height
-					, FL_ALIGN_CENTER
-					, nullptr, 2);
+				, m_VisualDragTile.VisualTile.GetX()
+				, m_VisualDragTile.VisualTile.GetY()
+				, Tile::Width_Height
+				, Tile::Width_Height
+				, FL_ALIGN_CENTER
+				, nullptr, 2);
 		}
 
 	}
@@ -110,7 +110,7 @@ void Mybox::SetTilesValue(std::vector<int> inValues)
 	std::sort(std::begin(Solution), std::end(Solution));
 	//
 	Tile::Width_Height = ((m_MainTableWidthHeight - s_MainTablePadding * 2)\
-				- (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
+		- (TilesInRow - 1) * s_InterTileDistance) / TilesInRow;
 	Frame::Width_Height = Tile::Width_Height * 2 + (s_FramePadding * 2) + s_InterTileDistance;
 
 	//std::cout<<"Tile::Width_Height:"<<Tile::Width_Height<<"\n";
@@ -150,104 +150,108 @@ int Mybox::handle(int e)
 	int xTmp;
 	int yTmp;
 	std::unique_ptr<char[]> dataStr;
-	std::unique_ptr<Fs> m_fsClass;
+	std::unique_ptr<Fs> fsClass;
 	std::chrono::time_point<std::chrono::system_clock> start;
 	std::chrono::time_point<std::chrono::system_clock> end;
 	std::chrono::duration<double> diff;
+	//std::cout << "GameState: " << static_cast<int>(GameState) << std::endl;
 	switch (e)
 	{
 	case FL_PUSH:
 	{
-		if (Fl::event_button() == FL_LEFT_MOUSE)
+		if (GameState != GameStateEnum::FindSolving)
 		{
-			if (Fl::event_inside(m_Frame.GetX()
-				, m_Frame.GetY()
-				, Frame::Width_Height
-				, Frame::Width_Height))
+			if (Fl::event_button() == FL_LEFT_MOUSE)
 			{
-				GameState = GameStateEnum::FrameDragging;
-				m_VisualDragFrame = m_Frame;
+				if (Fl::event_inside(m_Frame.GetX()
+					, m_Frame.GetY()
+					, Frame::Width_Height
+					, Frame::Width_Height))
+				{
+					GameState = GameStateEnum::FrameDragging;
+					m_VisualDragFrame = m_Frame;
+				}
 			}
-		}
-		else if (Fl::event_button() == FL_RIGHT_MOUSE)
-		{
-			auto itr = std::find_if(Tiles.begin()
-				, Tiles.end()
-				, [&](const Tile& box)
+			else if (Fl::event_button() == FL_RIGHT_MOUSE)
 			{
-				return Fl::event_inside(box.GetX()
+				auto itr = std::find_if(Tiles.begin()
+					, Tiles.end()
+					, [&](const Tile& box)
+				{
+					return Fl::event_inside(box.GetX()
 						, box.GetY()
 						, Tile::Width_Height
 						, Tile::Width_Height)
-					&&
-					Fl::event_inside(m_Frame.GetX()
-						, m_Frame.GetY()
-						, Frame::Width_Height
-						, Frame::Width_Height);
-			});
-			if (itr != Tiles.end())
-			{
-				bool isLeftTile;
-				bool isUpperTile;
-
-				std::vector<Tile>::iterator ULpairItr = itr;
-
-				if (itr->GetX() > m_Frame.GetX() + Frame::Width_Height / 2)
+						&&
+						Fl::event_inside(m_Frame.GetX()
+							, m_Frame.GetY()
+							, Frame::Width_Height
+							, Frame::Width_Height);
+				});
+				if (itr != Tiles.end())
 				{
-					//std::cout<<"right tile\n";
-					isLeftTile = false;
-				}
-				else
-				{
-					//std::cout<<"left tile\n";
-					isLeftTile = true;
-				}
-				if (itr->GetY() < m_Frame.GetY() + Frame::Width_Height / 2)
-				{
-					isUpperTile = true;
-					//std::cout<<"upper tile\n";
-				}
-				else
-				{
-					isUpperTile = false;
-					//std::cout<<"lower tile\n";
-				}
+					bool isLeftTile;
+					bool isUpperTile;
 
-				if (isLeftTile == true)
-				{
-					auto LRpairItr = std::next(itr);
-					LRpairItr->SetColor(FL_BLUE);
+					std::vector<Tile>::iterator ULpairItr = itr;
 
+					if (itr->GetX() > m_Frame.GetX() + Frame::Width_Height / 2)
+					{
+						//std::cout<<"right tile\n";
+						isLeftTile = false;
+					}
+					else
+					{
+						//std::cout<<"left tile\n";
+						isLeftTile = true;
+					}
+					if (itr->GetY() < m_Frame.GetY() + Frame::Width_Height / 2)
+					{
+						isUpperTile = true;
+						//std::cout<<"upper tile\n";
+					}
+					else
+					{
+						isUpperTile = false;
+						//std::cout<<"lower tile\n";
+					}
+
+					if (isLeftTile == true)
+					{
+						auto LRpairItr = std::next(itr);
+						LRpairItr->SetColor(FL_BLUE);
+
+					}
+					else
+					{
+						auto LRpairItr = std::prev(itr);
+						LRpairItr->SetColor(FL_BLUE);
+
+					}
+					if (isUpperTile == true)
+					{
+						std::advance(ULpairItr, TilesInRow);
+						ULpairItr->SetColor(FL_BLUE);
+					}
+					else
+					{
+						std::advance(ULpairItr, -TilesInRow);
+						ULpairItr->SetColor(FL_BLUE);
+					}
+					redraw();
+
+					//std::cout<<"Inside"<<std::endl;
+
+					m_VisualDragTile.VisualTile = *itr;
+					m_VisualDragTile.TileIterator = itr;
+					m_VisualDragTile.IsUpperTile = isUpperTile;
+					m_VisualDragTile.IsLeftTile = isLeftTile;
+
+					GameState = GameStateEnum::TileDragging;
 				}
-				else
-				{
-					auto LRpairItr = std::prev(itr);
-					LRpairItr->SetColor(FL_BLUE);
-
-				}
-				if (isUpperTile == true)
-				{
-					std::advance(ULpairItr, TilesInRow);
-					ULpairItr->SetColor(FL_BLUE);
-				}
-				else
-				{
-					std::advance(ULpairItr, -TilesInRow);
-					ULpairItr->SetColor(FL_BLUE);
-				}
-				redraw();
-
-				//std::cout<<"Inside"<<std::endl;
-
-				m_VisualDragTile.VisualTile = *itr;
-				m_VisualDragTile.TileIterator = itr;
-				m_VisualDragTile.IsUpperTile = isUpperTile;
-				m_VisualDragTile.IsLeftTile = isLeftTile;
-
-				GameState = GameStateEnum::TileDragging;
+				//else
+				//	std::cout<<"Outside"<<std::endl;
 			}
-			//else
-			//	std::cout<<"Outside"<<std::endl;
 		}
 		return 1;
 	}
@@ -306,7 +310,7 @@ int Mybox::handle(int e)
 			std::vector<Tile>::iterator clockWiseTileIter = m_VisualDragTile.TileIterator;
 			std::vector<Tile>::iterator counterClockWiseTileIter = m_VisualDragTile.TileIterator;
 
-			if(m_VisualDragTile.IsLeftTile == true
+			if (m_VisualDragTile.IsLeftTile == true
 				&& m_VisualDragTile.IsUpperTile == true)
 			{
 
@@ -314,21 +318,21 @@ int Mybox::handle(int e)
 				std::advance(counterClockWiseTileIter, TilesInRow);
 				//std::cout<<"LU"<<std::endl;
 			}
-			else if(m_VisualDragTile.IsLeftTile == true
+			else if (m_VisualDragTile.IsLeftTile == true
 				&& m_VisualDragTile.IsUpperTile == false)
 			{
 				std::advance(clockWiseTileIter, -TilesInRow);
 				std::advance(counterClockWiseTileIter, 1);
 				//std::cout<<"LD"<<std::endl;
 			}
-			else if(m_VisualDragTile.IsLeftTile == false
+			else if (m_VisualDragTile.IsLeftTile == false
 				&& m_VisualDragTile.IsUpperTile == false)
 			{
 				std::advance(clockWiseTileIter, -1);
 				std::advance(counterClockWiseTileIter, TilesInRow*-1);
 				//std::cout<<"RD"<<std::endl;
 			}
-			else if(m_VisualDragTile.IsLeftTile == false
+			else if (m_VisualDragTile.IsLeftTile == false
 				&& m_VisualDragTile.IsUpperTile == true)
 			{
 				std::advance(clockWiseTileIter, TilesInRow);
@@ -341,11 +345,11 @@ int Mybox::handle(int e)
 				counterClockWiseTileIter = Tiles.end();
 			}
 
-		
-			if(clockWiseTileIter != Tiles.end()
-					&& counterClockWiseTileIter != Tiles.end())
+
+			if (clockWiseTileIter != Tiles.end()
+				&& counterClockWiseTileIter != Tiles.end())
 			{
-				if(Fl::event_inside(clockWiseTileIter->GetX()
+				if (Fl::event_inside(clockWiseTileIter->GetX()
 					, clockWiseTileIter->GetY()
 					, Tile::Width_Height
 					, Tile::Width_Height))
@@ -379,154 +383,160 @@ int Mybox::handle(int e)
 	}
 	case FL_SHORTCUT:
 	{
-		switch (Fl::event_key())
+		if (GameState == GameStateEnum::Normal || GameState == GameStateEnum::Initialization)
 		{
-		case FL_Left:
-			xTmp = m_Frame.GetX() - (Tile::Width_Height + s_InterTileDistance);
-			if (xTmp < m_MainTableXpos + s_MainTablePadding)
-				xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
-				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
-			m_Frame.SetX(xTmp);
-			redraw();
+			switch (Fl::event_key())
+			{
+			case FL_Left:
+				xTmp = m_Frame.GetX() - (Tile::Width_Height + s_InterTileDistance);
+				if (xTmp < m_MainTableXpos + s_MainTablePadding)
+					xTmp = (m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
+					* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
+				m_Frame.SetX(xTmp);
+				redraw();
 
-			return 1;
-		case FL_Right:
-			xTmp = m_Frame.GetX() + (Tile::Width_Height + s_InterTileDistance);
-			if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
-				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
-				xTmp = m_MainTableXpos + s_MainTablePadding;
-			m_Frame.SetX(xTmp);
-			redraw();
+				return 1;
+			case FL_Right:
+				xTmp = m_Frame.GetX() + (Tile::Width_Height + s_InterTileDistance);
+				if (xTmp > ((m_MainTableXpos + s_MainTablePadding) + (TilesInRow - 2)\
+					* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
+					xTmp = m_MainTableXpos + s_MainTablePadding;
+				m_Frame.SetX(xTmp);
+				redraw();
 
-			return 1;
-		case FL_Up:
-			yTmp = m_Frame.GetY() - (Tile::Width_Height + s_InterTileDistance);
-			if (yTmp < m_MainTableYpos + s_MainTablePadding)
-				yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
-				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
-			m_Frame.SetY(yTmp);
-			redraw();
+				return 1;
+			case FL_Up:
+				yTmp = m_Frame.GetY() - (Tile::Width_Height + s_InterTileDistance);
+				if (yTmp < m_MainTableYpos + s_MainTablePadding)
+					yTmp = (m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
+					* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height;
+				m_Frame.SetY(yTmp);
+				redraw();
 
-			return 1;
-		case FL_Down:
-			yTmp = m_Frame.GetY() + (Tile::Width_Height + s_InterTileDistance);
-			if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
-				* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
-				yTmp = m_MainTableYpos + s_MainTablePadding;
-			m_Frame.SetY(yTmp);
-			redraw();
+				return 1;
+			case FL_Down:
+				yTmp = m_Frame.GetY() + (Tile::Width_Height + s_InterTileDistance);
+				if (yTmp > ((m_MainTableYpos + s_MainTablePadding) + (TilesInRow - 2)\
+					* s_InterTileDistance + (TilesInRow - 2)*Tile::Width_Height))
+					yTmp = m_MainTableYpos + s_MainTablePadding;
+				m_Frame.SetY(yTmp);
+				redraw();
 
-			return 1;
-		case 'x':
-			TurnRight(GetFrameLeftUpperPosition());
-			redraw();
-			CheckSolution();
-			return 1;
-		case 'z':
-			TurnLeft(GetFrameLeftUpperPosition());
-			redraw();
-			CheckSolution();
-			return 1;
-			/* Too much memory consume
-		case 'a':
+				return 1;
+			case 'x':
+				TurnRight(GetFrameLeftUpperPosition());
+				redraw();
+				CheckSolution();
+				return 1;
+			case 'z':
+				TurnLeft(GetFrameLeftUpperPosition());
+				redraw();
+				CheckSolution();
+				return 1;
+				/* Too much memory consume
+			case 'a':
 
-			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
-			std::transform(Tiles.begin()
+				dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow);
+				std::transform(Tiles.begin()
+						, Tiles.end()
+						, dataStr.get()
+						, [](const Tile& box)
+						{
+							return box.GetData();
+						});
+
+				start = std::chrono::system_clock::now();
+
+				fsClass = std::make_unique<BFS_Class>(TilesInRow);
+				m_fut = std::async(&BFS_Class::FindSolution
+							, dynamic_cast<BFS_Class*>(fsClass.get())
+							, dataStr.get());
+
+				PrgsBar(nullptr);
+				BackList = m_fut.get();
+
+				end = std::chrono::system_clock::now();
+				diff = end - start;
+				std::cout << "Time elapsed: " << diff.count()<<std::endl;
+
+				if (BackList.size() > 0)
+				{
+					std::cout << "Solution was found through " \
+						<< BackList.size() - 1 << " steps in BackList\n";
+					fl_message("Solution was found through %d steps", BackList.size() - 1);
+					//std::cout<<"iterations: "<<L<<std::endl;
+					//for(unsigned i=0;i<BackList.size();i++)
+					//{
+					//	std::cout<<std::endl;
+					//	for(int j=0;j<TilesInRow*TilesInRow;j++)
+					//		std::cout<<(int)BackList[i][j];
+					//}
+				}
+				else
+				{
+					fl_message("solution is not found");
+					std::cout << "solution is not found\n";
+				}
+				return 1;
+				*/
+			case 's':
+				dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow + 1);
+				dataStr[TilesInRow*TilesInRow] = '\0';
+				std::transform(Tiles.begin()
 					, Tiles.end()
 					, dataStr.get()
 					, [](const Tile& box)
-					{
-						return box.GetData();
-					});
-
-			start = std::chrono::system_clock::now();
-
-			m_fsClass = std::make_unique<BFS_Class>(TilesInRow);
-			m_fut = std::async(&BFS_Class::FindSolution
-						, dynamic_cast<BFS_Class*>(m_fsClass.get())
-						, dataStr.get());
-
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
-
-			end = std::chrono::system_clock::now();
-			diff = end - start;
-			std::cout << "Time elapsed: " << diff.count()<<std::endl;
-
-			if (BackList.size() > 0)
-			{
-				std::cout << "Solution was found through " \
-					<< BackList.size() - 1 << " steps in BackList\n";
-				fl_message("Solution was found through %d steps", BackList.size() - 1);
-				//std::cout<<"iterations: "<<L<<std::endl;
-				//for(unsigned i=0;i<BackList.size();i++)
-				//{
-				//	std::cout<<std::endl;
-				//	for(int j=0;j<TilesInRow*TilesInRow;j++)
-				//		std::cout<<(int)BackList[i][j];
-				//}
-			}
-			else
-			{
-				fl_message("solution is not found");
-				std::cout << "solution is not found\n";
-			}
-			return 1;
-			*/
-		case 's':
-			dataStr = std::make_unique<char[]>(TilesInRow*TilesInRow + 1);
-			dataStr[TilesInRow*TilesInRow] = '\0';
-			std::transform(Tiles.begin()
-				, Tiles.end()
-				, dataStr.get()
-				, [](const Tile& box)
-			{
-				return box.GetData();
-			});
-
-			start = std::chrono::system_clock::now();
-
-			m_fsClass = std::make_unique<EFS_Class>(TilesInRow);
-			m_fut = std::async(&EFS_Class::FindSolution
-				, dynamic_cast<EFS_Class*>(m_fsClass.get())
-				, std::move(dataStr));
-
-			PrgsBar(nullptr);
-			BackList = m_fut.get();
-
-			end = std::chrono::system_clock::now();
-			diff = end - start;
-			std::cout << "Time elapsed: " << diff.count() << std::endl;
-			if (BackList.size() > 0)
-			{
-				fl_message("Solution was found through %u steps", BackList.size() - 1);
-#ifdef DEBUGLOG
-				int _Tmp;
-
-				for (int i = BackList.size() - 1; i >= 0; i--)
 				{
-					for (auto k = 0; k < TilesInRow*TilesInRow; k++)
-					{
-						if (k % TilesInRow == 0)std::cout << "\n";
-						_Tmp = (int)BackList[i][k];
-						std::cout << std::setw(2) << _Tmp << " ";
-					}
-					std::cout << std::endl;
-				}
-#endif
-				std::cout << "Solution was found through "\
-					<< BackList.size() - 1 << " steps in BackList\n";
-				std::cout << "iterations: " << m_fsClass->GetIteration() << std::endl;
-				std::cout << "UsedList: " << m_fsClass->GetUsedListCount() << std::endl;
+					return box.GetData();
+				});
 
-				Fl::add_timeout(0.25, TimerR, (void*)this);
+				start = std::chrono::system_clock::now();
+
+				fsClass = std::make_unique<EFS_Class>(TilesInRow);
+				m_fut = std::async(&EFS_Class::FindSolution
+					, dynamic_cast<EFS_Class*>(fsClass.get())
+					, std::move(dataStr));
+
+				GameState = GameStateEnum::FindSolving;
+
+				PrgsBar(fsClass.get());
+				BackList = m_fut.get();
+
+				end = std::chrono::system_clock::now();
+				diff = end - start;
+				std::cout << "Time elapsed: " << diff.count() << std::endl;
+				if (BackList.size() > 0)
+				{
+					fl_message("Solution was found through %lu steps", BackList.size() - 1);
+#ifdef DEBUGLOG
+					int _Tmp;
+
+					for (int i = BackList.size() - 1; i >= 0; i--)
+					{
+						for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+						{
+							if (k % TilesInRow == 0)std::cout << "\n";
+							_Tmp = (int)BackList[i][k];
+							std::cout << std::setw(2) << _Tmp << " ";
+						}
+						std::cout << std::endl;
+					}
+#endif
+					std::cout << "Solution was found through "\
+						<< BackList.size() - 1 << " steps in BackList\n";
+					std::cout << "iterations: " << fsClass->GetIteration() << std::endl;
+					std::cout << "UsedList: " << fsClass->GetUsedListCount() << std::endl;
+
+					Fl::add_timeout(0.25, TimerR, (void*)this);
+				}
+				else
+				{
+					fl_message("solution is not found");
+					std::cout << "solution is not found\n";
+					GameState = GameStateEnum::Solved;
+				}
+				return 1;
 			}
-			else
-			{
-				fl_message("solution is not found");
-				std::cout << "solution is not found\n";
-			}
-			return 1;
 		}
 	}
 	}
@@ -722,6 +732,8 @@ static void TimerR(void* UserData)
 	{
 		Mb->BackList.erase(Mb->BackList.begin(), Mb->BackList.end());
 		Fl::remove_timeout(TimerR);
+
+		Mb->GameState = GameStateEnum::Solved;
 	}
 
 }
@@ -793,7 +805,7 @@ ParseFileValue OpenFileAndLaunch(char * fileName)
 	inFile.open(fileName, std::ifstream::in);
 	if (!inFile.is_open())
 	{
-		errorStringStream<<"error on open file: "<<fileName;
+		errorStringStream << "error on open file: " << fileName;
 		retVal.ErrorMsg = errorStringStream.str();
 	}
 	else
@@ -812,7 +824,7 @@ ParseFileValue OpenFileAndLaunch(char * fileName)
 					targetVector.push_back(vl);
 				else
 				{
-					errorStringStream<<"duplicated value: "<<vl<<" in file: "<<fileName;
+					errorStringStream << "duplicated value: " << vl << " in file: " << fileName;
 					retVal.ErrorMsg = errorStringStream.str();
 					return retVal;
 				}
@@ -821,7 +833,7 @@ ParseFileValue OpenFileAndLaunch(char * fileName)
 			}
 			if (prevRowsCount > 0 && prevRowsCount != curRowsCount)
 			{
-				errorStringStream<<"mismatch of rows count in file: "<<fileName;
+				errorStringStream << "mismatch of rows count in file: " << fileName;
 				retVal.ErrorMsg = errorStringStream.str();
 				return retVal;
 			}
@@ -830,7 +842,7 @@ ParseFileValue OpenFileAndLaunch(char * fileName)
 		}
 		if (prevRowsCount != linesCount)
 		{
-			errorStringStream<<"mismatch of lines count in file: "<<fileName;
+			errorStringStream << "mismatch of lines count in file: " << fileName;
 			retVal.ErrorMsg = errorStringStream.str();
 			return retVal;
 		}
@@ -840,7 +852,7 @@ ParseFileValue OpenFileAndLaunch(char * fileName)
 			auto itr = std::find(std::begin(targetVector), std::end(targetVector), i);
 			if (itr == targetVector.end())
 			{
-				errorStringStream<<"fail on sorting value: "<<i<<" in file: "<<fileName;
+				errorStringStream << "fail on sorting value: " << i << " in file: " << fileName;
 				retVal.ErrorMsg = errorStringStream.str();
 				return retVal;
 			}
