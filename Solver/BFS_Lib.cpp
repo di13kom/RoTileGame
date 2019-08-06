@@ -36,7 +36,7 @@ namespace Solver
 			auto _Node = std::make_unique<_Nd>();
 			inData[ElementsInRow*ElementsInRow] = '\0';
 			_Node->Positions = std::move(inData);
-			UsedList.insert(std::move(_Node));
+			UsedList.emplace(_Node->Positions.get(),std::move(_Node));
 			//StartRecursiveFunction
 			for (char i = 0; i < (ElementsInRow - 1); i++)
 			{
@@ -59,7 +59,7 @@ namespace Solver
 
 	int BFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
 	{
-		_Nd* currentNode = nullptr;
+		const _Nd* currentNode = nullptr;
 		IterationCount++;
 		auto _Node = std::make_unique<_Nd>();
 		_Node->Parent = ParNode;
@@ -93,7 +93,7 @@ namespace Solver
 		}
 		else
 		{
-			auto vl = UsedList.insert(std::move(_Node));
+			auto vl = UsedList.emplace(_Node->Positions.get(),std::move(_Node));
 			if (vl.second == true)
 			{
 				for (char i = 0; i < (ElementsInRow - 1); i++)

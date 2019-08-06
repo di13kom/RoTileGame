@@ -6,7 +6,7 @@ namespace Solver
 	{
 		std::multiset<_Nd *, Comp1Func> GreenQueue;//Checking list for used combinations
 		short int Calc(char, short int);
-		int Rotate(char, _Nd*, char);
+		int Rotate(char, const _Nd*, char);
 		short int GetManhattan(char*);
 	public:
 		EFS_Class(int);

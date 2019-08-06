@@ -8,12 +8,14 @@
 #include <iomanip> // std::setw
 #include <memory>
 #include <set>
+#include <map>
 //#include <future>
 #include <numeric> //iota
 //#include <array>
 //#include <thread>
 #include <tuple>
 //
+#include <unordered_map>
 #include <unordered_set>
 #include <exception>
 
@@ -22,7 +24,7 @@ namespace Solver
 
 	struct _Nd
 	{
-		_Nd* Parent;
+		const _Nd* Parent;
 		short int hValue;
 		short int gValue;
 		short int fValue;
@@ -70,6 +72,33 @@ namespace Solver
 			//while ((c = *s1++))
 			//	h = ((h << 5) + h) + c;
 			//return h;
+		}
+	};
+
+	struct NodeHashFuncPtr
+	{
+		inline size_t operator()(const char* nd) const
+		{
+			size_t result = 0;
+			const size_t prime = 31;
+			int len = strlen(nd);
+			for (int i = 0; i < len; ++i) {
+				result = nd[i] + (result * prime);
+			}
+			return result;
+		}
+	};
+	struct compNodeHashFuncPtr
+	{
+		bool operator()(const char* nd1, const char* nd2) const
+		{
+			bool retVal;
+			if (strcmp(nd1, nd2) == 0)
+				retVal = true;
+			else
+				retVal = false;
+
+			return retVal;
 		}
 	};
 
@@ -127,9 +156,9 @@ namespace Solver
 		std::unique_ptr<char[]> Solution;
 		int ElementsInRow, IterationCount;
 		//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
-		std::unordered_set<std::unique_ptr<_Nd>, NodeHashFunc, compNodeHashFunc> UsedList;//Checking list for used combinations
+		std::unordered_map<const char*, std::unique_ptr<_Nd>, NodeHashFuncPtr, compNodeHashFuncPtr> UsedList;//Checking list for used combinations
 		std::vector<std::vector<char>> BackList;
-		virtual int Rotate(char M, _Nd*, char) = 0;
+		virtual int Rotate(char M, const _Nd*, char) = 0;
 		bool CancelationFlag;
 	public:
 		virtual std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) = 0;

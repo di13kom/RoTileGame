@@ -20,15 +20,13 @@ namespace Solver
 		Dif = std::abs(xValueIndex - xPositionIndex) + std::abs(yValueIndex - yPositionIndex);
 		return Dif;
 	}
-	int EFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
+	int EFS_Class::Rotate(char M, const _Nd *ParNode, char IsLeft)
 	{
 		IterationCount++;
 
-		auto _Node = std::make_unique<_Nd>();
 		auto Tmp = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
 		Tmp[ElementsInRow*ElementsInRow] = '\0';
 
-		_Node->Parent = ParNode;
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
 		if (IsLeft)//Left Rotate
 		{
@@ -42,25 +40,24 @@ namespace Solver
 			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow + 1]);
 			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow]);
 		}
-		_Node->Positions = std::move(Tmp);
-		_Node->gValue = ParNode->gValue + 1;
-		_Node->hValue = GetManhattan(_Node->Positions.get());
-		_Node->fValue = _Node->gValue + _Node->hValue;
-		//Insert combination to UsedList
+
+		char* vl = Tmp.get();
 		bool result;
-		_Nd *TmpNode = _Node.get();
-		std::tie(std::ignore, result) = UsedList.insert(std::move(_Node));
-		//Check existance in UsedList
-		if (result == true || _Node->hValue == 0)
+
+		if (UsedList.find(vl) == UsedList.end())
 		{
-			//auto v = GreenQueue.lower_bound(_Node);
-			//if (v == GreenQueue.begin()
-			//	&& v != GreenQueue.end()
-			//	&& v.operator*()->fValue == _Node->fValue
-			//	&& v.operator*()->hValue > _Node->hValue)
-			//	GreenQueue.emplace_hint(v, std::move(_Node));
-			//else
-			GreenQueue.insert(TmpNode);
+			auto _Node = std::make_unique<_Nd>();
+			_Node->Parent = ParNode;
+			_Node->Positions = std::move(Tmp);
+			_Node->gValue = ParNode->gValue + 1;
+			_Node->hValue = GetManhattan(_Node->Positions.get());
+			_Node->fValue = _Node->gValue + _Node->hValue;
+			//Insert combination to UsedList
+			_Nd *TmpNode = _Node.get();
+
+			std::tie(std::ignore, result) = UsedList.emplace(vl, std::move(_Node));
+
+			auto itr = GreenQueue.insert(TmpNode);
 		}
 		else
 		{
@@ -99,10 +96,10 @@ namespace Solver
 	};
 	std::vector<std::vector<char>> EFS_Class::FindSolution(std::unique_ptr<char[]> inData)
 	{
-		std::cout<<"sizeof _Nd: "<<sizeof(_Nd)<<std::endl;
+		std::cout << "sizeof _Nd: " << sizeof(_Nd) << std::endl;
 		try
 		{
-			_Nd* currentNode;
+			const _Nd* currentNode;
 			auto _Node = std::make_unique<_Nd>();
 
 			inData[ElementsInRow*ElementsInRow] = '\0';
@@ -112,7 +109,7 @@ namespace Solver
 			_Node->fValue = _Node->gValue + _Node->hValue;
 			//Add to CloseList
 			currentNode = _Node.get();
-			UsedList.insert(std::move(_Node));//insert combination
+			UsedList.emplace(_Node->Positions.get(),std::move(_Node));//insert combination
 
 			//StartRecursiveFunction
 			while (CancelationFlag == false)
