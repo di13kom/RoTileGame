@@ -1,0 +1,23 @@
+# data file for the Fltk User Interface Designer (fluid)
+version 1.0304
+header_name {.h}
+code_name {.cxx}
+class WaitingWindow {open
+} {
+  Function {} {open
+  } {
+    Fl_Window {} {
+      label {Wait Please} open
+      xywh {570 350 225 125} type Single hide
+    } {
+      Fl_Progress {} {
+        label {Processing...}
+        xywh {10 50 200 30}
+      }
+      Fl_Return_Button {} {
+        label button selected
+        xywh {130 90 80 25}
+      }
+    }
+  }
+}

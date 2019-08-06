@@ -138,6 +138,7 @@ namespace Solver
 		virtual ~Fs() = default;
 		virtual int GetIteration() = 0;
 		virtual int GetUsedListCount() = 0;
+		virtual int GetGreenListCount() = 0;
 		virtual void CancelTask() = 0;
 	};
 

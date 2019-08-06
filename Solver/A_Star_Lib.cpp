@@ -7,6 +7,11 @@ namespace Solver
 	{
 		return IterationCount;
 	}
+
+	int EFS_Class::GetGreenListCount()
+	{
+		return GreenQueue.size();
+	}
 	short int EFS_Class::Calc(char value, short int position)
 	{
 		short int Dif = 0;
@@ -24,11 +29,9 @@ namespace Solver
 	{
 		IterationCount++;
 
-		auto _Node = std::make_unique<_Nd>();
 		auto Tmp = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
 		Tmp[ElementsInRow*ElementsInRow] = '\0';
 
-		_Node->Parent = ParNode;
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
 		if (IsLeft)//Left Rotate
 		{
@@ -42,29 +45,42 @@ namespace Solver
 			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow + 1]);
 			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow]);
 		}
-		_Node->Positions = std::move(Tmp);
-		_Node->gValue = ParNode->gValue + 1;
-		_Node->hValue = GetManhattan(_Node->Positions.get());
-		_Node->fValue = _Node->gValue + _Node->hValue;
-		//Insert combination to UsedList
-		bool result;
-		_Nd *TmpNode = _Node.get();
-		std::tie(std::ignore, result) = UsedList.insert(std::move(_Node));
-		//Check existance in UsedList
-		if (result == true || _Node->hValue == 0)
+
+		auto localhValue = GetManhattan(Tmp.get());
+		auto localgValue = ParNode->gValue + 1;
+		auto localfValue = localhValue + localgValue;
+
+		auto itr = GreenQueue.rbegin();
+		auto nd = *itr;
+		if(localfValue < nd->fValue)
 		{
-			//auto v = GreenQueue.lower_bound(_Node);
-			//if (v == GreenQueue.begin()
-			//	&& v != GreenQueue.end()
-			//	&& v.operator*()->fValue == _Node->fValue
-			//	&& v.operator*()->hValue > _Node->hValue)
-			//	GreenQueue.emplace_hint(v, std::move(_Node));
-			//else
-			GreenQueue.insert(TmpNode);
-		}
-		else
-		{
-			return 1;
+			auto _Node = std::make_unique<_Nd>();
+			_Node->Parent = ParNode;
+			_Node->Positions = std::move(Tmp);
+			_Node->gValue = localgValue;
+			_Node->hValue = localhValue;
+			_Node->fValue = localfValue;
+			//Insert combination to UsedList
+			_Nd *TmpNode = _Node.get();
+
+			bool result;
+			std::tie(std::ignore, result) = UsedList.insert(std::move(_Node));
+			//Check existance in UsedList
+			if (result == true || _Node->hValue == 0)
+			{
+				//auto v = GreenQueue.lower_bound(_Node);
+				//if (v == GreenQueue.begin()
+				//	&& v != GreenQueue.end()
+				//	&& v->fValue == _Node->fValue
+				//	&& v->hValue > _Node->hValue)
+				//	GreenQueue.emplace_hint(v, std::move(_Node));
+				//else
+				GreenQueue.insert(TmpNode);
+			}
+			else
+			{
+				return 1;
+			}
 		}
 		return 0;
 	}
@@ -113,6 +129,7 @@ namespace Solver
 			//Add to CloseList
 			currentNode = _Node.get();
 			UsedList.insert(std::move(_Node));//insert combination
+			GreenQueue.insert(currentNode);
 
 			//StartRecursiveFunction
 			while (CancelationFlag == false)

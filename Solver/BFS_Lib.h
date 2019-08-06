@@ -12,7 +12,8 @@ namespace Solver
 		// Inherited via Fs
 		std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) override;
 		int GetIteration() override;
-		virtual int GetUsedListCount() override;
+		int GetUsedListCount() override;
+		int GetGreenListCount() override;
 		void CancelTask() override;
 	};
 }

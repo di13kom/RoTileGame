@@ -25,6 +25,11 @@ namespace Solver
 		return UsedList.size();
 	}
 
+	int BFS_Class::GetGreenListCount()
+	{
+		return 0;
+	}
+
 	void BFS_Class::CancelTask()
 	{
 	}

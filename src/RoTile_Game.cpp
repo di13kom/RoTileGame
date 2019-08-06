@@ -526,6 +526,7 @@ int Mybox::handle(int e)
 						<< BackList.size() - 1 << " steps in BackList\n";
 					std::cout << "iterations: " << fsClass->GetIteration() << std::endl;
 					std::cout << "UsedList: " << fsClass->GetUsedListCount() << std::endl;
+					std::cout << "GreenList: " << fsClass->GetGreenListCount() << std::endl;
 
 					Fl::add_timeout(0.25, TimerR, (void*)this);
 				}
