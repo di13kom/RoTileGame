@@ -1,4 +1,5 @@
 #include "Common.h"
+#include<fstream>
 
 namespace Solver
 {
@@ -8,6 +9,7 @@ namespace Solver
 		short int Calc(char, short int);
 		int Rotate(char, _Nd*, char);
 		short int GetManhattan(char*);
+		std::fstream StorageFile;
 	public:
 		EFS_Class(int);
 		~EFS_Class();

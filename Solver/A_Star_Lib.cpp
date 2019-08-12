@@ -76,6 +76,19 @@ namespace Solver
 				//	GreenQueue.emplace_hint(v, std::move(_Node));
 				//else
 				GreenQueue.insert(TmpNode);
+				/*
+				StorageFile<<"{\n\t\"Node\": "<<TmpNode
+					<<",\n\t\"ParNode\": "<<TmpNode->Parent
+					<<",\n\t\"gValue\": "<<TmpNode->gValue
+					<<",\n\t\"hValue\": "<<TmpNode->hValue
+					<<",\n\t\"fValue\": "<<TmpNode->fValue<<"\n},\n";
+					*/
+				StorageFile<<"{\"Node\": "<<TmpNode
+					<<",\"ParNode\": "<<TmpNode->Parent
+					<<",\"gValue\": "<<TmpNode->gValue
+					<<",\"hValue\": "<<TmpNode->hValue
+					<<",\"fValue\": "<<TmpNode->fValue
+					<<"},\n";
 			}
 			else
 			{
@@ -118,6 +131,8 @@ namespace Solver
 		std::cout<<"sizeof _Nd: "<<sizeof(_Nd)<<std::endl;
 		try
 		{
+			StorageFile.open("solv.json",std::fstream::in|std::fstream::out|std::fstream::trunc);
+			StorageFile<<"[\n";
 			_Nd* currentNode;
 			auto _Node = std::make_unique<_Nd>();
 
@@ -155,6 +170,8 @@ namespace Solver
 						if (currentNode->Parent) currentNode = currentNode->Parent;
 						else break;
 					}
+					StorageFile<<"]\n";
+					StorageFile.close();
 					return BackList;
 				}
 				//std::move(GreenQueue.begin, std::next(it), std::back_inserter(RedQueue));
