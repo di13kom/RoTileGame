@@ -33,17 +33,14 @@ namespace Solver
 		Tmp[ElementsInRow*ElementsInRow] = '\0';
 
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
-		if (IsLeft)//Left Rotate
+
+		while(IsLeft>0)
 		{
 			std::swap(Tmp[(int)M + 1], Tmp[(int)M]);
 			std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow]);
 			std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow + 1]);
-		}
-		else//Right Rotate
-		{
-			std::swap(Tmp[(int)M], Tmp[(int)M + 1]);
-			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow + 1]);
-			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow]);
+
+			IsLeft--;
 		}
 
 		auto localhValue = GetManhattan(Tmp.get());
@@ -77,18 +74,23 @@ namespace Solver
 				//else
 				GreenQueue.insert(TmpNode);
 				/*
-				StorageFile<<"{\n\t\"Node\": "<<TmpNode
-					<<",\n\t\"ParNode\": "<<TmpNode->Parent
-					<<",\n\t\"gValue\": "<<TmpNode->gValue
-					<<",\n\t\"hValue\": "<<TmpNode->hValue
-					<<",\n\t\"fValue\": "<<TmpNode->fValue<<"\n},\n";
-					*/
+
+				std::ostringstream memStr;
+				for(int i=0;i<ElementsInRow*ElementsInRow;i++)
+				{
+					memStr<<(int)TmpNode->Positions[i];
+					if(i<ElementsInRow*ElementsInRow-1)
+						memStr<<",";
+				}
 				StorageFile<<"{\"Node\": "<<TmpNode
 					<<",\"ParNode\": "<<TmpNode->Parent
 					<<",\"gValue\": "<<TmpNode->gValue
 					<<",\"hValue\": "<<TmpNode->hValue
 					<<",\"fValue\": "<<TmpNode->fValue
+					<<",\"P\": "<<memStr.str()
 					<<"},\n";
+
+				*/
 			}
 			else
 			{
@@ -102,17 +104,17 @@ namespace Solver
 	short int EFS_Class::GetManhattan(char *Value)
 	{
 		/*
-		- State -
-		675
-		432
-		198
-		- Manhattan values-
-		331
-		022
-		211
-		- Sum -
-		3+3+1+0+2+2+1+1=13
-		*/
+		   - State -
+		   675
+		   432
+		   198
+		   - Manhattan values-
+		   331
+		   022
+		   211
+		   - Sum -
+		   3+3+1+0+2+2+1+1=13
+		   */
 		short int Sum = 0;
 		for (short int i = 0; i < ElementsInRow*ElementsInRow; i++)
 			Sum += Calc(Value[i], i);
@@ -131,8 +133,8 @@ namespace Solver
 		std::cout<<"sizeof _Nd: "<<sizeof(_Nd)<<std::endl;
 		try
 		{
-			StorageFile.open("solv.json",std::fstream::in|std::fstream::out|std::fstream::trunc);
-			StorageFile<<"[\n";
+			//StorageFile.open("solv.json",std::fstream::in|std::fstream::out|std::fstream::trunc);
+			//StorageFile<<"[\n";
 			_Nd* currentNode;
 			auto _Node = std::make_unique<_Nd>();
 
@@ -153,10 +155,9 @@ namespace Solver
 				{
 					for (char j = 0; j < (ElementsInRow - 1); j++)
 					{
-						for (char Left = 0; Left < 2; Left++)
+						for (char cnt = 0; cnt < 4; cnt++)
 						{
-							//Creation
-							/*Node->Child[xValueIndex] = */Rotate(ElementsInRow*(int)i + (int)j, currentNode, (bool)Left);
+							Rotate(ElementsInRow*(int)i + (int)j, currentNode, cnt);
 						}
 					}
 				}
@@ -170,8 +171,8 @@ namespace Solver
 						if (currentNode->Parent) currentNode = currentNode->Parent;
 						else break;
 					}
-					StorageFile<<"]\n";
-					StorageFile.close();
+					//StorageFile<<"]\n";
+					//StorageFile.close();
 					return BackList;
 				}
 				//std::move(GreenQueue.begin, std::next(it), std::back_inserter(RedQueue));
