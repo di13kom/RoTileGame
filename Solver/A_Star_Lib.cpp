@@ -33,14 +33,17 @@ namespace Solver
 		Tmp[ElementsInRow*ElementsInRow] = '\0';
 
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
-
-		while(IsLeft>0)
+		if (IsLeft)//Left Rotate
 		{
 			std::swap(Tmp[(int)M + 1], Tmp[(int)M]);
 			std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow]);
 			std::swap(Tmp[(int)M + 1], Tmp[(int)M + ElementsInRow + 1]);
-
-			IsLeft--;
+		}
+		else//Right Rotate
+		{
+			std::swap(Tmp[(int)M], Tmp[(int)M + 1]);
+			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow + 1]);
+			std::swap(Tmp[(int)M], Tmp[(int)M + ElementsInRow]);
 		}
 
 		auto localhValue = GetManhattan(Tmp.get());
@@ -73,7 +76,6 @@ namespace Solver
 				//	GreenQueue.emplace_hint(v, std::move(_Node));
 				//else
 				GreenQueue.insert(TmpNode);
-				/*
 
 				std::ostringstream memStr;
 				for(int i=0;i<ElementsInRow*ElementsInRow;i++)
@@ -89,8 +91,6 @@ namespace Solver
 					<<",\"fValue\": "<<TmpNode->fValue
 					<<",\"P\": "<<memStr.str()
 					<<"},\n";
-
-				*/
 			}
 			else
 			{
@@ -101,7 +101,7 @@ namespace Solver
 	}
 
 
-	short int EFS_Class::GetManhattan(char *Value)
+	constexpr short int EFS_Class::GetManhattan(char *Value)
 	{
 		/*
 		   - State -
@@ -133,8 +133,8 @@ namespace Solver
 		std::cout<<"sizeof _Nd: "<<sizeof(_Nd)<<std::endl;
 		try
 		{
-			//StorageFile.open("solv.json",std::fstream::in|std::fstream::out|std::fstream::trunc);
-			//StorageFile<<"[\n";
+			StorageFile.open("solv.json",std::fstream::in|std::fstream::out|std::fstream::trunc);
+			StorageFile<<"[\n";
 			_Nd* currentNode;
 			auto _Node = std::make_unique<_Nd>();
 
@@ -155,9 +155,9 @@ namespace Solver
 				{
 					for (char j = 0; j < (ElementsInRow - 1); j++)
 					{
-						for (char cnt = 0; cnt < 4; cnt++)
+						for (char Left = 0; Left < 2; Left++)
 						{
-							Rotate(ElementsInRow*(int)i + (int)j, currentNode, cnt);
+							Rotate(ElementsInRow*(int)i + (int)j, currentNode, (bool)Left);
 						}
 					}
 				}
@@ -171,8 +171,8 @@ namespace Solver
 						if (currentNode->Parent) currentNode = currentNode->Parent;
 						else break;
 					}
-					//StorageFile<<"]\n";
-					//StorageFile.close();
+					StorageFile<<"]\n";
+					StorageFile.close();
 					return BackList;
 				}
 				//std::move(GreenQueue.begin, std::next(it), std::back_inserter(RedQueue));
