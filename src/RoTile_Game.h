@@ -37,6 +37,7 @@ static int s_BasicFontValue = 120;
 char *s_FileName = nullptr;
 //args
 int helpFlag = 0;
+int printSolutionFlag = 0;
 
 struct ParseFileValue
 {

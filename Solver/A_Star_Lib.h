@@ -1,5 +1,6 @@
 #include "Common.h"
-#include<fstream>
+#include <fstream>
+#include <sstream>
 
 namespace Solver
 {

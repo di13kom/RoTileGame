@@ -508,20 +508,21 @@ int Mybox::handle(int e)
 				if (BackList.size() > 0)
 				{
 					fl_message("Solution was found through %lu steps", BackList.size() - 1);
-#ifdef DEBUGLOG
-					int _Tmp;
-
-					for (int i = BackList.size() - 1; i >= 0; i--)
+					if (printSolutionFlag)
 					{
-						for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+						int _Tmp;
+
+						for (int i = BackList.size() - 1; i >= 0; i--)
 						{
-							if (k % TilesInRow == 0)std::cout << "\n";
-							_Tmp = (int)BackList[i][k];
-							std::cout << std::setw(2) << _Tmp << " ";
+							for (auto k = 0; k < TilesInRow*TilesInRow; k++)
+							{
+								if (k % TilesInRow == 0)std::cout << "\n";
+								_Tmp = (int)BackList[i][k];
+								std::cout << std::setw(2) << _Tmp << " ";
+							}
+							std::cout << std::endl;
 						}
-						std::cout << std::endl;
 					}
-#endif
 					std::cout << "Solution was found through "\
 						<< BackList.size() - 1 << " steps in BackList\n";
 					std::cout << "iterations: " << fsClass->GetIteration() << std::endl;
@@ -880,6 +881,12 @@ int ArgsHandler(int argc, char **argv, int &i)
 			return 2;
 		}
 	}
+	if (strcmp("-p", argv[i]) == 0 || strcmp("--print", argv[i]) == 0)
+	{
+		printSolutionFlag = 1;
+		i += 3;
+		return 3;
+	}
 	return 0;
 }
 
@@ -896,6 +903,7 @@ int main(int argc, char** argv)
 			"usage: %s [options]\n"
 			" -h | --help : print help message\n"
 			" -f | --file : specify file \n"
+			" -p | --print: print solution step to console\n"
 			" plus standard fltk options\n",
 			argv[i], argv[0]);
 	}
@@ -904,6 +912,7 @@ int main(int argc, char** argv)
 		Fl::fatal("usage: %s [options]\n"
 			" -h | --help : print help message\n"
 			" -f | --file : specify file \n"
+			" -p | --print: print solution step to console\n"
 			" plus standard fltk options:\n"
 			"%s\n",
 			argv[0], Fl::help);

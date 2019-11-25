@@ -11,10 +11,6 @@ add_executable(RoTile_Game ${Sources} ${Headers})
 add_dependencies(RoTile_Game Solver_Lib)
 target_include_directories(RoTile_Game PRIVATE ${Solver_Dir})
 
-#add -DDEBUGLLOG=TRUE
-if(DEBUGLOG)
-	target_compile_definitions(RoTile_Game PRIVATE DEBUGLOG)
-endif()
 target_link_libraries(RoTile_Game fltk fltk_images Solver_Lib) 
 
 if(UNIX)
