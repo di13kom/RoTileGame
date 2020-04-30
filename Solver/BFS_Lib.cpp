@@ -68,7 +68,7 @@ namespace Solver
 		IterationCount++;
 		auto _Node = std::make_shared<_Nd>();
 		_Node->Parent = ParNode;
-		auto Tmp = std::make_shared<char[]>(ElementsInRow*ElementsInRow);
+		std::shared_ptr<char[]> Tmp(new char[ElementsInRow*ElementsInRow + 1], std::default_delete<char[]>());
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
 		if (IsLeft)//Left Rotate
 		{
