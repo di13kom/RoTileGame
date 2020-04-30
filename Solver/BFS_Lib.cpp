@@ -2,7 +2,7 @@
 
 namespace Solver
 {
-	int BFS_Class::GetIteration()
+	int BFS_Class::GetIteration() const
 	{
 		return IterationCount;
 	}
@@ -20,12 +20,12 @@ namespace Solver
 
 	BFS_Class::~BFS_Class() {}
 
-	int BFS_Class::GetUsedListCount()
+	int BFS_Class::GetUsedListCount() const
 	{
 		return UsedList.size();
 	}
 
-	int BFS_Class::GetGreenListCount()
+	int BFS_Class::GetGreenListCount() const
 	{
 		return 0;
 	}
@@ -38,10 +38,10 @@ namespace Solver
 	{
 		try
 		{
-			auto _Node = std::make_unique<_Nd>();
+			auto _Node = std::make_shared<_Nd>();
 			inData[ElementsInRow*ElementsInRow] = '\0';
 			_Node->Positions = std::move(inData);
-			UsedList.insert(std::move(_Node));
+			UsedList.insert(_Node->Positions);
 			//StartRecursiveFunction
 			for (char i = 0; i < (ElementsInRow - 1); i++)
 			{
@@ -62,13 +62,13 @@ namespace Solver
 		return std::vector<std::vector<char>>();
 	}
 
-	int BFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
+	int BFS_Class::Rotate(char M, std::shared_ptr<_Nd> ParNode, char IsLeft)
 	{
-		_Nd* currentNode = nullptr;
+		std::shared_ptr<_Nd> currentNode = nullptr;
 		IterationCount++;
-		auto _Node = std::make_unique<_Nd>();
+		auto _Node = std::make_shared<_Nd>();
 		_Node->Parent = ParNode;
-		auto Tmp = std::make_unique<char[]>(ElementsInRow*ElementsInRow);
+		auto Tmp = std::make_shared<char[]>(ElementsInRow*ElementsInRow);
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
 		if (IsLeft)//Left Rotate
 		{
@@ -98,7 +98,7 @@ namespace Solver
 		}
 		else
 		{
-			auto vl = UsedList.insert(std::move(_Node));
+			auto vl = UsedList.insert(_Node->Positions);
 			if (vl.second == true)
 			{
 				for (char i = 0; i < (ElementsInRow - 1); i++)

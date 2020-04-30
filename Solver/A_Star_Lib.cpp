@@ -3,12 +3,12 @@
 
 namespace Solver
 {
-	int EFS_Class::GetIteration()
+	int EFS_Class::GetIteration() const
 	{
 		return IterationCount;
 	}
 
-	int EFS_Class::GetGreenListCount()
+	int EFS_Class::GetGreenListCount() const
 	{
 		return GreenQueue.size();
 	}
@@ -25,12 +25,13 @@ namespace Solver
 		Dif = std::abs(xValueIndex - xPositionIndex) + std::abs(yValueIndex - yPositionIndex);
 		return Dif;
 	}
-	int EFS_Class::Rotate(char M, _Nd *ParNode, char IsLeft)
+	int EFS_Class::Rotate(char M, std::shared_ptr<_Nd> ParNode, char IsLeft)
 	{
-		IterationCount++;
+		//std::cout<<"Iter: "<<
+		       	IterationCount++;
 
-		auto Tmp = std::make_unique<char[]>(ElementsInRow*ElementsInRow + 1);
-		Tmp[ElementsInRow*ElementsInRow] = '\0';
+		std::shared_ptr<char[]> Tmp(new char[ElementsInRow*ElementsInRow + 1], std::default_delete<char[]>());
+		//Tmp[ElementsInRow*ElementsInRow] = '\0';
 
 		std::copy(ParNode->Positions.get(), ParNode->Positions.get() + ElementsInRow * ElementsInRow, Tmp.get());
 		if (IsLeft)//Left Rotate
@@ -54,17 +55,17 @@ namespace Solver
 		auto nd = *itr;
 		if(localfValue < nd->fValue)
 		{
-			auto _Node = std::make_unique<_Nd>();
+			auto _Node = std::make_shared<_Nd>();
 			_Node->Parent = ParNode;
-			_Node->Positions = std::move(Tmp);
+			_Node->Positions = Tmp;
 			_Node->gValue = localgValue;
 			_Node->hValue = localhValue;
 			_Node->fValue = localfValue;
 			//Insert combination to UsedList
-			_Nd *TmpNode = _Node.get();
+			//_Nd *TmpNode = _Node.get();
 
 			bool result;
-			std::tie(std::ignore, result) = UsedList.insert(std::move(_Node));
+			std::tie(std::ignore, result) = UsedList.insert(Tmp);
 			//Check existance in UsedList
 			if (result == true || _Node->hValue == 0)
 			{
@@ -75,8 +76,9 @@ namespace Solver
 				//	&& v->hValue > _Node->hValue)
 				//	GreenQueue.emplace_hint(v, std::move(_Node));
 				//else
-				GreenQueue.insert(TmpNode);
+				GreenQueue.insert(_Node);
 
+#ifdef STORAGE_REQUIRED
 				std::ostringstream memStr;
 				for(int i=0;i<ElementsInRow*ElementsInRow;i++)
 				{
@@ -91,13 +93,11 @@ namespace Solver
 					<<",\"fValue\": "<<TmpNode->fValue
 					<<",\"P\": "<<memStr.str()
 					<<"},\n";
-			}
-			else
-			{
-				return 1;
+#endif
+				return 0;
 			}
 		}
-		return 0;
+		return 1;
 	}
 
 
@@ -133,20 +133,28 @@ namespace Solver
 		std::cout<<"sizeof _Nd: "<<sizeof(_Nd)<<std::endl;
 		try
 		{
+#ifdef STORAGE_REQUIRED
 			StorageFile.open("solv.json",std::fstream::in|std::fstream::out|std::fstream::trunc);
 			StorageFile<<"[\n";
-			_Nd* currentNode;
-			auto _Node = std::make_unique<_Nd>();
+#endif
+			std::shared_ptr<_Nd> currentNode;
+			auto _Node = std::make_shared<_Nd>();
 
+			//
 			inData[ElementsInRow*ElementsInRow] = '\0';
-			_Node->Positions = std::move(inData);
+			//_Node->Positions = std::make_shared<char[]>(ElementsInRow*ElementsInRow + 1);
+			_Node->Positions = std::shared_ptr<char[]>(new char[ElementsInRow*ElementsInRow + 1], std::default_delete<char[]>());
+			_Node->Positions[ElementsInRow*ElementsInRow] = '\0';
+
+			std::copy(inData.get(), inData.get() + ElementsInRow * ElementsInRow, _Node->Positions.get());
+			//
 			_Node->gValue = 0;
 			_Node->hValue = GetManhattan(_Node->Positions.get());
 			_Node->fValue = _Node->gValue + _Node->hValue;
 			//Add to CloseList
-			currentNode = _Node.get();
-			UsedList.insert(std::move(_Node));//insert combination
-			GreenQueue.insert(currentNode);
+			currentNode = _Node;
+			UsedList.insert(_Node->Positions);//insert combination
+			GreenQueue.insert(_Node);
 
 			//StartRecursiveFunction
 			while (CancelationFlag == false)
@@ -171,8 +179,10 @@ namespace Solver
 						if (currentNode->Parent) currentNode = currentNode->Parent;
 						else break;
 					}
+#ifdef STORAGE_REQUIRED
 					StorageFile<<"]\n";
 					StorageFile.close();
+#endif
 					return BackList;
 				}
 				//std::move(GreenQueue.begin, std::next(it), std::back_inserter(RedQueue));
@@ -185,7 +195,7 @@ namespace Solver
 		}
 		return std::vector<std::vector<char>>();
 	}
-	int EFS_Class::GetUsedListCount()
+	int EFS_Class::GetUsedListCount() const
 	{
 		return UsedList.size();
 	}

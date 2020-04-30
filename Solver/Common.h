@@ -8,10 +8,7 @@
 #include <iomanip> // std::setw
 #include <memory>
 #include <set>
-//#include <future>
 #include <numeric> //iota
-//#include <array>
-//#include <thread>
 #include <tuple>
 //
 #include <unordered_set>
@@ -19,14 +16,13 @@
 
 namespace Solver
 {
-
 	struct _Nd
 	{
-		_Nd* Parent;
+		std::shared_ptr<_Nd> Parent;
 		short int hValue;
 		short int gValue;
 		short int fValue;
-		std::unique_ptr<char[]> Positions;
+		std::shared_ptr<char[]> Positions;
 	};
 
 	//
@@ -76,11 +72,11 @@ namespace Solver
 	//Node unique_ptr impl
 	struct NodeHashFunc
 	{
-		inline size_t operator()(const std::unique_ptr<_Nd>& nd) const
+		inline size_t operator()(const std::shared_ptr<char[]>& nd) const
 		{
 			size_t result = 0;
 			const size_t prime = 31;
-			const char* s1 = nd->Positions.get();
+			const char* s1 = nd.get();
 			int len = strlen(s1);
 			for (int i = 0; i < len; ++i) {
 				result = s1[i] + (result * prime);
@@ -90,11 +86,11 @@ namespace Solver
 	};
 	struct compNodeHashFunc
 	{
-		bool operator()(const std::unique_ptr<_Nd>& nd1, const std::unique_ptr<_Nd>& nd2) const
+		bool operator()(const std::shared_ptr<char[]>& nd1, const std::shared_ptr<char[]>& nd2) const
 		{
 			bool retVal;
-			char* s1 = nd1->Positions.get();
-			char* s2 = nd2->Positions.get();
+			char* s1 = nd1.get();
+			char* s2 = nd2.get();
 			if (strcmp(s1, s2) == 0)
 				retVal = true;
 			else
@@ -105,14 +101,6 @@ namespace Solver
 	};
 	//
 	///-----------
-	struct Comp1Func
-	{
-		bool operator()(const _Nd *s1, const _Nd *s2) const
-		{
-			return s1->fValue < s2->fValue;
-		}
-	};
-
 	struct Comp2Func
 	{
 		bool operator()(const char *s1, const char *s2) const
@@ -123,23 +111,23 @@ namespace Solver
 
 	class Fs
 	{
-	protected:
-		std::unique_ptr<char[]> Solution;
-		int ElementsInRow, IterationCount;
-		//std::set<const char*, Comp2Func> UsedList;//Checking list for used combinations
-		std::unordered_set<std::unique_ptr<_Nd>, NodeHashFunc, compNodeHashFunc> UsedList;//Checking list for used combinations
-		std::vector<std::vector<char>> BackList;
-		virtual int Rotate(char M, _Nd*, char) = 0;
-		bool CancelationFlag;
-	public:
-		virtual std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) = 0;
-		Fs(int);
-		Fs() = default;
-		virtual ~Fs() = default;
-		virtual int GetIteration() = 0;
-		virtual int GetUsedListCount() = 0;
-		virtual int GetGreenListCount() = 0;
-		virtual void CancelTask() = 0;
+		protected:
+			std::unique_ptr<char[]> Solution;
+			int ElementsInRow, IterationCount;
+			//Checking list for used combinations
+			std::unordered_set<std::shared_ptr<char[]>, NodeHashFunc, compNodeHashFunc> UsedList;
+			std::vector<std::vector<char>> BackList;
+			virtual int Rotate(char M, std::shared_ptr<_Nd>, char) = 0;
+			bool CancelationFlag;
+		public:
+			virtual std::vector<std::vector<char>> FindSolution(std::unique_ptr<char[]>) = 0;
+			Fs(int);
+			Fs() = default;
+			virtual ~Fs() = default;
+			virtual int GetIteration() const = 0;
+			virtual int GetUsedListCount() const = 0;
+			virtual int GetGreenListCount() const = 0;
+			virtual void CancelTask() = 0;
 	};
 
 	//void *PrgsBar(void *ptr);
